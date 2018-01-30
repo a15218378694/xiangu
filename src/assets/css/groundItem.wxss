@@ -1,0 +1,56 @@
+.grounding {
+  padding: 0 0.4rem;
+  background-color: #fff;
+}
+.grounding .bot {
+  padding: 0.2rem 0;
+  display: flex;
+}
+.grounding .bot .leftt img {
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-right: 0.15rem;
+}
+.grounding .bot .centerr {
+  flex: 1;
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: column;
+  text-align: left;
+}
+.grounding .bot .centerr .topp {
+  text-align: left;
+}
+.grounding .bot .centerr .topp .com {
+  padding-right: 0.15rem;
+  font-size: 0.3rem;
+}
+.grounding .bot .centerr .topp .num {
+  color: #9e9fa1;
+  font-size: 0.26rem;
+}
+.grounding .bot .centerr .bott {
+  color: #9e9fa1;
+}
+.grounding .bot .centerr .bott .kill_time {
+  color: #ff6d00;
+  margin: 0 0.1rem;
+}
+.grounding .bot .centerr .bott .kucun {
+  color: #ff6d00;
+  margin: 0 0.1rem;
+}
+.grounding .bot .rightt {
+  padding: 0.095rem 0;
+}
+.grounding .bot .rightt .goGround {
+  border: 0.01rem solid #42bd56 !important;
+  color: #42bd56;
+  width: 1.2rem;
+  height: 0.58rem;
+  background: #e1f3e2;
+  border-radius: 0.05rem;
+  line-height: 0.58rem;
+  text-align: center;
+  border-radius: 0.15rem;
+}

@@ -1,0 +1,29 @@
+.groundStep {
+  display: flex;
+  text-align: center;
+}
+.groundStep div {
+  flex: 1;
+  position: relative;
+  padding: 0.4rem 0 0.3rem;
+}
+.groundStep .go {
+  position: absolute;
+  right: 0;
+  top: 0.4rem;
+  transform: translateX(50%);
+  width: 0.13rem;
+  height: 0.22rem;
+}
+.groundStep .step {
+  width: 0.4rem;
+  height: 0.4rem;
+}
+.groundStep .des {
+  font-size: 0.26rem;
+  color: #3E3F42;
+}
+.groundStep .tip {
+  font-size: 0.24rem;
+  color: #9297A3;
+}
