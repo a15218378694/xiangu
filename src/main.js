@@ -59,6 +59,7 @@ new function() {
 new Vue({
   el: "#app",
   router,
+  bridge,
   mounted() {
     
   },

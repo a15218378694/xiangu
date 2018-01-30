@@ -2,9 +2,12 @@
 var root = process.env.API_ROOT
 import axios from 'axios'
 import qs from 'qs'
+import { Indicator } from 'mint-ui';
+import { Toast } from "mint-ui";
+
 axios.defaults.withCredentials = true
 axios.interceptors.request.use(config => {
-  // loading
+  Indicator.open('加载中...');
   return config
 }, error => {
   return Promise.reject(error)
@@ -33,7 +36,9 @@ function checkStatus (response) {
 function checkCode (res) {
   // 如果code异常(这里已经包括网络错误，服务器错误，后端抛出的错误)，可以弹出一个错误提示，告诉用户
   if (res.status === -404) {
-    // alert(res.msg)
+      Toast(res.msg)
+  } else {
+    Indicator.close();
   }
   // if (res.data && (!res.data.success)) {
   //   alert(res.data.error_msg)
@@ -45,7 +50,7 @@ export default {
   post (url, data) {
     return axios({
       method: 'post',
-      // 线上 http://merchant.luyongjin.vip:80 测试 http://192.168.6.111:8080 192.168.8.102:80      
+      // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80      
       baseURL: root,
       url,
       credentials: 'include',
@@ -69,7 +74,7 @@ export default {
   post1 (url, data) {
     return axios({
       method: 'post',
-      // 线上 http://merchant.luyongjin.vip:80 测试 http://192.168.6.111:8080 192.168.8.102:80      
+      // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80      
       baseURL: root,
       url,
       credentials: 'include',
@@ -92,7 +97,7 @@ export default {
   get (url, params) {
     return axios({
       method: 'get',
-      // 线上 http://merchant.luyongjin.vip:80 测试 http://192.168.6.111:8080 192.168.8.102:80
+      // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80
       baseURL: root,
       url,
       params, // get 请求时带的参数

@@ -142,7 +142,7 @@
           </div>
           <img class="close" @click="isShowEven('close')" src="../assets/img/mall/guige/关闭@3x.png" alt="">
         </div>
-
+        <span v-if="isLoading"></span>
         <template v-for="(guigesObj,indexss) in guigess">
           <div class="two" :key="indexss">
             <div class="guigeType">{{guigesObj.sizes}}</div>
@@ -197,6 +197,7 @@ import groundItem from "../components/groundItem.vue";
 import { Toast } from "mint-ui";
 import { MessageBox } from "mint-ui";
 import { Swipe, SwipeItem } from "mint-ui";
+
 Vue.component(Swipe.name, Swipe);
 Vue.component(SwipeItem.name, SwipeItem);
 export default {
@@ -219,7 +220,8 @@ export default {
       buy_way: 1,
       guigesNum: 0,
       showChecked: false,
-      isClickAdd: false
+      isClickAdd: false,
+      isLoading: false,
     };
   },
 
@@ -290,21 +292,25 @@ export default {
         this.clock = util.countdownMore(timeArr, this);
       }
     },
+
+
+    
     //guigeIndex  guigeObj对应的索引    guigesObj最外层对象   guigeObj最外层对象的sizeslist数组里面的对象
     checkGuige(indexss, guigeIndex, guigesObj, guigeObj) {
+      this.isLoading = true;
       if (guigeObj.sizes !== guigesObj.curItem.sizes) {
+        guigesObj.curIndex = guigeIndex;        
         guigesObj.curItem = guigeObj;
-        guigesObj.curIndex = guigeIndex;
         this.newGuigess = [];
         this.guigess.forEach((v, i) => {
           this.newGuigess[i] = v.curItem;
         });
-      } else {
-        return;
       }
+      this.isLoading = false;
     },
+
+
     addCart() {
-      debugger
       if (!this.addCartCheck()) {
         return;
       }
@@ -331,8 +337,6 @@ export default {
     //点击添加所选
     addCheckGuigeItem() {
       if (this.addCheck() == false) {
-        console.log(21331);
-
         return;
       }
       this.zuheChecked();
@@ -350,7 +354,7 @@ export default {
       } else if (this.newGuigess.length == 0) {
         flag = false;
         Toast(`请先选择规格并且各类型规格必选`);
-      } else if (this.newGuigess.length < this.totalLength) {
+      } else if (this.newGuigess.indexOf('') > -1) {
         flag = false;
         Toast(`所选规格类型不能少于${this.totalLength}种`);
       } else if (!Number.isInteger(this.numNum) || this.numNum <= 0) {
