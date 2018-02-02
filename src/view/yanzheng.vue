@@ -1,9 +1,8 @@
 <template>
     <div>
-      <header class="orderPageHeader">
-          <img class="back" src="../assets/img/订单详情_slices/Arrow@3x.png" alt="">
-          <span class="orderDetTit">验证手机号</span>
-      </header>
+      <nav-header>
+        <span class="orderDetTit" slot="header">拼团详情</span>
+      </nav-header>
 
       <div class="yanZtit">
           <div class="one">
@@ -32,29 +31,6 @@ export default {
 </script>
 
 <style scoped lang="less">
-.orderPageHeader {
-  background-color: #fff;
-  width: 100%;
-  height: 0.88rem;
-  text-align: center;
-  position: relative;
-  line-height: 0.88rem;
-  border-bottom: 0.02rem solid #dfdfdf;
-
-  .back {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 0.17rem;
-    height: 0.29rem;
-    padding: 0.29rem 0.3rem;
-    box-sizing: content-box;
-  }
-
-  .orderDetTit {
-    text-align: center;
-  }
-}
 .yanZtit {
   text-align: left;
   padding: 0.2rem 0.45rem;

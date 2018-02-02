@@ -27,7 +27,6 @@ export default {
       this.curIndex = curIndex;
       this.$emit("getToolGoods", curIndex);
       if (curIndex == 3) {
-        // debugger
         if (this.sortType == "def" || this.sortType == "down") {
           this.sortType = "up";
         } else if (this.sortType == "up") {

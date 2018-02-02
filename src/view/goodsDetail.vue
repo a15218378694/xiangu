@@ -1,163 +1,166 @@
 <template>
-  <div>
-    <div class="goods_det">
-      <div class="con">
-        <img class="back" @click="back" src="../assets/img/mall/商品详情_slices/Group@2x.png" alt="">
-        <img v-if="!isCollect" class="collect" src="../assets/img/mall/商品详情_slices/收藏@2x.png" alt="">
-        <img v-else class="collect" src="../assets/img/mall/商品详情_slices/收藏2@2x.png" alt="">
-        <router-link class="toShopCart" to="shopCart">
-          <img class="shopCart" src="../assets/img/mall/商品详情_slices/购物车@2x.png" alt="">
-        </router-link>
+  <div :class="[isShow? 'showGuige': '','goods_det']">
+
+    <div class="con">
+      <img class="back" @click="back" src="../assets/img/mall/商品详情_slices/Group@2x.png" alt="">
+      <img v-if="!isCollect" @click="collect" class="collect" src="../assets/img/mall/商品详情_slices/收藏@2x.png" alt="">
+      <img v-else class="collect" src="../assets/img/mall/商品详情_slices/收藏2@2x.png" alt="">
+      <router-link class="toShopCart" to="shopCart">
+        <img class="shopCart" src="../assets/img/mall/商品详情_slices/购物车@2x.png" alt="">
+      </router-link>
+    </div>
+
+    <div class="header_img">
+      <mt-swipe :auto="0">
+        <mt-swipe-item v-for="item in proDetails.slidershowAdd" :key="item.id">
+          <img :src="item.address" alt="">
+        </mt-swipe-item>
+      </mt-swipe>
+    </div>
+
+    <div class="goods_det_det">
+      <div class="goods_tit">
+        {{proDetails.title}}
       </div>
 
-      <div class="header_img">
-        <mt-swipe>
-          <mt-swipe-item v-for="item in proDetails.slidershowAdd" :key="item.id">
-            <img :src="item.address" alt="">
-          </mt-swipe-item>
-        </mt-swipe>
+      <div class="item_price">
+        <span class="ground_price">拼团：
+          <span class="mod_ground_price">￥</span>{{proDetails.offering_price}}</span>
+        <span class="old_price">原价：
+          <span class="mod_old_price">￥</span>{{proDetails.original_price}}</span>
       </div>
 
-      <div class="goods_det_det">
-        <div class="goods_tit">
-          {{proDetails.title}}
+      <div class="ground_play">
+        <div class="tit">
+          <span class="play_tit">拼团玩法</span>
+          <span class="fanli">(拼团返利 ￥2,000~￥5,000)</span>
+          <router-link to="playDet" tag="span" class="play_det">玩法详情
+            <span>></span>
+          </router-link>
         </div>
 
-        <div class="item_price">
-          <span class="ground_price">拼团：
-            <span class="mod_ground_price">￥</span>{{proDetails.offering_price}}</span>
-          <span class="old_price">原价：
-            <span class="mod_old_price">￥</span>{{proDetails.original_price}}</span>
-        </div>
-
-        <div class="ground_play">
-          <div class="tit">
-            <span class="play_tit">拼团玩法</span>
-            <span class="fanli">(拼团返利 ￥2,000~￥5,000)</span>
-            <span class="play_det">玩法详情
-              <span>></span>
+        <div class="ground_process">
+          <div class="one process">
+            <span class="left">
+              <img src="../assets/img/mall/商品详情_slices/Group 4@2x.png" alt="">
+            </span>
+            <span class="right">
+              <p>选择商品</p>
+              <p>付款开团/参团</p>
             </span>
           </div>
+          <div class="two process">
+            <span class="left">
+              <img src="../assets/img/mall/商品详情_slices/Group 41@2x.png" alt="">
+            </span>
+            <span class="right">
+              <p>邀请并等待</p>
+              <p>好友支付参团</p>
+            </span>
+          </div>
+          <div class="three process">
+            <span class="left">
+              <img src="../assets/img/mall/商品详情_slices/Group 42@2x.png" alt="">
+            </span>
+            <span class="right">
+              <p>数量购完</p>
+              <p>即可拼成</p>
+            </span>
 
-          <div class="ground_process">
-            <div class="one process">
-              <span class="left">
-                <img src="../assets/img/mall/商品详情_slices/Group 4@2x.png" alt="">
-              </span>
-              <span class="right">
-                <p>选择商品</p>
-                <p>付款开团/参团</p>
-              </span>
-            </div>
-            <div class="two process">
-              <span class="left">
-                <img src="../assets/img/mall/商品详情_slices/Group 41@2x.png" alt="">
-              </span>
-              <span class="right">
-                <p>邀请并等待</p>
-                <p>好友支付参团</p>
-              </span>
-            </div>
-            <div class="three process">
-              <span class="left">
-                <img src="../assets/img/mall/商品详情_slices/Group 42@2x.png" alt="">
-              </span>
-              <span class="right">
-                <p>数量购完</p>
-                <p>即可拼成</p>
-              </span>
-
-            </div>
           </div>
         </div>
-
       </div>
 
-      <div class="grounding">
-        <div class="top">
-          <div class="left">
-            <div class="leftImg"></div>
-          </div>
-          <div class="center">正在拼团</div>
-          <div class="right">
-            <router-link to="moreGround">查看更多</router-link>
-          </div>
-        </div>
-        <ground-item :groundInfo="groundInfo" :clock="clock"></ground-item>
+    </div>
 
+    <div class="grounding" v-if="groundInfo.length > 0">
+      <div class="top">
+        <div class="left">
+          <div class="leftImg"></div>
+        </div>
+        <div class="center">正在拼团</div>
+        <div class="right">
+          <router-link to="moreGround">查看更多</router-link>
+        </div>
       </div>
+      <ground-item :groundInfo="groundInfo" :clock="clock"></ground-item>
 
-      <div class="goods_det1">
-        <div class="top">
-          <div class="left">
-            <div class="leftImg"></div>
-          </div>
-          <div class="center">商品详情</div>
+    </div>
+
+    <div class="goods_det1">
+      <div class="top">
+        <div class="left">
+          <div class="leftImg"></div>
         </div>
-        <div class="bot_det">
-          <!-- proDetails.productDesc -->
-          <template v-for="item in proDetails.productDesc">
-            <img :key="item.id" :src="item.pro_desc" alt="">
-          </template>
-          <!-- <div class="loadMore">
+        <div class="center">商品详情</div>
+      </div>
+      <div class="bot_det" v-if="!isShow">
+        <!-- proDetails.productDesc -->
+        <template v-for="item in proDetails.productDesc">
+          <img :key="item.id" :src="item.pro_desc" alt="">
+        </template>
+        <!-- <div class="loadMore">
             <button>加载更多</button>
           </div> -->
+      </div>
+
+    </div>
+
+    <div class="hot_goods">
+      <div class="top">
+        <div class="left">
+          <div class="leftImg"></div>
         </div>
-
+        <div class="center">热门商品</div>
       </div>
+      <shop-item :hotGoods="proDetails.recProducts"></shop-item>
+    </div>
 
-      <div class="hot_goods">
-        <div class="top">
-          <div class="left">
-            <div class="leftImg"></div>
-          </div>
-          <div class="center">热门商品</div>
-        </div>
-        <shop-item :hotGoods="proDetails.recProducts"></shop-item>
-      </div>
+    <div class="goods_con">
+      <div class="kefu">客服</div>
+      <button class="ground_buy" @click="isShowEven('拼团',2)">
+        <p class="ground_pri">￥{{proDetails.offering_price}}</p>
+        <p class="groundBtn">发起拼团</p>
+      </button>
+      <button class="alone_buy" @click="isShowEven('单价',1)">
+        <p class="alone_pri">￥{{proDetails.original_price}}</p>
+        <p class="aloneBtn">单价购买</p>
+      </button>
+    </div>
 
-      <div class="goods_con">
-        <div class="kefu">客服</div>
-        <button class="ground_buy" @click="isShowEven('拼团',2)">
-          <p class="ground_pri">￥1</p>
-          <p class="groundBtn">发起拼团</p>
-        </button>
-        <button class="alone_buy" @click="isShowEven('单价',1)">
-          <p class="alone_pri">￥4.5</p>
-          <p class="aloneBtn">单价购买</p>
-        </button>
-      </div>
-
-      <div class="goods_guige" v-show="isShow">
+    <mt-popup v-model="isShow" position="bottom" popup-transition="popup-fade">
+      <div v-if="isShow" class="goods_guige">
         <div class="one">
           <div class="left">
-            <img src="../assets/img/mall/guige/3934756966_1131286789.400x400@3x.png" alt="">
+            <img :src="proDetails.slidershowAdd[0].address" alt="">
           </div>
           <div class="cen">
             <div class="tit">{{proDetails.title}}</div>
             <div class="pinGround">
               {{buyType}}：￥
-              <span>4.3</span>
+              <span v-if="buyType == '单价'">{{proDetails.original_price}}</span>
+              <span v-if="buyType == '拼团'">{{proDetails.offering_price}}</span>
             </div>
           </div>
           <img class="close" @click="isShowEven('close')" src="../assets/img/mall/guige/关闭@3x.png" alt="">
         </div>
         <span v-if="isLoading"></span>
-        <template v-for="(guigesObj,indexss) in guigess">
-          <div class="two" :key="indexss">
-            <div class="guigeType">{{guigesObj.sizes}}</div>
-            <template v-for="(guigeObj,guigeIndex) in guigesObj.sizeslist">
-              <button :key="guigeIndex" class="guigeTypeItem" :class="[guigesObj.curIndex == guigeIndex ? 'guigeTypeItemActive' : '']" @click="checkGuige(indexss,guigeIndex,guigesObj,guigeObj)">{{guigeObj.sizes}}</button>
-            </template>
+        <scroll ref="listContent" :data="guigess" class="scrollBox" :refreshDelay="refreshDelay">
+          <div>
+            <div class="two" v-for="(guigesObj,indexss) in guigess" :key="indexss">
+              <div class="guigeType">{{guigesObj.sizes}}</div>
+              <div>
+                <button v-for="(guigeObj,guigeIndex) in guigesObj.sizeslist" :key="guigeIndex" :class="[guigesObj.curIndex == guigeIndex ? 'guigeTypeItemActive' : '','guigeTypeItem']" @click="checkGuige(indexss,guigeIndex,guigesObj,guigeObj)">{{guigeObj.sizes}}</button>
+              </div>
+            </div>
           </div>
-        </template>
+        </scroll>
 
         <div class="needNum">
           <span>需要数量：</span>
           <input v-model="num" type="text" placeholder="输入数量（1万起）">
           <img src="../assets/img/mall/guige/提示@3x.png" alt="">
         </div>
-
         <div class="res">
           <div class="resGuiges" v-if="showChecked">
             <template v-if="checkedGuige.length > 0" v-for="(item,index) in checkedGuige">
@@ -175,14 +178,18 @@
           </div>
           <button @click="addCheckGuigeItem">添加所选</button>
         </div>
-
         <div class="sure">
           <button v-if="buy_way == 1" class="addCart" @click="addCart()">加入购物车</button>
           <button class="goOrder" @click="sureGoOrder">确定下单</button>
         </div>
-
       </div>
-    </div>
+    </mt-popup>
+
+    <!-- <div v-if="isShow" class="zhezhao">
+
+    </div> -->
+    <!-- </mt-popup> -->
+
   </div>
 </template>
 
@@ -194,16 +201,18 @@ import axios from "axios";
 import util from "../utils/util";
 import shopItem from "../components/shopItem.vue";
 import groundItem from "../components/groundItem.vue";
-import { Toast } from "mint-ui";
+import scroll from "../components/scroll.vue";
+import { Popup } from "mint-ui";
 import { MessageBox } from "mint-ui";
 import { Swipe, SwipeItem } from "mint-ui";
-
+Vue.component(Popup.name, Popup);
 Vue.component(Swipe.name, Swipe);
 Vue.component(SwipeItem.name, SwipeItem);
 export default {
   name: "name",
   data: function() {
     return {
+      refreshDelay: 120,
       isCollect: false,
       isShow: false,
       buyType: "",
@@ -222,17 +231,24 @@ export default {
       showChecked: false,
       isClickAdd: false,
       isLoading: false,
+      goodsId: "",
+      teamId: "",
+      initFlag: true
     };
   },
 
   mounted() {
     this.goodsId = this.$route.query.goodsId;
+    if (this.$route.query.teamId) {
+      this.teamId = this.$route.query.teamId;
+    }
     this.fetchGoodsDet();
     this.fetchGroundItem(); //拿到团购列表商品中的第一项
   },
   components: {
     shopItem,
-    groundItem
+    groundItem,
+    scroll
   },
   methods: {
     //单价购买或者发起拼团或者关闭
@@ -247,21 +263,28 @@ export default {
     },
     fetchGuigeDet: async function(buy_way) {
       let params = {
-        id: 3,
+        id: this.goodsId,
         buy_way
       };
+      if (this.teamId) {
+        params.teamId = this.teamId;
+      }
       const res = await http.get(api.pro, params);
       if (res.data) {
         if (buy_way == 2 && res.data.code == -1) {
-          return Toast("已经开团啦，不能发起拼团了");
+          return MessageBox("提示", "已经开团啦，不能发起拼团了");
         }
         this.isShow = !this.isShow;
+        setTimeout(() => {
+          this.$refs.listContent.refresh();
+        }, 20);
+        this.$emit("goodsDetailPage", this.isShow);
         this.guigess = res.data.proSize.proSizeLists;
         this.totalLength = this.guigess.length;
         this.guigess.forEach((v, i) => {
-          v.curIndex = 0;
-          v.curItem = v.sizeslist[0];
-          this.newGuigess[i] = v.curItem;
+          v.curIndex = -1;
+          v.curItem = "";
+          this.newGuigess = [];
         });
       }
     },
@@ -293,23 +316,45 @@ export default {
       }
     },
 
-
-    
     //guigeIndex  guigeObj对应的索引    guigesObj最外层对象   guigeObj最外层对象的sizeslist数组里面的对象
     checkGuige(indexss, guigeIndex, guigesObj, guigeObj) {
       this.isLoading = true;
       if (guigeObj.sizes !== guigesObj.curItem.sizes) {
-        guigesObj.curIndex = guigeIndex;        
+        guigesObj.curIndex = guigeIndex;
         guigesObj.curItem = guigeObj;
         this.newGuigess = [];
         this.guigess.forEach((v, i) => {
-          this.newGuigess[i] = v.curItem;
+          if (v.curItem) {
+            this.newGuigess[i] = v.curItem;
+          }
         });
+        console.log(this.newGuigess.length, this.totalLength);
+        if (this.newGuigess.length == this.totalLength) {
+          this.getPrice();
+        }
       }
       this.isLoading = false;
     },
-
-
+    getPrice: async function() {
+      let params = {
+        pid: this.proDetails.id,
+        buyway: this.buy_way
+      };
+      this.newGuigess.map((v, i) => {
+        if (i == 0) {
+          params.coulour = v.sizes;
+        } else if (i == 1) {
+          params.sizes = v.sizes;
+        } else if (i == 2) {
+          params.powers = v.sizes;
+        }
+      });
+      const res = await http.post1(api.getProPrice, params);
+      if (res.data) {
+        MessageBox("提示", res.data.msg);
+        return;
+      }
+    },
     addCart() {
       if (!this.addCartCheck()) {
         return;
@@ -317,6 +362,7 @@ export default {
       if (!this.isClickAdd && !this.addCheck()) {
         return;
       }
+      this.initFlag = false;
       this.zuheChecked();
       this.addCartEven();
     },
@@ -328,21 +374,58 @@ export default {
       const res = await http.post1(api.addPro, params);
       if (res.data) {
         this.guigesNum = 0;
+        this.initFlag = false;
         this.clearStatus();
         this.clearAllSelGuige();
-        Toast(res.data.msg);
+        MessageBox("提示", res.data.msg);
         return;
       }
     },
     //点击添加所选
     addCheckGuigeItem() {
-      if (this.addCheck() == false) {
+      if (!this.addCheck()) {
         return;
       }
-      this.zuheChecked();
+      this.zuheChecked("addCheckGuigeItem");
       this.clearStatus();
       this.showChecked = true;
       this.isClickAdd = true;
+    },
+    checkKucun: async function(paramsKucun) {
+      this.showChecked = false;
+      let params = {
+        // coulour: '3030漫反射 1.15米15灯',
+        // sizes: '白',
+        // powers: '其它',
+        buynum: this.num,
+        pid: this.proDetails.id
+      };
+      if (this.teamId) {
+        params.teamId = this.teamId;
+      }
+      this.newGuigess.map((v, i) => {
+        if (i == 0) {
+          params.coulour = v.sizes;
+        } else if (i == 1) {
+          params.sizes = v.sizes;
+        } else if (i == 2) {
+          params.powers = v.sizes;
+        }
+      });
+      // params.buynum = this.num;
+      // params.buyway = this.buy_way;
+      // params.pid = this.proDetails.id;
+      // if (this.teamId) {
+      //   params.teamId = this.teamId;
+      // }
+      const res = await http.post1(api.outrepertory, params);
+      if (res.data) {
+        this.guigesNum = 0;
+        this.clearStatus();
+        this.clearAllSelGuige();
+        MessageBox("提示", res.data.msg);
+        return;
+      }
     },
     //点击添加所选项或者加入购物车共有的检测
     addCheck() {
@@ -350,16 +433,13 @@ export default {
       let flag = true;
       if (this.guigesNum >= 4) {
         flag = false;
-        Toast("购买4组以上规格商品请加入购物车购买");
-      } else if (this.newGuigess.length == 0) {
+        MessageBox("提示", "购买4组以上规格商品请加入购物车购买");
+      } else if (this.newGuigess.length < this.totalLength) {
         flag = false;
-        Toast(`请先选择规格并且各类型规格必选`);
-      } else if (this.newGuigess.indexOf('') > -1) {
-        flag = false;
-        Toast(`所选规格类型不能少于${this.totalLength}种`);
+        MessageBox("提示", `请先选择规格并且各类型规格必选`);
       } else if (!Number.isInteger(this.numNum) || this.numNum <= 0) {
         flag = false;
-        Toast(`请规范输入商品数量并且大于0`);
+        MessageBox("提示", `请规范输入商品数量并且大于0`);
       }
       return flag;
     },
@@ -368,14 +448,22 @@ export default {
       let flag = true;
       if (!this.num > 0 && this.checkedGuige.length == 0) {
         flag = false;
-        Toast("请先选择规格项并规范填写了数量");
+        MessageBox("提示", "请先选择规格项并规范填写了数量");
       }
       return flag;
     },
     //组合所选中的数据
-    zuheChecked() {
+    zuheChecked(tianjia) {
+      if (
+        this.guigesNum == 0 &&
+        tianjia == "addCheckGuigeItem" &&
+        this.initFlag
+      ) {
+        this.checkedGuige = [];
+      }
       this.newGuigess.push({ num: this.numNum });
       this.checkedGuige.push(this.newGuigess);
+
       this.guigesNum++;
     },
     //清空规格状态以及清空一套规格
@@ -400,8 +488,111 @@ export default {
     },
     sureGoOrder: async function() {
       if (this.checkedGuige.length == 0) {
-        return Toast("请先添加所选规格");
+        if (!this.addCheck()) {
+          return;
+        }
       }
+      this.initFlag = false;
+      let params = this.getParams();
+      const res = await http.post1(api.order, params);
+      if (res.data) {
+        let that = this,
+          checkedGuige = this.checkedGuige,
+          newGuigess = this.newGuigess,
+          totalNum = this.num;
+        this.$router.push({
+          path: "orderDet",
+          query: {
+            orderDetData: JSON.stringify(res.data),
+            newGuigess: JSON.stringify(that.newGuigess),
+            checkedGuige: JSON.stringify(that.checkedGuige),
+            totalNum
+          }
+        });
+      }
+    },
+    //拿到发给后端的参数
+    getParams() {
+      let cartNum = 1;
+      if (this.checkedGuige.length > 0) {
+        cartNum = this.checkedGuige.length;
+      }
+      this.paramsSureOrder = {
+        pid: this.proDetails.id,
+        title: this.proDetails.title,
+        offering_price: this.proDetails.offering_price,
+        image: this.proDetails.slidershowAdd[0].address,
+        buyway: this.buy_way,
+        cart_num: cartNum
+      };
+      if (this.checkedGuige.length > 0) {
+        this.checkedGuige.forEach((v, i) => {
+          v.forEach((v1, i1) => {
+            if (i == 0) {
+              if (i1 == 0) {
+                this.paramsSureOrder.colour1 = v1.sizes;
+              } else if (i1 == 1) {
+                this.paramsSureOrder.sizes1 = v1.sizes;
+              } else if (i1 == 2) {
+                this.paramsSureOrder.powers1 = v1.sizes;
+              } else if (i1 == 3) {
+                this.paramsSureOrder.buynum1 = v1.num;
+              }
+            } else if (i == 1) {
+              if (i1 == 0) {
+                this.paramsSureOrder.colour2 = v1.sizes;
+              } else if (i1 == 1) {
+                this.paramsSureOrder.sizes2 = v1.sizes;
+              } else if (i1 == 2) {
+                this.paramsSureOrder.powers2 = v1.sizes;
+              } else if (i1 == 3) {
+                this.paramsSureOrder.buynum2 = v1.num;
+              }
+            } else if (i == 2) {
+              if (i1 == 0) {
+                this.paramsSureOrder.colour3 = v1.sizes;
+              } else if (i1 == 1) {
+                this.paramsSureOrder.sizes3 = v1.sizes;
+              } else if (i1 == 2) {
+                this.paramsSureOrder.powers3 = v1.sizes;
+              } else if (i1 == 3) {
+                this.paramsSureOrder.buynum3 = v1.num;
+              }
+            } else if (i == 3) {
+              if (i1 == 0) {
+                this.paramsSureOrder.colour4 = v1.sizes;
+              } else if (i1 == 1) {
+                this.paramsSureOrder.sizes4 = v1.sizes;
+              } else if (i1 == 2) {
+                this.paramsSureOrder.powers4 = v1.sizes;
+              } else if (i1 == 3) {
+                this.paramsSureOrder.buynum4 = v1.num;
+              }
+            }
+          });
+        });
+      } else {
+        this.paramsSureOrder.colour1 = this.newGuigess[0].sizes;
+        this.paramsSureOrder.sizes1 = this.newGuigess[1].sizes;
+        this.paramsSureOrder.powers1 = this.newGuigess[2].sizes;
+        this.paramsSureOrder.buynum1 = this.num;
+      }
+
+      return [this.paramsSureOrder];
+    },
+    loadTop() {
+      util.loadTop(this);
+    },
+    collect() {
+      this.isCollect = !this.isCollect;
+    },
+    collectEven: async function() {
+      if (this.checkedGuige.length == 0) {
+        if (!this.addCheck()) {
+          return;
+        }
+      }
+      this.initFlag = false;
       let params = this.getParams();
       const res = await http.post1(api.order, params);
       if (res.data) {
@@ -410,67 +601,18 @@ export default {
           path: "orderDet",
           query: {
             orderDetData: JSON.stringify(res.data),
-            checkedGuige: JSON.stringify(that.checkedGuige)
+            checkedGuige: JSON.stringify(that.checkedGuige),
+            newGuigess: JSON.stringify(that.newGuigess)
           }
         });
       }
-    },
-    //拿到发给后端的参数
-    getParams() {
-      this.paramsSureOrder = {
-        pid: this.proDetails.id,
-        title: this.proDetails.title,
-        offering_price: this.proDetails.offering_price,
-        image: this.proDetails.slidershowAdd[0].address,
-        buyway: this.buy_way,
-        cart_num: this.checkedGuige.length
-      };
-      this.checkedGuige.forEach((v, i) => {
-        v.forEach((v1, i1) => {
-          if (i == 0) {
-            if (i1 == 0) {
-              this.paramsSureOrder.colour1 = v1.sizes;
-            } else if (i1 == 1) {
-              this.paramsSureOrder.sizes1 = v1.sizes;
-            } else if (i1 == 2) {
-              this.paramsSureOrder.powers1 = v1.sizes;
-            } else if (i1 == 3) {
-              this.paramsSureOrder.buynum1 = v1.num;
-            }
-          } else if (i == 1) {
-            if (i1 == 0) {
-              this.paramsSureOrder.colour2 = v1.sizes;
-            } else if (i1 == 1) {
-              this.paramsSureOrder.sizes2 = v1.sizes;
-            } else if (i1 == 2) {
-              this.paramsSureOrder.powers2 = v1.sizes;
-            } else if (i1 == 3) {
-              this.paramsSureOrder.buynum2 = v1.num;
-            }
-          } else if (i == 2) {
-            if (i1 == 0) {
-              this.paramsSureOrder.colour3 = v1.sizes;
-            } else if (i1 == 1) {
-              this.paramsSureOrder.sizes3 = v1.sizes;
-            } else if (i1 == 2) {
-              this.paramsSureOrder.powers3 = v1.sizes;
-            } else if (i1 == 3) {
-              this.paramsSureOrder.buynum3 = v1.num;
-            }
-          } else if (i == 3) {
-            if (i1 == 0) {
-              this.paramsSureOrder.colour4 = v1.sizes;
-            } else if (i1 == 1) {
-              this.paramsSureOrder.sizes4 = v1.sizes;
-            } else if (i1 == 2) {
-              this.paramsSureOrder.powers4 = v1.sizes;
-            } else if (i1 == 3) {
-              this.paramsSureOrder.buynum4 = v1.num;
-            }
-          }
-        });
-      });
-      return [this.paramsSureOrder];
+    }
+  },
+  watch: {
+    num() {
+      if (this.newGuigess.length == this.totalLength) {
+        this.checkKucun();
+      }
     }
   }
 };
@@ -478,8 +620,6 @@ export default {
 
 <style scoped lang="less">
 .goods_det {
-  height: 1.4rem;
-
   .con {
     width: 100%;
     position: fixed;
@@ -510,6 +650,9 @@ export default {
 
   .header_img {
     height: 7.5rem;
+    img {
+      width: 100%;
+    }
   }
 
   .goods_det_det {
@@ -710,18 +853,22 @@ export default {
     }
     .bot_det {
       text-align: center;
-      .loadMore {
+      img {
         width: 100%;
-        button {
-          width: 2.45rem;
-          height: 0.64rem;
-          margin: 0 auto;
-          line-height: 0.64rem;
-          color: #fff;
-          background-color: #42bd56;
-          border-radius: 0.3rem;
-        }
+        vertical-align: middle;
       }
+      // .loadMore {
+      //   width: 100%;
+      //   button {
+      //     width: 2.45rem;
+      //     height: 0.64rem;
+      //     margin: 0 auto;
+      //     line-height: 0.64rem;
+      //     color: #fff;
+      //     background-color: #42bd56;
+      //     border-radius: 0.3rem;
+      //   }
+      // }
     }
   }
 
@@ -825,13 +972,23 @@ export default {
       float: right;
     }
   }
-
+  .scrollBox {
+    max-height: 240px;
+    overflow: hidden;
+  }
+  // .zhezhao {
+  //   position: fixed;
+  //   left: 0;
+  //   right: 0;
+  //   top: 0;
+  //   bottom: 0;
+  // }
   .goods_guige {
     text-align: left;
     width: 100%;
-    position: fixed;
-    bottom: 0;
-    z-index: 3;
+    // position: fixed;
+    // bottom: 0;
+    // z-index: 3;
     background-color: #fff;
     .one {
       height: 1.6rem;
@@ -888,14 +1045,13 @@ export default {
         font-size: 0.26rem;
         border-radius: 0.05rem;
         border: 0.01rem solid #f0f0f0;
-        width: 1.2rem;
         height: 0.6rem;
         line-height: 0.6rem;
 
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-right: 0.2rem;
+        margin: 0.2rem;
       }
       .guigeTypeItemActive {
         color: #42bd56;
@@ -1000,5 +1156,13 @@ export default {
       }
     }
   }
+  .mint-popup {
+    width: 100%;
+  }
+}
+.showGuige {
+  width: 7.5rem;
+  height: 13.34rem;
+  overflow: hidden;
 }
 </style>

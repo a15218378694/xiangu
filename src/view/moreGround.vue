@@ -23,7 +23,8 @@ export default {
     return {
       back: -1,
       groundInfo: [],
-      clock: [[]]
+      clock: [[]],
+      page: 1
     };
   },
   mounted() {
@@ -31,10 +32,12 @@ export default {
   },
   methods: {
     grounding: async function() {
-      let params = {};
-      const res = await http.get(api.groupbooking, params);
+      let params = {
+        page: this.page
+      };
+      const res = await http.get(api.lookmore, params);
       if (res.data) {
-        this.groundInfo = res.data.gbookingMessage;
+        this.groundInfo = res.data.list;
         var timeArr = [];
         for (var i = 0; i < this.groundInfo.length; i++) {
           timeArr[i] =

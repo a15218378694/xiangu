@@ -1,9 +1,12 @@
 <template>
   <div>
-    <div class="mall_search bgcWhite">
-      <mt-search @click.native="toSearch" v-model="value" cancel-text="取消" placeholder="输入你要搜索的商品">
-      </mt-search>
-    </div>
+    <!-- <div class="mall_search bgcWhite">
+          <mt-search @click.native="toSearch" v-model="value" cancel-text="取消" placeholder="输入你要搜索的商品">
+          </mt-search>
+        </div> -->
+    <nav-header>
+      <span class="orderDetTit" slot="header">首页</span>
+    </nav-header>
     <div class="mall_noGoods" v-if="!hasGoods">
       <div class="back_img"></div>
       <div class="des">一片空白</div>
@@ -26,7 +29,7 @@
         </template>
       </div>
 
-      <div class="grounding">
+      <div class="grounding" v-if="groundInfo.length > 0">
         <div class="top">
           <div class="left">
             <div class="leftImg"></div>
@@ -64,6 +67,7 @@ import util from "../utils/util";
 import groundItem from "../components/groundItem.vue";
 import shopItem from "../components/shopItem.vue";
 import goodsTool from "../components/goodsTool.vue";
+import navHeader from "../components/navHeader.vue";
 import { Carousel, CarouselItem } from "element-ui";
 import { Search } from "mint-ui";
 Vue.component(Search.name, Search);
@@ -150,14 +154,16 @@ export default {
       let params = {};
       const res = await http.get(api.groupbooking, params);
       if (res.data) {
-        this.groundInfo = res.data.gbookingMessage.splice(0, 1);
-        var timeArr = [];
-        for (var i = 0; i < this.groundInfo.length; i++) {
-          timeArr[i] =
-            this.groundInfo[i].statime / 1000 +
-            this.groundInfo[i].limtime / 1000;
+        if (res.data.gbookingMessage) {
+          this.groundInfo = res.data.gbookingMessage.splice(0, 1);
+          var timeArr = [];
+          for (var i = 0; i < this.groundInfo.length; i++) {
+            timeArr[i] =
+              this.groundInfo[i].statime / 1000 +
+              this.groundInfo[i].limtime / 1000;
+          }
+          this.clock = util.countdownMore(timeArr, this);
         }
-        this.clock = util.countdownMore(timeArr, this);
       }
     },
     toSearch() {
@@ -216,7 +222,6 @@ export default {
         }
       );
       if (curIndex == 3) {
-        // debugger
         if (this.sortType == "def" || this.sortType == "down") {
           this.sortType = "up";
         } else if (this.sortType == "up") {
@@ -225,12 +230,16 @@ export default {
       } else {
         this.sortType = "def";
       }
+    },
+    loadTop() {
+      util.loadTop(this);
     }
   },
   components: {
     groundItem,
     shopItem,
-    goodsTool
+    goodsTool,
+    navHeader
   }
 };
 </script>

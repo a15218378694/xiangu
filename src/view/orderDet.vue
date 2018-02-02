@@ -30,7 +30,7 @@
       </div>
 
       <div class="goodsItemInfo">
-        <goods-item :orderDetailsArr="orderDetailsArr" :checkedGuige="checkedGuige" :totalNum="totalNum"></goods-item>
+        <goods-item :orderDetailsArr="orderDetailsArr" :newGuigess="newGuigess" :checkedGuige="checkedGuige" :totalNum="totalNum"></goods-item>
 
         <div class="infoPri">
           <div class="xiaojiBox">
@@ -62,7 +62,7 @@
           <span class="xiushi">￥</span>
           <span class="totPri">{{totalPrice}}</span>
         </span>
-        <span class="right" @click="isShowEven">
+        <span class="right" @click="getOrderId">
           <button>立即支付</button>
         </span>
       </div>
@@ -89,29 +89,57 @@ export default {
       totalGoodsPri: 0,
       totalPrice: 0,
       freight: 0,
-      totalNum: 0
+      totalNum: 0,
+      newGuigess: [],
+      checkedGuige: []
     };
   },
   methods: {
-    isShowEven(buyTypeDet) {
+    getOrderId(buyTypeDet) {
+      console.log(vuePay.showInfoFromJs("I'M FROM JS!!!"));
       this.isShow = !this.isShow;
       this.buyType = buyTypeDet;
+    },
+    fetchGoodsDet: async function() {
+      let params = {
+        name: "小红", //收货人
+        telephone: "18872209853", // 收货人电话
+        address: "皇后大道", //收货人地址
+        remarkMessage: "惺惺惜惺惺", //留言信息
+        teamId: "209885", //团队id
+        orderId: "1234567891", //订单id
+        totalprice: "10000", //订单总金额
+        buyway: "2" //购买方式 1，普通 2，拼团
+      };
+      await http.post1(api.submitorder, params);
+      if (res.data) {
+        this.orderIdObj = res.data
+      }
     },
     comTotleGoodsPri() {
       this.totalPrice = this.myOrders.prices;
       this.freight = this.myOrders.orderDetails.freight;
       this.totalGoodsPri = this.totalPrice - this.freight;
     }
+    // getAddr(addr) {
+
+    // }
   },
   components: {
     goodsItem,
     NavHeader
   },
   mounted() {
+    console.log(this.$route.query);
     //传过来的混合数据
     this.orderDetData = JSON.parse(this.$route.query.orderDetData);
     //传递过来的规格
-    this.checkedGuige = JSON.parse(this.$route.query.checkedGuige);
+    if (JSON.parse(this.$route.query.checkedGuige).length > 0) {
+      this.checkedGuige = JSON.parse(this.$route.query.checkedGuige);
+    } else {
+      this.newGuigess = JSON.parse(this.$route.query.newGuigess);
+      this.totalNum = this.$route.query.totalNum;
+    }
 
     // 订单商品信息集合
     this.myOrders = this.orderDetData.myorders;
@@ -120,41 +148,24 @@ export default {
     //计算商品总价
     this.comTotleGoodsPri();
     //计算总数量
-    this.checkedGuige.forEach((v, i) => {
-      this.totalNum += parseInt(v[v.length - 1].num);
-    });
+    if (this.checkedGuige > 0) {
+      this.checkedGuige.forEach((v, i) => {
+        this.totalNum += parseInt(v[v.length - 1].num);
+      });
+    }
+
+    //  else {
+    //   this.newGuigess.forEach((v, i) => {
+    //     if (i == this.newGuigess.length - 1) {
+    //       this.totalNum
+    //     }
+    //   });
+    // }
   }
 };
 </script>
 
 <style scoped lang="less">
-.orderPageHeader {
-  background-color: #fff;
-  width: 100%;
-  height: 0.88rem;
-  text-align: center;
-  position: relative;
-  line-height: 0.88rem;
-  border-bottom: 0.02rem solid #dfdfdf;
-
-  .back {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 0.17rem;
-    height: 0.29rem;
-    padding: 0.29rem 0.3rem;
-    box-sizing: content-box;
-  }
-  .close {
-    width: 0.3rem;
-    height: 0.3rem;
-  }
-  .orderDetTit {
-    text-align: center;
-  }
-}
-
 //公共样式
 .orderDets {
   text-align: left;

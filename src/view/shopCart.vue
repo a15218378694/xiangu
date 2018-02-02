@@ -1,65 +1,62 @@
 <template>
-  <div>
-    <div class="shopCartPage">
+  <div class="shopCartPage">
 
-      <nav-header>
-        <span slot="header">购物车</span>
-      </nav-header>
+    <nav-header>
+      <span slot="header">购物车</span>
+    </nav-header>
 
-      <div class="shopCartGoods">
-        <template v-for="(item,index) in shopCartGoods">
-          <v-touch :key="index" v-bind:pan-options="{ direction: 'horizontal', threshold: 100 }" v-on:swipeleft="onSwipeLeft(item)" v-on:swiperight="onSwipeRight(item)" class="goodsItemInfo">
-            <div class="infoDet" v-on:click.stop="toGoodsDet">
-              <div class="left">
-                <img v-if="!item.isSelected" v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/Oval@2x.png" alt="">
-                <img v-else v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/勾选@2x.png" alt="">
-                <img :src="item.image" alt="">
-              </div>
-              <div class="right">
-                <div class="one">{{item.title}}</div>
-                <div class="two">款式：
-                  <template v-for="(item1,index1) in shopCartGoods.productSizes" >
-                    <span :key="index1">
-                      <span v-for="(item1Item,item1Key) in item1" :key="item1Key">
-                        {{ item1Item }}
-                      </span>
+    <div class="shopCartGoods">
+      <template v-for="(item,index) in shopCartGoods">
+        <v-touch :key="index" v-bind:pan-options="{ direction: 'horizontal', threshold: 100 }" v-on:swipeleft="onSwipeLeft(item)" v-on:swiperight="onSwipeRight(item)" class="goodsItemInfo">
+          <div class="infoDet" v-on:click.stop="toGoodsDet">
+            <div class="left">
+              <img v-if="!item.isSelected" v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/Oval@2x.png" alt="">
+              <img v-else v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/勾选@2x.png" alt="">
+              <img :src="item.image" alt="">
+            </div>
+            <div class="right">
+              <div class="one">{{item.title}}</div>
+              <div class="two">款式：
+                <template v-for="(item1,index1) in shopCartGoods.productSizes">
+                  <span :key="index1">
+                    <span v-for="(item1Item,item1Key) in item1" :key="item1Key">
+                      {{ item1Item }}
                     </span>
-                  </template>
+                  </span>
+                </template>
+              </div>
+              <div class="three">
+                <div class="pri">
+                  <span class="priType">原价：</span>
+                  <span>￥</span>
+                  <span>{{item.offering_price}}</span>
                 </div>
-                <div class="three">
-                  <div class="pri">
-                    <span class="priType">原价：</span>
-                    <span>￥</span>
-                    <span>{{item.offering_price}}</span>
-                  </div>
-                  <div class="num">X{{item.buynum}}</div>
-                </div>
-                <div class="closeDel" :class="{'tranShow': item.isTranShow}">
-                  <span class="del" @click.stop="delGood(item)">删除</span>
-                </div>
+                <div class="num">X{{item.buynum}}</div>
+              </div>
+              <div :class="[item.isTranShow == true?'tranShow':'','closeDel']">
+                <span class="del" @click.stop="delGood(item,index)">删除</span>
               </div>
             </div>
-          </v-touch>
-        </template>
-      </div>
-
-      <div class="view-more-normal" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="20">
-        <img style="width:20px;height:20px;" src="../assets/img/common/loading.gif" v-if="loading">
-        <div v-if="this.totalPage <= this.page && !loading">到底部了</div>
-      </div>
-
-      <div class="goPay">
-        <span class="left">
-          <span class="heji">合计：</span>
-          <span class="xiushi">￥</span>
-          <span class="totPri">{{totalPrice}}</span>
-        </span>
-        <span class="right" @click="goPayPri">
-          <button>立即支付</button>
-        </span>
-      </div>
+          </div>
+        </v-touch>
+      </template>
     </div>
 
+    <div class="view-more-normal" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="20">
+      <img style="width:20px;height:20px;" src="../assets/img/common/loading.gif" v-if="loading">
+      <div v-if="this.totalPage <= this.page && !loading">到底部了</div>
+    </div>
+
+    <div class="goPay">
+      <span class="left">
+        <span class="heji">合计：</span>
+        <span class="xiushi">￥</span>
+        <span class="totPri">{{totalPrice}}</span>
+      </span>
+      <span class="right" @click="goPayPri">
+        <button>立即支付</button>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -69,6 +66,7 @@ import api from "../utils/api";
 import http from "../utils/http";
 import util from "../utils/util";
 import navHeader from "@/components/navHeader.vue";
+import { Toast } from "mint-ui";
 var VueTouch = require("vue-touch");
 Vue.use(VueTouch, { name: "v-touch" });
 export default {
@@ -122,8 +120,9 @@ export default {
         res => {
           this.loading = false;
           this.shopCartGoods = res.data.list;
-          this.shopCartGoods.forEach((v,i) => {
-            v.isSelected = false
+          this.shopCartGoods.forEach((v, i) => {
+            v.isSelected = false;
+            v.isTranShow = false;
           });
           this.totalPage = res.data.page_total;
           if (this.page == this.totalPage) {
@@ -149,13 +148,37 @@ export default {
             page: that.page
           },
           res => {
-            res.data.list.forEach((v,i) => {
-                v.isSelected = false;
+            res.data.list.forEach((v, i) => {
+              v.isSelected = false;
             });
             that.shopCartGoods = that.shopCartGoods.concat(res.data.list);
           }
         );
       });
+    },
+    delGood(item, index) {
+      this.fetchDeledGoods(
+        [
+          {
+            pid: item.pid,
+            sid: item.sid,
+            cartNum: item.buynum
+          }
+        ],
+        res => {
+          this.shopCartGoods.splice(index, 1);
+          Toast("删除成功");
+          this.page = 1;
+          this.getShopGoods()
+        }
+      );
+    },
+    fetchDeledGoods: async function(params, callS) {
+      const res = await http.post1(api.delete, params);
+      if (res.data) {
+        this.loading = false;
+        callS && callS(res);
+      }
     }
   },
   components: {
@@ -171,7 +194,7 @@ export default {
     padding: 0.3rem 0.27rem 0.33rem 0.8rem;
     background-color: #fff;
     position: relative;
-
+    height: 100%;
     .infoDet {
       overflow: hidden;
 
@@ -196,7 +219,7 @@ export default {
         float: left;
 
         .one {
-          width: 4.31rem;
+          width: 3.31rem;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -231,7 +254,7 @@ export default {
           position: absolute;
           top: 0.3rem;
           right: 0;
-          transform: translateX(110%);
+          // transform: translateX(50%);
           background-color: #aaa;
           width: 1.3rem;
           height: 1.6rem;

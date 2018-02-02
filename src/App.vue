@@ -7,24 +7,20 @@
 <script>
 import http from "./utils/http";
 import api from "./utils/api";
+import util from "./utils/util";
 export default {
   name: "app",
-  mounted() {
-    this.goLogin();
+  data() {
+    return {
+      
+    };
   },
+  mounted() {},
   methods: {
-    goLogin: async function() {
-      let params = {
-        phone: 15218378694
-      };
-      const res = await http.post(api.send_SMS_verifyCode, params);
-      await http.post(api.login_by_verifyCode, {
-        phone: 15218378694,
-        code: 1234
-      });
-      if (res.data) {
-      }
-    }
+
+  },
+  watch: {
+
   }
 };
 </script>

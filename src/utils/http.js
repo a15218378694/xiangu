@@ -7,6 +7,7 @@ import { Toast } from "mint-ui";
 
 axios.defaults.withCredentials = true
 axios.interceptors.request.use(config => {
+  
   Indicator.open('加载中...');
   return config
 }, error => {
@@ -29,7 +30,7 @@ function checkStatus (response) {
   // 异常状态下，把错误信息返回去
   return {
     status: -404,
-    msg: '网络异常'
+    msg: '网络异常，请返回重新进入该页面'
   }
 }
 
