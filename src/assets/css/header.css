@@ -3,9 +3,11 @@
   width: 100%;
   height: 1.2rem;
   text-align: center;
-  position: relative;
+  position: fixed;
+  top: 0; 
   line-height: 1.2rem;
   border-bottom: 0.02rem solid #dfdfdf;
+  z-index: 9999;
 }
 .orderPageHeader .back {
   text-align: center;
@@ -19,4 +21,7 @@
 }
 .orderPageHeader .orderDetTit {
   text-align: center;
+}
+.headerZW {
+  height: 1.2rem;
 }

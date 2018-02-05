@@ -11,16 +11,20 @@ import util from "./utils/util";
 export default {
   name: "app",
   data() {
-    return {
-      
-    };
+    return {};
   },
-  mounted() {},
-  methods: {
-
+  mounted() {
+    // this.$bridge.callhandler("ObjC Echo", params, data => {
+    //   // 处理返回数据
+    // });
   },
+  methods: {},
   watch: {
-
+    $route(to, from) {
+      // this.$bridge.callhandler("ObjC Echo", params, data => {
+      //   // 处理返回数据
+      // });
+    }
   }
 };
 </script>

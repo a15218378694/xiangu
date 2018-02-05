@@ -12,7 +12,7 @@ module.exports = {
     proxyTable: {
       // "**": {
       //   changeOrigin: true,
-      //   target: "http://merchant.luyongjin.vip"
+      //   target: "http://192.168.6.101:8080"
       // }
     }, 
     
@@ -52,9 +52,9 @@ module.exports = {
      * Source Maps
      */
 
-    // productionSourceMap: true,
+    productionSourceMap: true,
     // https://webpack.js.org/configuration/devtool/#production
-    // devtool: "#source-map",
+    devtool: "#source-map",
 
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.

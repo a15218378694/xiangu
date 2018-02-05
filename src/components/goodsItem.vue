@@ -19,20 +19,20 @@
             <div class="resGuigeItems" v-if="newGuigess.length > 0">
               <template v-for="(item1,index1) in newGuigess">
                 <span :key="index1" class="resGuigeItem">
-                  {{item1.sizes}}
-                  <span v-if="index1 == newGuigess.length - 1">份</span>
+                  {{item1.sizes || addedItem.num}}
+                  <span v-if="addedItem.num">份</span>
                 </span>
               </template>
             </div>
           </div>
-          <div class="three">
+          <!-- <div class="three">
             <div class="pri">
               <span class="priType">原价：</span>
               <span>￥</span>
               <span>{{item.offering_price}}</span>
             </div>
             <div class="num">X{{totalNum}}</div>
-          </div>
+          </div> -->
         </div>
       </div>
     </template>

@@ -7,14 +7,14 @@
       <div class="perInfo">
         <div class="shouhuo">
           <span class="shouhuoren">收货人：</span>
-          <span class="ming">温</span>
-          <span class="phone">123</span>
+          <span class="ming">{{orderDetData.name}}</span>
+          <span class="phone">{{orderDetData.phone}}</span>
         </div>
         <div class="addr">
           <span class="dizhi">收货地址：</span>
           <span class="dizhiDet">
-            <span class="shi">shenz</span>
-            <span class="qu">龙华</span>
+            <span class="shi">{{orderDetData.address}}</span>
+            <!-- <span class="qu">龙华</span> -->
           </span>
         </div>
         <img class="bianji" src="../assets/img/订单详情_slices/编辑@3x.png" alt="">
@@ -30,7 +30,7 @@
       </div>
 
       <div class="goodsItemInfo">
-        <goods-item :orderDetailsArr="orderDetailsArr" :newGuigess="newGuigess" :checkedGuige="checkedGuige" :totalNum="totalNum"></goods-item>
+        <goods-item :orderDetailsArr="shoppingCatArr" :newGuigess="newGuigess" :checkedGuige="checkedGuige" :totalNum="totalNum"></goods-item>
 
         <div class="infoPri">
           <div class="xiaojiBox">
@@ -60,7 +60,7 @@
         <span class="left">
           <span class="heji">合计：</span>
           <span class="xiushi">￥</span>
-          <span class="totPri">{{totalPrice}}</span>
+          <span class="totPri">{{prices}}</span>
         </span>
         <span class="right" @click="getOrderId">
           <button>立即支付</button>
@@ -73,66 +73,96 @@
 
 <script>
 import Vue from "vue";
+import http from "../utils/http";
+import api from "../utils/api";
+import { hybrid } from "../utils/appapp";
 import goodsItem from "../components/goodsItem.vue";
+import { MessageBox } from "mint-ui";
 
 import NavHeader from "../components/navHeader.vue";
 export default {
   name: "name",
   data: function() {
     return {
-      isShow: false,
+      addr: {},
       isCheck: false,
-      orderDetData: {},
       myOrders: {},
-      orderDetailsArr: [],
       checkedGuige: [],
       totalGoodsPri: 0,
-      totalPrice: 0,
-      freight: 0,
       totalNum: 0,
       newGuigess: [],
-      checkedGuige: []
+      checkedGuige: [],
+      orderIdObj: {},
+      orderDetData: {},
+      orderId: "",
+      status: 1,
+      proNum: 0,
+      prices: 0,
+      orderDetails: {},
+      orderDetailsArr: [],
+      shoppingCatArr: [],
+      freight: 0,
+      buyway: 1,
+      teamId: ""
     };
   },
+  created() {
+    hybrid.getCurSel = this.getCurSel
+  },
   methods: {
-    getOrderId(buyTypeDet) {
-      console.log(vuePay.showInfoFromJs("I'M FROM JS!!!"));
-      this.isShow = !this.isShow;
-      this.buyType = buyTypeDet;
-    },
     fetchGoodsDet: async function() {
+      let that = this;
       let params = {
         name: "小红", //收货人
         telephone: "18872209853", // 收货人电话
         address: "皇后大道", //收货人地址
-        remarkMessage: "惺惺惜惺惺", //留言信息
-        teamId: "209885", //团队id
-        orderId: "1234567891", //订单id
-        totalprice: "10000", //订单总金额
-        buyway: "2" //购买方式 1，普通 2，拼团
+        remarkMessage: "惺惺惜惺惺" //留言信息
       };
-      await http.post1(api.submitorder, params);
+      params.orderId = this.orderId;
+      params.totalprice = this.prices;
+      params.buyway = this.buyway;
+
+      if (this.teamId) {
+        params.teamId = this.teamId;
+      }
+      let res = await http.post1(api.submitorder, params);
       if (res.data) {
-        this.orderIdObj = res.data
+        that.orderIdObj = res.data
+        // that.orderIdObj
+        vuePay.showInfoFromJs(res.data.orderId,res.data.teamId,res.data.totalPrice);
       }
     },
+    getOrderId() {
+      this.fetchGoodsDet()
+      
+    },
     comTotleGoodsPri() {
-      this.totalPrice = this.myOrders.prices;
-      this.freight = this.myOrders.orderDetails.freight;
-      this.totalGoodsPri = this.totalPrice - this.freight;
+      this.totalGoodsPri = this.prices - this.freight;
+    },
+    getCurSel(addr) {
+      this.addr = addr;
     }
-    // getAddr(addr) {
-
-    // }
   },
   components: {
     goodsItem,
     NavHeader
   },
   mounted() {
-    console.log(this.$route.query);
-    //传过来的混合数据
-    this.orderDetData = JSON.parse(this.$route.query.orderDetData);
+    this.orderDetData = JSON.parse(this.$route.query.orderDetData); //传过来的混合数据
+    if (this.orderDetData.code == -1) {
+      MessageBox("提示", "崩溃了，请重新打开应用");
+    }
+    this.orderId = this.$route.query.orderId; //订单号
+    this.status = this.orderDetData.myorders.status; //订单状态：1、待付款，2、待发货，3、待成团，4、已发货，5、已完成，6、已关闭7，待退款'
+    this.proNum = this.orderDetData.myorders.proNum; // 商品的总数量
+    this.prices = this.orderDetData.myorders.prices.toFixed(2); //商品加上运费的总价格
+    this.orderDetails = this.orderDetData.myorders.orderDetails; // 订单商品信息集合
+    this.orderDetailsArr = this.orderDetails.orderDetails; // 订单商品包括小计数组
+    this.shoppingCatArr = this.orderDetailsArr[0].shoppingCat; // 订单商品数组
+    this.freight = this.orderDetails.freight; //运费
+    this.buyway = this.$route.query.buyway;
+    this.teamId = this.orderDetails.teamId;
+
     //传递过来的规格
     if (JSON.parse(this.$route.query.checkedGuige).length > 0) {
       this.checkedGuige = JSON.parse(this.$route.query.checkedGuige);
@@ -143,24 +173,14 @@ export default {
 
     // 订单商品信息集合
     this.myOrders = this.orderDetData.myorders;
-    // 订单商品信息数组
-    this.orderDetailsArr = this.myOrders.orderDetails.orderDetails[0].shoppingCat;
     //计算商品总价
     this.comTotleGoodsPri();
     //计算总数量
-    if (this.checkedGuige > 0) {
+    if (this.checkedGuige.length > 0) {
       this.checkedGuige.forEach((v, i) => {
         this.totalNum += parseInt(v[v.length - 1].num);
       });
     }
-
-    //  else {
-    //   this.newGuigess.forEach((v, i) => {
-    //     if (i == this.newGuigess.length - 1) {
-    //       this.totalNum
-    //     }
-    //   });
-    // }
   }
 };
 </script>

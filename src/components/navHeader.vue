@@ -1,8 +1,11 @@
 <template>
-    <header class="orderPageHeader" tag="header">
-        <img class="back" v-if="isShow" @click="back" src="../assets/img/订单详情_slices/Arrow@3x.png" alt="">
-        <slot name="header"></slot>
-    </header>
+    <div>
+        <header class="orderPageHeader bgcWhite" tag="header">
+            <img class="back" v-if="isShow" @click="back" src="../assets/img/订单详情_slices/Arrow@3x.png" alt="">
+            <slot name="header"></slot>
+        </header>
+        <div class="headerZW"></div>
+    </div>
 
 </template>
 
@@ -13,21 +16,22 @@ export default {
       isShow: true
     };
   },
-  mounted () {
-    this.detCurRouter()  
+  mounted() {
+    this.detCurRouter();
   },
   methods: {
-      back() {
-          this.$router.go(-1)
-      },
-      detCurRouter() {
-          console.log();
-          if (location.hash != '#/mall') {
-              this.isShow = true
-          } else {
-              this.isShow = false              
-          }
+    back() {
+      this.$router.go(-1);
+    },
+    detCurRouter() {
+      console.log();
+      if (location.hash != "#/mall") {
+        this.isShow = true;
+      } else {
+        this.isShow = false;
       }
+    }
   }
 };
 </script>
+

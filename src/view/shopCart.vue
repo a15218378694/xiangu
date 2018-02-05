@@ -294,6 +294,8 @@ export default {
     overflow: hidden;
     position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     font-size: 0.3rem;
     .left {
       float: left;

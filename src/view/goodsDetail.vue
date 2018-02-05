@@ -3,8 +3,8 @@
 
     <div class="con">
       <img class="back" @click="back" src="../assets/img/mall/商品详情_slices/Group@2x.png" alt="">
-      <img v-if="!isCollect" @click="collect" class="collect" src="../assets/img/mall/商品详情_slices/收藏@2x.png" alt="">
-      <img v-else class="collect" src="../assets/img/mall/商品详情_slices/收藏2@2x.png" alt="">
+      <img v-if="!isCollect" @click="collect(0)" class="collect" src="../assets/img/mall/商品详情_slices/收藏@2x.png" alt="">
+      <img v-else class="collect" @click="collect(1)" src="../assets/img/mall/商品详情_slices/收藏2@2x.png" alt="">
       <router-link class="toShopCart" to="shopCart">
         <img class="shopCart" src="../assets/img/mall/商品详情_slices/购物车@2x.png" alt="">
       </router-link>
@@ -138,8 +138,8 @@
             <div class="tit">{{proDetails.title}}</div>
             <div class="pinGround">
               {{buyType}}：￥
-              <span v-if="buyType == '单价'">{{proDetails.original_price}}</span>
-              <span v-if="buyType == '拼团'">{{proDetails.offering_price}}</span>
+              <span v-if="buyType == '单价'">{{proDetails.offering_price}}</span>
+              <span v-if="buyType == '拼团'">{{proDetails.original_price}}</span>
             </div>
           </div>
           <img class="close" @click="isShowEven('close')" src="../assets/img/mall/guige/关闭@3x.png" alt="">
@@ -179,7 +179,7 @@
           <button @click="addCheckGuigeItem">添加所选</button>
         </div>
         <div class="sure">
-          <button v-if="buy_way == 1" class="addCart" @click="addCart()">加入购物车</button>
+          <button v-if="buy_way == 1" class="addCart" @click="addCart">加入购物车</button>
           <button class="goOrder" @click="sureGoOrder">确定下单</button>
         </div>
       </div>
@@ -197,13 +197,13 @@
 import Vue from "vue";
 import http from "../utils/http";
 import api from "../utils/api";
-import axios from "axios";
 import util from "../utils/util";
 import shopItem from "../components/shopItem.vue";
 import groundItem from "../components/groundItem.vue";
 import scroll from "../components/scroll.vue";
 import { Popup } from "mint-ui";
 import { MessageBox } from "mint-ui";
+import { Toast } from "mint-ui";
 import { Swipe, SwipeItem } from "mint-ui";
 Vue.component(Popup.name, Popup);
 Vue.component(Swipe.name, Swipe);
@@ -229,11 +229,9 @@ export default {
       buy_way: 1,
       guigesNum: 0,
       showChecked: false,
-      isClickAdd: false,
       isLoading: false,
       goodsId: "",
-      teamId: "",
-      initFlag: true
+      teamId: ""
     };
   },
 
@@ -271,7 +269,10 @@ export default {
       }
       const res = await http.get(api.pro, params);
       if (res.data) {
-        if (buy_way == 2 && res.data.code == -1) {
+        if (res.data.code == -1) {
+          return MessageBox("提示", "崩溃了，请重新打开应用");
+        }
+        if (buy_way == 2 && res.data.code == 2) {
           return MessageBox("提示", "已经开团啦，不能发起拼团了");
         }
         this.isShow = !this.isShow;
@@ -280,7 +281,6 @@ export default {
         }, 20);
         this.$emit("goodsDetailPage", this.isShow);
         this.guigess = res.data.proSize.proSizeLists;
-        this.totalLength = this.guigess.length;
         this.guigess.forEach((v, i) => {
           v.curIndex = -1;
           v.curItem = "";
@@ -324,16 +324,24 @@ export default {
         guigesObj.curItem = guigeObj;
         this.newGuigess = [];
         this.guigess.forEach((v, i) => {
-          if (v.curItem) {
-            this.newGuigess[i] = v.curItem;
-          }
+          //这里一定不能加判断过滤
+          this.newGuigess[i] = v.curItem;
         });
-        console.log(this.newGuigess.length, this.totalLength);
-        if (this.newGuigess.length == this.totalLength) {
+        if (this.checkKong(this.newGuigess)) {
           this.getPrice();
         }
       }
       this.isLoading = false;
+    },
+    //判断数组中是否有undefined
+    checkKong(arr) {
+      let flag = true;
+      arr.forEach(v => {
+        if (v == "") {
+          flag = false;
+        }
+      });
+      return flag;
     },
     getPrice: async function() {
       let params = {
@@ -351,30 +359,36 @@ export default {
       });
       const res = await http.post1(api.getProPrice, params);
       if (res.data) {
-        MessageBox("提示", res.data.msg);
-        return;
+        this.publicPrice = res.data.price;
+        if (this.buy_way == 1) {
+          this.proDetails.offering_price = res.data.price;
+        } else {
+          this.proDetails.original_price = res.data.price;
+        }
+      }else if (res.code == -1) {
+        
       }
-    },
+    }, 
     addCart() {
-      if (!this.addCartCheck()) {
-        return;
+      if (this.checkedGuige.length == 0) {
+        if (!this.addCheck()) {
+          return;
+        }
+        //checkedGuige.length == 0 就要去检测库存
+        this.checkKucun();
+        this.newGuigessAdd();
+        this.newGuigessGetRequestPrice();
       }
-      if (!this.isClickAdd && !this.addCheck()) {
-        return;
-      }
-      this.initFlag = false;
-      this.zuheChecked();
+
       this.addCartEven();
     },
     //调起加入购物车接口
     addCartEven: async function() {
       this.showChecked = false;
       let params = this.getParams();
-      console.log(params);
       const res = await http.post1(api.addPro, params);
       if (res.data) {
         this.guigesNum = 0;
-        this.initFlag = false;
         this.clearStatus();
         this.clearAllSelGuige();
         MessageBox("提示", res.data.msg);
@@ -383,20 +397,21 @@ export default {
     },
     //点击添加所选
     addCheckGuigeItem() {
+      //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套了
       if (!this.addCheck()) {
         return;
       }
-      this.zuheChecked("addCheckGuigeItem");
+      this.newGuigessAdd();
+      this.newGuigessGetRequestPrice();
+      this.checkedguigeAdd();
+      this.checkKucun();
       this.clearStatus();
       this.showChecked = true;
-      this.isClickAdd = true;
+      this.guigesNum++;
     },
     checkKucun: async function(paramsKucun) {
       this.showChecked = false;
       let params = {
-        // coulour: '3030漫反射 1.15米15灯',
-        // sizes: '白',
-        // powers: '其它',
         buynum: this.num,
         pid: this.proDetails.id
       };
@@ -412,29 +427,19 @@ export default {
           params.powers = v.sizes;
         }
       });
-      // params.buynum = this.num;
-      // params.buyway = this.buy_way;
-      // params.pid = this.proDetails.id;
-      // if (this.teamId) {
-      //   params.teamId = this.teamId;
-      // }
       const res = await http.post1(api.outrepertory, params);
-      if (res.data) {
-        this.guigesNum = 0;
-        this.clearStatus();
-        this.clearAllSelGuige();
+      if (res.data.code == -2) {
         MessageBox("提示", res.data.msg);
-        return;
       }
     },
-    //点击添加所选项或者加入购物车共有的检测
+    //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套
     addCheck() {
       this.numNum = Number(this.num);
       let flag = true;
-      if (this.guigesNum >= 4) {
+      if (this.guigesNum >= 3) {
         flag = false;
-        MessageBox("提示", "购买4组以上规格商品请加入购物车购买");
-      } else if (this.newGuigess.length < this.totalLength) {
+        MessageBox("提示", "购买3组以上规格商品请加入购物车购买");
+      } else if (!this.checkKong(this.newGuigess)) {
         flag = false;
         MessageBox("提示", `请先选择规格并且各类型规格必选`);
       } else if (!Number.isInteger(this.numNum) || this.numNum <= 0) {
@@ -443,36 +448,32 @@ export default {
       }
       return flag;
     },
-    //只用于点击加入购物车的检测
-    addCartCheck() {
-      let flag = true;
-      if (!this.num > 0 && this.checkedGuige.length == 0) {
-        flag = false;
-        MessageBox("提示", "请先选择规格项并规范填写了数量");
-      }
-      return flag;
-    },
-    //组合所选中的数据
-    zuheChecked(tianjia) {
-      if (
-        this.guigesNum == 0 &&
-        tianjia == "addCheckGuigeItem" &&
-        this.initFlag
-      ) {
-        this.checkedGuige = [];
-      }
+    newGuigessAdd() {
       this.newGuigess.push({ num: this.numNum });
+    },
+    //在checkedguige中增加以显示出来
+    checkedguigeAdd() {
       this.checkedGuige.push(this.newGuigess);
-
-      this.guigesNum++;
+    },
+    //往newGuigess中添加要发送给后端的数据
+    newGuigessGetRequestPrice() {
+      //要对应哪套的数据  所以做很多判断
+      if (this.guigesNum == 0) {
+        this.newGuigess.push({ buyprice1: this.publicPrice });
+      } else if (this.guigesNum == 1) {
+        this.newGuigess.push({ buyprice2: this.publicPrice });
+      } else if (this.guigesNum == 2) {
+        this.newGuigess.push({ buyprice3: this.publicPrice });
+      }
     },
     //清空规格状态以及清空一套规格
     clearStatus() {
+      this.num = "";
+      this.newGuigess = [];
       this.guigess.forEach((v, i) => {
         v.curIndex = -1;
         v.curItem = "";
       });
-      this.newGuigess = [];
     },
     //清空所有选中规格
     clearAllSelGuige() {
@@ -486,46 +487,53 @@ export default {
         })
         .catch(() => {});
     },
+    //确定下单是同时跳转的，newGuigessAdd newGuigessGetRequestPrice两个都要调
     sureGoOrder: async function() {
+      //checkedGuige没数据的情况
       if (this.checkedGuige.length == 0) {
         if (!this.addCheck()) {
           return;
         }
+        //没有点添加所选就在确定下单的时候再去检测库存
+        this.checkKucun();
+        this.newGuigessAdd();
+        this.newGuigessGetRequestPrice();
       }
-      this.initFlag = false;
+
+      //发送给后端的数据只是从checkedGuige中抽取出来的
       let params = this.getParams();
       const res = await http.post1(api.order, params);
+      if (res.code == -1) {
+        util.goLogin()
+      } 
       if (res.data) {
-        let that = this,
-          checkedGuige = this.checkedGuige,
-          newGuigess = this.newGuigess,
-          totalNum = this.num;
         this.$router.push({
           path: "orderDet",
           query: {
             orderDetData: JSON.stringify(res.data),
-            newGuigess: JSON.stringify(that.newGuigess),
-            checkedGuige: JSON.stringify(that.checkedGuige),
-            totalNum
+            newGuigess: JSON.stringify(this.newGuigess),
+            checkedGuige: JSON.stringify(this.checkedGuige),
+            totalNum: this.numNum,
+            buyway: this.buy_way,
+            teamId: this.teamId,
+            orderId: res.data.myorders.orderid,
           }
         });
       }
     },
     //拿到发给后端的参数
     getParams() {
+      //发多少套规格
       let cartNum = 1;
-      if (this.checkedGuige.length > 0) {
-        cartNum = this.checkedGuige.length;
-      }
       this.paramsSureOrder = {
         pid: this.proDetails.id,
         title: this.proDetails.title,
-        offering_price: this.proDetails.offering_price,
         image: this.proDetails.slidershowAdd[0].address,
         buyway: this.buy_way,
         cart_num: cartNum
       };
       if (this.checkedGuige.length > 0) {
+        this.paramsSureOrder.cart_num = this.checkedGuige.length;
         this.checkedGuige.forEach((v, i) => {
           v.forEach((v1, i1) => {
             if (i == 0) {
@@ -537,6 +545,8 @@ export default {
                 this.paramsSureOrder.powers1 = v1.sizes;
               } else if (i1 == 3) {
                 this.paramsSureOrder.buynum1 = v1.num;
+              } else if (i1 == 4) {
+                this.paramsSureOrder.buyprice1 = v1.buyprice1;
               }
             } else if (i == 1) {
               if (i1 == 0) {
@@ -547,6 +557,9 @@ export default {
                 this.paramsSureOrder.powers2 = v1.sizes;
               } else if (i1 == 3) {
                 this.paramsSureOrder.buynum2 = v1.num;
+                
+              } else if (i1 == 4) {
+                this.paramsSureOrder.buyprice2 = v1.buyprice2;
               }
             } else if (i == 2) {
               if (i1 == 0) {
@@ -557,6 +570,9 @@ export default {
                 this.paramsSureOrder.powers3 = v1.sizes;
               } else if (i1 == 3) {
                 this.paramsSureOrder.buynum3 = v1.num;
+                
+              } else if (i1 == 4) {
+                this.paramsSureOrder.buyprice3 = v1.buyprice3;
               }
             } else if (i == 3) {
               if (i1 == 0) {
@@ -567,6 +583,9 @@ export default {
                 this.paramsSureOrder.powers4 = v1.sizes;
               } else if (i1 == 3) {
                 this.paramsSureOrder.buynum4 = v1.num;
+                
+              } else if (i1 == 4) {
+                this.paramsSureOrder.buyprice4 = v1.buyprice4;
               }
             }
           });
@@ -575,7 +594,8 @@ export default {
         this.paramsSureOrder.colour1 = this.newGuigess[0].sizes;
         this.paramsSureOrder.sizes1 = this.newGuigess[1].sizes;
         this.paramsSureOrder.powers1 = this.newGuigess[2].sizes;
-        this.paramsSureOrder.buynum1 = this.num;
+        this.paramsSureOrder.buynum1 = this.newGuigess[3].num;
+        this.paramsSureOrder.buyprice1 = this.newGuigess[4].buyprice1;
       }
 
       return [this.paramsSureOrder];
@@ -583,35 +603,35 @@ export default {
     loadTop() {
       util.loadTop(this);
     },
-    collect() {
-      this.isCollect = !this.isCollect;
+    collect(status) {
+      if (!status) {
+        this.collectEven();
+      } else {
+        this.delColl();
+      }
     },
     collectEven: async function() {
-      if (this.checkedGuige.length == 0) {
-        if (!this.addCheck()) {
-          return;
-        }
-      }
-      this.initFlag = false;
-      let params = this.getParams();
-      const res = await http.post1(api.order, params);
+      const res = await http.get(api.collectproduct, {
+        pid: this.proDetails.id
+      });
       if (res.data) {
-        let that = this;
-        this.$router.push({
-          path: "orderDet",
-          query: {
-            orderDetData: JSON.stringify(res.data),
-            checkedGuige: JSON.stringify(that.checkedGuige),
-            newGuigess: JSON.stringify(that.newGuigess)
-          }
-        });
+        this.isCollect = !this.isCollect;
+        return Toast("收藏成功");
       }
-    }
-  },
-  watch: {
-    num() {
-      if (this.newGuigess.length == this.totalLength) {
-        this.checkKucun();
+    },
+    delColl: async function() {
+      const res = await http.post1(api.collectproduct, [
+        { pid: this.proDetails.id }
+      ]);
+      if (res.data) {
+        this.isCollect = !this.isCollect;
+        return Toast("取消收藏");
+      }
+    },
+    checkNum() {
+      this.numNum = Number(this.num);
+      if (!Number.isInteger(this.numNum) || this.numNum <= 0) {
+        return MessageBox("提示", "请输入规范数量");
       }
     }
   }
@@ -1042,12 +1062,14 @@ export default {
         margin-bottom: 0.15rem;
       }
       .guigeTypeItem {
-        font-size: 0.26rem;
+        min-width: 1.2rem;
+        background: rgba(255, 255, 255, 1);
         border-radius: 0.05rem;
+        font-size: 0.26rem;
         border: 0.01rem solid #f0f0f0;
-        height: 0.6rem;
+        min-height: 0.6rem;
         line-height: 0.6rem;
-
+        padding: 0 0.35rem;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

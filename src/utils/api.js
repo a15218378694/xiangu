@@ -5,7 +5,7 @@ export default {
   lookmore: "/home/groupbooking/lookmore",//首页点击查看更多
   prodetails: "/prodetails",//商品详情页
   pro: "/buy/pro",//商品 购买(单价或拼图)
-  order: "/pro/order",//商品 确定下单
+  order: "/pro/order",//商品 确定下单 获得orderid
   showPro: "/shoppingcat/showPro",//显示购物车商品
   showtotalprice: "/shoppingcat/showtotalprice",//购物车选择的商品的总价
   delete: "/shoppingcat/delete",//删除购物车商品
@@ -22,6 +22,7 @@ export default {
   finishpay: '/groupbooking/finishpay',//去参团，或者支付完成跳转到的拼团详情页面
   billboard: '/home/billboard',//首页轮播图
   collectproduct: '/collectproduct',//收藏商品
+  collectproductDet: '/delete/collectproduct',//删除或者取消收藏
   submitorder: '/pro/submitorder',//立即支付
   getProPrice: '/pro/getProPrice',//根据商品规格 获得相应的价格
 };

@@ -17,8 +17,11 @@ import api from "./utils/api";
 import router from "./router";
 import util from "./utils/util";
 import "mint-ui/lib/style.css";
-import bridge from './constant/nativeJSBridge';
+import bridge1 from './constant/nativeJSBridge';
+
 import { Loadmore } from 'mint-ui';
+// import bridge from './config/bridge.js'
+// Vue.prototype.$bridge = Bridge
 Vue.component(Loadmore.name, Loadmore);
 {
   // const mall = r => require.ensure([], () => r(require('./view/mall.vue')), 'chunkname1')
@@ -129,6 +132,10 @@ new function () {
   //   ]
   // });
 }
+
+// bridge.registerHandler('openWebviewBridgeArticle', function() {
+//   log("openWebviewBridgeArticle was called with by ObjC")
+// })
 router.beforeEach((to, from, next) => {
   let loginObj = {
     goLogin: async function () {
@@ -151,7 +158,7 @@ router.beforeEach((to, from, next) => {
 new Vue({
   el: "#app",
   router,
-  bridge,
+  bridge1,
   template: "<App/>",
   components: { App }
 });
