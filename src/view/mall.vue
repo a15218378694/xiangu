@@ -117,6 +117,7 @@ export default {
   methods: {
     fetchHotGoods: async function(params, callS) {
       const res = await http.get(api.recommend, params);
+
       if (res.data) {
         this.loading = false;
         callS && callS(res);

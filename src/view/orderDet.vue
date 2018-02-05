@@ -7,17 +7,17 @@
       <div class="perInfo">
         <div class="shouhuo">
           <span class="shouhuoren">收货人：</span>
-          <span class="ming">{{orderDetData.name}}</span>
-          <span class="phone">{{orderDetData.phone}}</span>
+          <span class="ming">{{perName}}</span>
+          <span class="phone">{{perPhone}}</span>
         </div>
         <div class="addr">
           <span class="dizhi">收货地址：</span>
           <span class="dizhiDet">
-            <span class="shi">{{orderDetData.address}}</span>
+            <span class="shi">{{perAddr}}</span>
             <!-- <span class="qu">龙华</span> -->
           </span>
         </div>
-        <img class="bianji" src="../assets/img/订单详情_slices/编辑@3x.png" alt="">
+        <img class="bianji" @click="editAddr" src="../assets/img/订单详情_slices/编辑@3x.png" alt="">
       </div>
 
       <div class="goods_det1">
@@ -30,7 +30,7 @@
       </div>
 
       <div class="goodsItemInfo">
-        <goods-item :orderDetailsArr="shoppingCatArr" :newGuigess="newGuigess" :checkedGuige="checkedGuige" :totalNum="totalNum"></goods-item>
+        <goods-item :orderDetailsArr="shoppingCatArr" :endGuigess="endGuigess" :totalNum="totalNum"></goods-item>
 
         <div class="infoPri">
           <div class="xiaojiBox">
@@ -53,7 +53,7 @@
 
       <div class="buyerWord">
         <span>买家留言：</span>
-        <input class="liuyan" type="text" placeholder="点击填写买家留言">
+        <input v-model="liuyanInfo" class="liuyan" type="text" placeholder="点击填写买家留言">
       </div>
 
       <div class="goPay">
@@ -84,13 +84,16 @@ export default {
   name: "name",
   data: function() {
     return {
+      liuyanInfo: '',
+      perName: "",
+      perPhone: "",
+      perAddr: "",
       addr: {},
       isCheck: false,
       myOrders: {},
       checkedGuige: [],
       totalGoodsPri: 0,
       totalNum: 0,
-      newGuigess: [],
       checkedGuige: [],
       orderIdObj: {},
       orderDetData: {},
@@ -103,55 +106,69 @@ export default {
       shoppingCatArr: [],
       freight: 0,
       buyway: 1,
-      teamId: ""
+      teamId: "",
+      totalNums: 0,
+      endGuigess: []
     };
   },
   created() {
-    hybrid.getCurSel = this.getCurSel
+    hybrid.getCurSel = this.getCurSel;
   },
   methods: {
     fetchGoodsDet: async function() {
       let that = this;
       let params = {
-        name: "小红", //收货人
-        telephone: "18872209853", // 收货人电话
-        address: "皇后大道", //收货人地址
-        remarkMessage: "惺惺惜惺惺" //留言信息
+        name: this.perName, //收货人
+        telephone: this.perPhone, // 收货人电话
+        address: this.perAddr, //收货人地址
+        remarkMessage: this.liuyanInfo //留言信息
       };
       params.orderId = this.orderId;
       params.totalprice = this.prices;
+      if (this.totalNums > 0) {
+        params.total_num = this.totalNums;
+      } else {
+        params.total_num = this.totalNum;
+      }
+      params.freight = this.freight;
       params.buyway = this.buyway;
-
+      params.shoppingCat = this.shoppingCatArr;
       if (this.teamId) {
         params.teamId = this.teamId;
       }
       let res = await http.post1(api.submitorder, params);
       if (res.data) {
-        that.orderIdObj = res.data
+        that.orderIdObj = res.data;
         // that.orderIdObj
-        vuePay.showInfoFromJs(res.data.orderId,res.data.teamId,res.data.totalPrice);
+        vuePay.showInfoFromJs(
+          res.data.orderId,
+          res.data.teamId,
+          res.data.totalPrice
+        );
       }
     },
     getOrderId() {
-      this.fetchGoodsDet()
-      
+      this.fetchGoodsDet();
     },
     comTotleGoodsPri() {
       this.totalGoodsPri = this.prices - this.freight;
     },
-    getCurSel(addr) {
-      this.addr = addr;
+    getCurSel(preName, perPhone, perAddr) {
+      this.preName = preName;
+      this.perPhone = perPhone;
+      this.perAddr = perAddr;
+    },
+    editAddr() {
+      console.log(vuePay.showAddressFromJs);
+      vuePay.showAddressFromJs();
     }
   },
-  components: {
-    goodsItem,
-    NavHeader
-  },
+
   mounted() {
     this.orderDetData = JSON.parse(this.$route.query.orderDetData); //传过来的混合数据
-    if (this.orderDetData.code == -1) {
-      MessageBox("提示", "崩溃了，请重新打开应用");
-    }
+    this.perName = this.orderDetData.name;
+    this.perPhone = this.orderDetData.phone;
+    this.perAddr = this.orderDetData.address;
     this.orderId = this.$route.query.orderId; //订单号
     this.status = this.orderDetData.myorders.status; //订单状态：1、待付款，2、待发货，3、待成团，4、已发货，5、已完成，6、已关闭7，待退款'
     this.proNum = this.orderDetData.myorders.proNum; // 商品的总数量
@@ -166,11 +183,14 @@ export default {
     //传递过来的规格
     if (JSON.parse(this.$route.query.checkedGuige).length > 0) {
       this.checkedGuige = JSON.parse(this.$route.query.checkedGuige);
+      this.totalNums = this.$route.query.totalNums;
     } else {
-      this.newGuigess = JSON.parse(this.$route.query.newGuigess);
+      this.checkedGuige = this.checkedGuige.push(
+        JSON.parse(this.$route.query.newGuigess)
+      );
       this.totalNum = this.$route.query.totalNum;
     }
-
+    this.endGuigess = this.checkedGuige;
     // 订单商品信息集合
     this.myOrders = this.orderDetData.myorders;
     //计算商品总价
@@ -181,6 +201,10 @@ export default {
         this.totalNum += parseInt(v[v.length - 1].num);
       });
     }
+  },
+  components: {
+    goodsItem,
+    NavHeader
   }
 };
 </script>

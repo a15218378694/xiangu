@@ -8,6 +8,7 @@
       <router-link class="toShopCart" to="shopCart">
         <img class="shopCart" src="../assets/img/mall/商品详情_slices/购物车@2x.png" alt="">
       </router-link>
+      <span v-if="isLoading1"></span>
     </div>
 
     <div class="header_img">
@@ -212,6 +213,7 @@ export default {
   name: "name",
   data: function() {
     return {
+      isLoading1: false,
       refreshDelay: 120,
       isCollect: false,
       isShow: false,
@@ -231,7 +233,8 @@ export default {
       showChecked: false,
       isLoading: false,
       goodsId: "",
-      teamId: ""
+      teamId: "",
+      totalNums: 0
     };
   },
 
@@ -260,6 +263,7 @@ export default {
       this.fetchGuigeDet(buy_way);
     },
     fetchGuigeDet: async function(buy_way) {
+      this.isLoading1 = !this.isLoading1;
       let params = {
         id: this.goodsId,
         buy_way
@@ -269,9 +273,6 @@ export default {
       }
       const res = await http.get(api.pro, params);
       if (res.data) {
-        if (res.data.code == -1) {
-          return MessageBox("提示", "崩溃了，请重新打开应用");
-        }
         if (buy_way == 2 && res.data.code == 2) {
           return MessageBox("提示", "已经开团啦，不能发起拼团了");
         }
@@ -287,6 +288,7 @@ export default {
           this.newGuigess = [];
         });
       }
+      this.isLoading1 = !this.isLoading1;      
     },
     back() {
       this.$router.go(-1);
@@ -336,6 +338,9 @@ export default {
     //判断数组中是否有undefined
     checkKong(arr) {
       let flag = true;
+      if (arr.length == 0) {
+      flag = false;
+      }
       arr.forEach(v => {
         if (v == "") {
           flag = false;
@@ -365,10 +370,8 @@ export default {
         } else {
           this.proDetails.original_price = res.data.price;
         }
-      }else if (res.code == -1) {
-        
       }
-    }, 
+    },
     addCart() {
       if (this.checkedGuige.length == 0) {
         if (!this.addCheck()) {
@@ -498,14 +501,13 @@ export default {
         this.checkKucun();
         this.newGuigessAdd();
         this.newGuigessGetRequestPrice();
+      } else {
+        this.getTotalNums(this.checkedGuige)
       }
 
       //发送给后端的数据只是从checkedGuige中抽取出来的
       let params = this.getParams();
       const res = await http.post1(api.order, params);
-      if (res.code == -1) {
-        util.goLogin()
-      } 
       if (res.data) {
         this.$router.push({
           path: "orderDet",
@@ -513,11 +515,23 @@ export default {
             orderDetData: JSON.stringify(res.data),
             newGuigess: JSON.stringify(this.newGuigess),
             checkedGuige: JSON.stringify(this.checkedGuige),
-            totalNum: this.numNum,
+            totalNum: this.num,
+            totalNums: this.totalNums,
             buyway: this.buy_way,
             teamId: this.teamId,
-            orderId: res.data.myorders.orderid,
+            orderId: res.data.myorders.orderid
           }
+        });
+      }
+    },
+    getTotalNums(arr) {
+      if (arr.length > 0) {
+        arr.forEach(v => {
+          v.forEach((v1, i1) => {
+            if (i1 == 3) {
+              this.totalNums += v1.num;
+            }
+          });
         });
       }
     },
@@ -557,7 +571,6 @@ export default {
                 this.paramsSureOrder.powers2 = v1.sizes;
               } else if (i1 == 3) {
                 this.paramsSureOrder.buynum2 = v1.num;
-                
               } else if (i1 == 4) {
                 this.paramsSureOrder.buyprice2 = v1.buyprice2;
               }
@@ -570,7 +583,6 @@ export default {
                 this.paramsSureOrder.powers3 = v1.sizes;
               } else if (i1 == 3) {
                 this.paramsSureOrder.buynum3 = v1.num;
-                
               } else if (i1 == 4) {
                 this.paramsSureOrder.buyprice3 = v1.buyprice3;
               }
@@ -583,7 +595,6 @@ export default {
                 this.paramsSureOrder.powers4 = v1.sizes;
               } else if (i1 == 3) {
                 this.paramsSureOrder.buynum4 = v1.num;
-                
               } else if (i1 == 4) {
                 this.paramsSureOrder.buyprice4 = v1.buyprice4;
               }

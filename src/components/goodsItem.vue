@@ -1,31 +1,23 @@
 <template>
   <div class="infoDet">
-    <template v-for="(item,index) in orderDetailsArr">
-      <div class="goodsItemBox" :key="index">
-        <div class="left">
-          <img :src="item.image" alt="">
-        </div>
-        <div class="right">
-          <div class="one">{{item.title}}</div>
-          <div class="two">
-            <div v-if="checkedGuige.length > 0" :key="index1" class="resGuigeItems" v-for="(item1,index1) in checkedGuige">
-              <template v-for="(addedItem,addedIndex) in item1">
-                <span class="resGuigeItem" :key="addedIndex">
-                  {{addedItem.sizes || addedItem.num}}
-                  <span v-if="addedItem.num">份</span>
-                </span>
-              </template>
-            </div>
-            <div class="resGuigeItems" v-if="newGuigess.length > 0">
-              <template v-for="(item1,index1) in newGuigess">
-                <span :key="index1" class="resGuigeItem">
-                  {{item1.sizes || addedItem.num}}
-                  <span v-if="addedItem.num">份</span>
-                </span>
-              </template>
-            </div>
+    <div v-for="(item,index) in orderDetailsArr" class="goodsItemBox" :key="index">
+      <div class="left">
+        <img :src="item.image" alt="">
+      </div>
+      <div class="right">
+        <div class="one">{{item.title}}</div>
+        <div class="two">
+          <div class="resGuigeItems" v-for="(item1,index1) in endGuigess" :key="index1">
+            <template v-for="(addedItem,addedIndex) in item1">
+              <span class="resGuigeItem" :key="addedIndex">
+                {{addedItem.sizes || addedItem.num}}
+                <span v-if="addedItem.num">份</span>
+              </span>
+            </template>
           </div>
-          <!-- <div class="three">
+
+        </div>
+        <!-- <div class="three">
             <div class="pri">
               <span class="priType">原价：</span>
               <span>￥</span>
@@ -33,9 +25,8 @@
             </div>
             <div class="num">X{{totalNum}}</div>
           </div> -->
-        </div>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -46,11 +37,7 @@ export default {
       type: Array,
       default: []
     },
-    checkedGuige: {
-      type: Array,
-      default: () => []
-    },
-    newGuigess: {
+    endGuigess: {
       type: Array,
       default: () => []
     },

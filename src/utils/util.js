@@ -1,3 +1,7 @@
+import http from './http'
+import api from './api'
+
+
 export default {
   //获取cookie、
   getCookie(name) {
@@ -144,18 +148,19 @@ export default {
     }
     that.page++;
     callb();
-  },
+  }, 
   goLogin: async function (callS) {
+    console.log('goLogin');
     let params = {
-      phone: 15218378694
+      phone: 18872209853
     };
     const res = await http.post(api.send_SMS_verifyCode, params);
     await http.post(api.login_by_verifyCode, {
-      phone: 15218378694,
+      phone: 18872209853,
       code: 1234
     });
     if (res.data) {
-      callS()
+      callS && callS()
     }
   }
 };
