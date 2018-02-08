@@ -48,7 +48,9 @@ export default {
   data: function() {
     return {};
   },
-  mounted() {},
+  mounted() {
+
+  },
   methods: {}
 };
 </script>

@@ -73,7 +73,7 @@ import { Search } from "mint-ui";
 Vue.component(Search.name, Search);
 Vue.component(Carousel.name, Carousel);
 Vue.component(CarouselItem.name, CarouselItem);
-export default {
+let mallObj = {
   name: "name",
   data() {
     return {
@@ -243,6 +243,9 @@ export default {
     navHeader
   }
 };
+
+export default mallObj
+
 </script>
 
 <style lang="less">
@@ -301,6 +304,10 @@ export default {
     }
     .el-carousel__item:nth-child(2n + 1) {
       background-color: #d3dce6;
+    }
+    img {
+      width: 100%;
+      height: 100%;
     }
   }
   .goods_types {

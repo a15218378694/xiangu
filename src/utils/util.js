@@ -149,8 +149,7 @@ export default {
     that.page++;
     callb();
   }, 
-  goLogin: async function (callS) {
-    console.log('goLogin');
+  goLogin: async function () {
     let params = {
       phone: 18872209853
     };
@@ -160,7 +159,7 @@ export default {
       code: 1234
     });
     if (res.data) {
-      callS && callS()
+      
     }
   }
 };

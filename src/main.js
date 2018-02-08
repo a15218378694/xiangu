@@ -18,11 +18,10 @@ import router from "./router";
 import util from "./utils/util";
 import "mint-ui/lib/style.css";
 import bridge1 from './constant/nativeJSBridge';
-
 import { Loadmore } from 'mint-ui';
+
 import bridge from './config/bridge.js'
 Vue.prototype.$bridge = bridge
-
 
 Vue.component(Loadmore.name, Loadmore);
 Vue.use(infiniteScroll);
@@ -32,6 +31,8 @@ Vue.use(VueLazyload, {
 });
 
 Vue.config.productionTip = false;
+
+
 new function () {
   var _self = this;
   _self.width = 750; //设置默认最大宽度
@@ -63,19 +64,10 @@ new function () {
   );
 }();
 
-let expireDays = 1000 * 60 * 60 ;
 router.beforeEach((to, from, next) => {
-  console.log(to,from);
-  if (to.query.cookie) {
-    util.setCookie('cookie',to.query.cookie,expireDays);
-    Vue.prototype.cookie = util.getCookie('cookie');
-  }
-  bridge.setupWebViewJavascriptBridge(function (bridge) {
-    bridge.isHiddenBar(to.path,from.path)
-  })
+  util.goLogin()
   next()
 })
-
 new Vue({
   el: "#app",
   router,

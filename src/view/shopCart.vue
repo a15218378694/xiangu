@@ -6,40 +6,39 @@
     </nav-header>
 
     <div class="shopCartGoods">
-      <template v-for="(item,index) in shopCartGoods">
-        <v-touch :key="index" v-bind:pan-options="{ direction: 'horizontal', threshold: 100 }" v-on:swipeleft="onSwipeLeft(item)" v-on:swiperight="onSwipeRight(item)" class="goodsItemInfo">
-          <div class="infoDet" v-on:click.stop="toGoodsDet">
-            <div class="left">
-              <img v-if="!item.isSelected" v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/Oval@2x.png" alt="">
-              <img v-else v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/勾选@2x.png" alt="">
-              <img :src="item.image" alt="">
-            </div>
-            <div class="right">
-              <div class="one">{{item.title}}</div>
-              <div class="two">款式：
-                <template v-for="(item1,index1) in shopCartGoods.productSizes">
-                  <span :key="index1">
-                    <span v-for="(item1Item,item1Key) in item1" :key="item1Key">
-                      {{ item1Item }}
-                    </span>
+      <v-touch v-for="(item,index) in shopCartGoods" :key="index" v-bind:pan-options="{ direction: 'horizontal', threshold: 100 }" v-on:swipeleft="onSwipeLeft(item)" v-on:swiperight="onSwipeRight(item)" class="goodsItemInfo">
+        <div class="infoDet" v-on:click.stop="toGoodsDet(item.pid)">
+          <div class="left">
+            <img v-if="!item.isSelected" v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/Oval@2x.png" alt="">
+            <img v-else v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/勾选@2x.png" alt="">
+            <img :src="item.image" alt="">
+          </div>
+          <div class="right">
+            <div class="one">{{item.title}}</div>
+            <div class="two">
+              <template v-for="(item1,index1) in item.productSizes">
+                <div :key="index1" class="twoItem">
+                  <span v-for="(item1Item,item1Key) in item1" :key="item1Key">
+                    {{ item1Item }}
                   </span>
-                </template>
-              </div>
-              <div class="three">
-                <div class="pri">
-                  <span class="priType">原价：</span>
-                  <span>￥</span>
-                  <span>{{item.offering_price}}</span>
                 </div>
-                <div class="num">X{{item.buynum}}</div>
-              </div>
-              <div :class="[item.isTranShow == true?'tranShow':'','closeDel']">
-                <span class="del" @click.stop="delGood(item,index)">删除</span>
-              </div>
+              </template>
+            </div>
+            <div class="three">
+              <!-- <div class="pri">
+                <span class="priType" v-if="item.buyway == 1">原价：</span>
+                <span class="priType" v-else>拼团：</span>
+                <span>￥</span>
+                <span>{{item.offering_price}}</span>
+              </div> -->
+              <div class="num">X{{item.buyTotalnum}}</div>
+            </div>
+            <div class="closeDel" :class="{'tranShow': item.isTranShow}">
+              <span class="del" @click.stop="delGood(item,index)">删除</span>
             </div>
           </div>
-        </v-touch>
-      </template>
+        </div>
+      </v-touch>
     </div>
 
     <div class="view-more-normal" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="20">
@@ -86,29 +85,75 @@ export default {
   },
   computed: {},
   methods: {
-    goPayPri() {},
+    sureGoOrder: async function(totalPrice) {
+      let params = [];
+      let paramsObj = {};
+      this.shopCartGoods.forEach((v, i) => {
+        if (v.isSelected) {
+          paramsObj.pid = v.pid;
+          paramsObj.sid = v.sid;
+          params.push(paramsObj);
+        }
+      });
+
+      const res = await http.post1(api.order, params);
+      if (res.data) {
+        this.$router.push({
+          path: "orderDet",
+          query: {
+            orderDetData: JSON.stringify(res.data),
+            newGuigess: JSON.stringify(this.newGuigess),
+            checkedGuige: JSON.stringify(this.checkedGuige),
+            totalNum: this.num,
+            totalNums: this.totalNums,
+            buyway: this.buy_way,
+            teamId: this.teamId
+            // orderId: res.data.myorders.orderid
+          }
+        });
+      }
+    },
+    goPayPri() {
+      this.sureGoOrder(this.totalPrice);
+    },
     onSwipeLeft(item) {
       item.isTranShow = true;
     },
     onSwipeRight(item) {
       item.isTranShow = false;
     },
-    toGoodsDet() {
-      this.$router.push({ path: "goodsDetail" });
+    toGoodsDet(goodsId) {
+      this.$router.push({
+        path: "goodsDetail",
+        query: {
+          goodsId
+        }
+      });
     },
     selected(item) {
       item.isSelected = !item.isSelected;
       this.comTot();
     },
     comTot() {
+      let totP = 0;
       this.totalPrice = 0;
       this.shopCartGoods.forEach((v, i) => {
-        if (v.isSelected) {
-          this.totalPrice += v.offering_price;
-        }
+        v.productSizes.forEach((v1, i1) => {
+          if (v.isSelected) {
+            totP += v1.buyprice * v1.buynum;
+          }
+        });
       });
+      this.totalPrice = totP.toFixed(2);
+      // this.getTotPrice()
     },
-
+    // getTotPrice: async function(params, callS) {
+    //   const res = await http.get(api.showPro, params);
+    //   if (res.data) {
+    //     this.loading = false;
+    //     callS && callS(res);
+    //   }
+    // },
     //下面是处理接口数据的
     //打开页面默认获取数据
     getShopGoods() {
@@ -169,7 +214,7 @@ export default {
           this.shopCartGoods.splice(index, 1);
           Toast("删除成功");
           this.page = 1;
-          this.getShopGoods()
+          this.getShopGoods();
         }
       );
     },
@@ -191,7 +236,7 @@ export default {
 .shopCartPage {
   .goodsItemInfo {
     text-align: left;
-    padding: 0.3rem 0.27rem 0.33rem 0.8rem;
+    padding: 0.3rem 0.27rem 0 0.8rem;
     background-color: #fff;
     position: relative;
     height: 100%;
@@ -226,9 +271,23 @@ export default {
           font-size: 0.3rem;
         }
         .two {
-          margin: 0.22rem 0;
-          color: rgba(158, 159, 161, 1);
-          font-size: 0.24rem;
+          color: rgba(137, 137, 137, 1);
+          width: 3.8rem;
+          height: 1.44rem;
+          .twoItem {
+            width: 3.8rem;
+            height: 0.4rem;
+            background: rgba(242, 242, 242, 1);
+            border-radius: 0.05rem;
+            font-size: 0.18rem;
+            font-family: PingFangSC-Regular;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 0.12rem;
+            span {
+            }
+          }
         }
         .three {
           overflow: hidden;

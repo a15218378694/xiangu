@@ -40,11 +40,18 @@
               <span class="rightTwo">{{totalGoodsPri}}</span>
             </span>
           </div>
-          <div class="yunfeiBox">
-            <span class="yunfei">运费：</span>
-            <span class="yunfeiNum">
-              <span class="left">￥</span>
-              <span class="right">{{freight}}</span>
+          <div class="xiaojiBox">
+            <span class="left">运费：</span>
+            <span class="right">
+              <span class="rightOne">￥</span>
+              <span class="rightTwo">{{freight}}</span>
+            </span>
+          </div>
+          <div class="xiaojiBox">
+            <span class="left">数量：</span>
+            <span class="right">
+              <span class="rightOne">X</span>
+              <span class="rightTwo">{{totalNum || totalNums}}</span>
             </span>
           </div>
         </div>
@@ -75,16 +82,16 @@
 import Vue from "vue";
 import http from "../utils/http";
 import api from "../utils/api";
-import { hybrid } from "../utils/appapp";
 import goodsItem from "../components/goodsItem.vue";
 import { MessageBox } from "mint-ui";
 
 import NavHeader from "../components/navHeader.vue";
+
 export default {
   name: "name",
   data: function() {
     return {
-      liuyanInfo: '',
+      liuyanInfo: "",
       perName: "",
       perPhone: "",
       perAddr: "",
@@ -111,9 +118,6 @@ export default {
       endGuigess: []
     };
   },
-  created() {
-    hybrid.getCurSel = this.getCurSel;
-  },
   methods: {
     fetchGoodsDet: async function() {
       let that = this;
@@ -123,7 +127,7 @@ export default {
         address: this.perAddr, //收货人地址
         remarkMessage: this.liuyanInfo //留言信息
       };
-      params.orderId = this.orderId;
+      // params.orderId = this.orderId;
       params.totalprice = this.prices;
       if (this.totalNums > 0) {
         params.total_num = this.totalNums;
@@ -153,23 +157,25 @@ export default {
     comTotleGoodsPri() {
       this.totalGoodsPri = this.prices - this.freight;
     },
-    getCurSel(preName, perPhone, perAddr) {
-      this.preName = preName;
-      this.perPhone = perPhone;
-      this.perAddr = perAddr;
+    getCurSel1() {
+      let that = this;
+      
+      window.getCurSel = function(perName, perPhone, perAddr) {
+        that.perName = perName;
+        that.perPhone = perPhone;
+        that.perAddr = perAddr;
+      };
     },
     editAddr() {
-      console.log(vuePay.showAddressFromJs);
       vuePay.showAddressFromJs();
     }
   },
-
   mounted() {
     this.orderDetData = JSON.parse(this.$route.query.orderDetData); //传过来的混合数据
     this.perName = this.orderDetData.name;
     this.perPhone = this.orderDetData.phone;
     this.perAddr = this.orderDetData.address;
-    this.orderId = this.$route.query.orderId; //订单号
+    // this.orderId = this.$route.query.orderId; //订单号
     this.status = this.orderDetData.myorders.status; //订单状态：1、待付款，2、待发货，3、待成团，4、已发货，5、已完成，6、已关闭7，待退款'
     this.proNum = this.orderDetData.myorders.proNum; // 商品的总数量
     this.prices = this.orderDetData.myorders.prices.toFixed(2); //商品加上运费的总价格
@@ -185,22 +191,24 @@ export default {
       this.checkedGuige = JSON.parse(this.$route.query.checkedGuige);
       this.totalNums = this.$route.query.totalNums;
     } else {
-      this.checkedGuige = this.checkedGuige.push(
-        JSON.parse(this.$route.query.newGuigess)
-      );
+      console.log(JSON.parse(this.$route.query.newGuigess));
+      this.checkedGuige[0] = JSON.parse(this.$route.query.newGuigess)
       this.totalNum = this.$route.query.totalNum;
+      console.log(this.totalNum);
+    
     }
     this.endGuigess = this.checkedGuige;
     // 订单商品信息集合
     this.myOrders = this.orderDetData.myorders;
     //计算商品总价
     this.comTotleGoodsPri();
-    //计算总数量
-    if (this.checkedGuige.length > 0) {
-      this.checkedGuige.forEach((v, i) => {
-        this.totalNum += parseInt(v[v.length - 1].num);
-      });
-    }
+    // //计算总数量
+    // if (this.checkedGuige.length > 0) {
+    //   this.checkedGuige.forEach((v, i) => {
+    //     this.totalNum += parseInt(v[v.length - 1].num);
+    //   });
+    // };
+    this.getCurSel1();
   },
   components: {
     goodsItem,
@@ -285,37 +293,19 @@ export default {
 
     .infoPri {
       padding-top: 0.3rem;
-      .xiaojiBox {
+      .xiaojiBox,
+      .yunfeiBox,
+      .totBox {
         overflow: hidden;
         height: 0.66rem;
         line-height: 0.66rem;
+        color: rgba(158, 159, 161, 1);
+
         .left {
           float: left;
-          color: rgba(158, 159, 161, 1);
         }
         .right {
-          color: rgba(79, 80, 84, 1);
           float: right;
-          .rightOne {
-          }
-          .rightTwo {
-          }
-        }
-      }
-      .yunfeiBox {
-        overflow: hidden;
-        height: 0.66rem;
-        line-height: 0.66rem;
-        .yunfei {
-          float: left;
-          color: rgba(158, 159, 161, 1);
-        }
-        .yunfeiNum {
-          float: right;
-          .left {
-          }
-          .right {
-          }
         }
       }
     }

@@ -45,7 +45,7 @@ function checkCode(res) {
   //   alert(res.data.error_msg)
   // }
   if (res.data.code == -1) {
-    // vuePay.showLoginFromJs("-1")
+    vuePay.showLoginFromJs("-1")
   } else {
     return res
   }
@@ -59,12 +59,13 @@ export default {
       baseURL: root,
       url,
       credentials: 'include',
-
+      
       data: qs.stringify(data),
       timeout: 100000,
       headers: {
+        // 'token': 'merchant_login_flag=18872209853_1517966682308_818610',
         'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
       }
     }).then(
       (response) => {

@@ -288,10 +288,21 @@ export default {
           this.newGuigess = [];
         });
       }
-      this.isLoading1 = !this.isLoading1;      
+      this.isLoading1 = !this.isLoading1;
     },
     back() {
-      this.$router.go(-1);
+      let that = this;
+      this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+        Toast("触发成功");
+        console.log(JSON.stringify(bridge));
+        Toast(JSON.stringify(bridge));
+
+        bridge.callHandler("isHiddenBar",function(resp) {
+          Toast("回调成功");
+          that.$router.go(-1);
+        });
+      });
+      // this.$router.go(-1);
     },
     fetchGoodsDet: async function() {
       await http.get(api.pageviews, { id: this.goodsId });
@@ -339,7 +350,7 @@ export default {
     checkKong(arr) {
       let flag = true;
       if (arr.length == 0) {
-      flag = false;
+        flag = false;
       }
       arr.forEach(v => {
         if (v == "") {
@@ -502,7 +513,7 @@ export default {
         this.newGuigessAdd();
         this.newGuigessGetRequestPrice();
       } else {
-        this.getTotalNums(this.checkedGuige)
+        this.getTotalNums(this.checkedGuige);
       }
 
       //发送给后端的数据只是从checkedGuige中抽取出来的
@@ -518,8 +529,8 @@ export default {
             totalNum: this.num,
             totalNums: this.totalNums,
             buyway: this.buy_way,
-            teamId: this.teamId,
-            orderId: res.data.myorders.orderid
+            teamId: this.teamId
+            // orderId: res.data.myorders.orderid
           }
         });
       }
@@ -631,7 +642,7 @@ export default {
       }
     },
     delColl: async function() {
-      const res = await http.post1(api.collectproduct, [
+      const res = await http.post1(api.collectproductDet, [
         { pid: this.proDetails.id }
       ]);
       if (res.data) {
@@ -1195,7 +1206,7 @@ export default {
 }
 .showGuige {
   width: 7.5rem;
-  height: 13.34rem;
+  height: 10.34rem;
   overflow: hidden;
 }
 </style>
