@@ -7,7 +7,7 @@
       <div class="right">
         <div class="one">{{item.title}}</div>
         <div class="two">
-          <div class="resGuigeItems" v-for="(item1,index1) in endGuigess" :key="index1">
+          <div class="resGuigeItems" v-for="(item1,index1) in item.endGuigess" :key="index1">
             <template v-for="(addedItem,addedIndex) in item1">
               <span class="resGuigeItem" :key="addedIndex">
                 {{addedItem.sizes || addedItem.num}}
@@ -37,10 +37,10 @@ export default {
       type: Array,
       default: []
     },
-    endGuigess: {
-      type: Array,
-      default: () => []
-    },
+    // endGuigess: {
+    //   type: Array,
+    //   default: () => []
+    // },
     totalNum: {
       default: 0
     }

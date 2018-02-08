@@ -76,7 +76,10 @@ export default {
       page: 1,
       totalPage: 0,
       busy: true,
-      loading: false
+      loading: false,
+      endGuigessItemArr: [],
+      endGuigessItemArrItem: [],
+      endGuigess: []
     };
   },
   mounted() {
@@ -93,6 +96,21 @@ export default {
           paramsObj.pid = v.pid;
           paramsObj.sid = v.sid;
           params.push(paramsObj);
+          v.productSizes.forEach((v1, i1) => {
+            for (let key in v1) {
+              if (v1.hasOwnProperty(key)) {
+                if (key !== "buynum" && key !== "buyprice") {
+                  this.endGuigessItemArrItem.push({ sizes: v1[key] });
+                } else if (key == "buynum") {
+                  this.endGuigessItemArrItem.push({ num: v1[key] });
+                }
+              }
+            }
+            this.endGuigessItemArr.push(this.endGuigessItemArrItem);
+            this.endGuigessItemArrItem = [];
+          });
+          this.endGuigess.push(this.endGuigessItemArr);
+          this.endGuigessItemArr = [];
         }
       });
 
@@ -102,8 +120,8 @@ export default {
           path: "orderDet",
           query: {
             orderDetData: JSON.stringify(res.data),
-            newGuigess: JSON.stringify(this.newGuigess),
-            checkedGuige: JSON.stringify(this.checkedGuige),
+            shopCartGoods: JSON.stringify(this.shopCartGoods),
+            endGuigess: JSON.stringify(this.endGuigess),
             totalNum: this.num,
             totalNums: this.totalNums,
             buyway: this.buy_way,
@@ -147,14 +165,6 @@ export default {
       this.totalPrice = totP.toFixed(2);
       // this.getTotPrice()
     },
-    // getTotPrice: async function(params, callS) {
-    //   const res = await http.get(api.showPro, params);
-    //   if (res.data) {
-    //     this.loading = false;
-    //     callS && callS(res);
-    //   }
-    // },
-    //下面是处理接口数据的
     //打开页面默认获取数据
     getShopGoods() {
       this.loading = true;

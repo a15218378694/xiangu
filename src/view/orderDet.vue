@@ -30,7 +30,7 @@
       </div>
 
       <div class="goodsItemInfo">
-        <goods-item :orderDetailsArr="shoppingCatArr" :endGuigess="endGuigess" :totalNum="totalNum"></goods-item>
+        <goods-item :orderDetailsArr="shoppingCatArr" :totalNum="totalNum"></goods-item>
 
         <div class="infoPri">
           <div class="xiaojiBox">
@@ -131,7 +131,7 @@ export default {
       params.totalprice = this.prices;
       if (this.totalNums > 0) {
         params.total_num = this.totalNums;
-      } else {
+      } else if (this.totalNums <= 0) {
         params.total_num = this.totalNum;
       }
       params.freight = this.freight;
@@ -181,33 +181,39 @@ export default {
     this.prices = this.orderDetData.myorders.prices.toFixed(2); //商品加上运费的总价格
     this.orderDetails = this.orderDetData.myorders.orderDetails; // 订单商品信息集合
     this.orderDetailsArr = this.orderDetails.orderDetails; // 订单商品包括小计数组
-    this.shoppingCatArr = this.orderDetailsArr[0].shoppingCat; // 订单商品数组
+
+    // this.shoppingCatArr = this.orderDetailsArr[0].shoppingCat; // 订单商品数组
     this.freight = this.orderDetails.freight; //运费
     this.buyway = this.$route.query.buyway;
     this.teamId = this.orderDetails.teamId;
 
     //传递过来的规格
-    if (JSON.parse(this.$route.query.checkedGuige).length > 0) {
+    if (this.$route.query.checkedGuige&&JSON.parse(this.$route.query.checkedGuige).length > 0) {
       this.checkedGuige = JSON.parse(this.$route.query.checkedGuige);
+
+      if (this.$route.query.totalNums) {
       this.totalNums = this.$route.query.totalNums;
-    } else {
+      
+      }
+    } else if (this.$route.query.checkedGuige&&JSON.parse(this.$route.query.checkedGuige).length <= 0) {
       console.log(JSON.parse(this.$route.query.newGuigess));
       this.checkedGuige[0] = JSON.parse(this.$route.query.newGuigess)
       this.totalNum = this.$route.query.totalNum;
       console.log(this.totalNum);
-    
     }
+
     this.endGuigess = this.checkedGuige;
+    if (this.$route.query.endGuigess) {
+      this.endGuigess = JSON.parse(this.$route.query.endGuigess);
+    }
+    this.orderDetailsArr.forEach((v,i) => {
+      v.shoppingCat[0].endGuigess = this.endGuigess[i]
+      this.shoppingCatArr.push(v.shoppingCat[0])
+    });
     // 订单商品信息集合
     this.myOrders = this.orderDetData.myorders;
     //计算商品总价
     this.comTotleGoodsPri();
-    // //计算总数量
-    // if (this.checkedGuige.length > 0) {
-    //   this.checkedGuige.forEach((v, i) => {
-    //     this.totalNum += parseInt(v[v.length - 1].num);
-    //   });
-    // };
     this.getCurSel1();
   },
   components: {
