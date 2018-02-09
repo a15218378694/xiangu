@@ -7,7 +7,7 @@
           <h3 class="item_tit">{{item.title}}</h3>
           <div class="item_price">
             <span class="ground_price">拼团：
-              <span class="mod_ground_price">￥</span> 4.3
+              <span class="mod_ground_price">￥</span>{{item.original_price}}
             </span>
           </div>
         </div>

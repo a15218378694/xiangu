@@ -22,7 +22,6 @@ import { Loadmore } from 'mint-ui';
 
 import bridge from './config/bridge.js'
 Vue.prototype.$bridge = bridge
-
 Vue.component(Loadmore.name, Loadmore);
 Vue.use(infiniteScroll);
 Vue.use(Vuex);
@@ -63,9 +62,8 @@ new function () {
     false
   );
 }();
-
 router.beforeEach((to, from, next) => {
-  util.goLogin()
+
   next()
 })
 new Vue({

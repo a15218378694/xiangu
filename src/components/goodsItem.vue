@@ -37,10 +37,6 @@ export default {
       type: Array,
       default: []
     },
-    // endGuigess: {
-    //   type: Array,
-    //   default: () => []
-    // },
     totalNum: {
       default: 0
     }
@@ -48,10 +44,10 @@ export default {
   data: function() {
     return {};
   },
-  mounted() {
+  mounted() {},
+  methods: {
 
-  },
-  methods: {}
+  }
 };
 </script>
 

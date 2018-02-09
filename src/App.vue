@@ -21,9 +21,19 @@ export default {
   methods: {},
   watch: {
     $route(to, from) {
-      // this.$bridge.callhandler("ObjC Echo", params, data => {
-      //   // 处理返回数据
-      // });
+      if (this.$bridge.getSheBei() == "iPhone") {
+        let iosData = {
+          fromPath: from.path,
+          toPath: to.path
+        };
+        console.log(JSON.stringify(iosData));
+        let that = this;
+        this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+          bridge.callHandler("isHiddenBar", iosData, function(resp) {
+            Toast("回调成功");
+          });
+        });
+      }
     }
   }
 };

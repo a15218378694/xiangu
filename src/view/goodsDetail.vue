@@ -26,9 +26,9 @@
 
       <div class="item_price">
         <span class="ground_price">拼团：
-          <span class="mod_ground_price">￥</span>{{proDetails.offering_price}}</span>
+          <span class="mod_ground_price">￥</span>{{proDetails.original_price}}</span>
         <span class="old_price">原价：
-          <span class="mod_old_price">￥</span>{{proDetails.original_price}}</span>
+          <span class="mod_old_price">￥</span>{{proDetails.offering_price}}</span>
       </div>
 
       <div class="ground_play">
@@ -118,13 +118,13 @@
     </div>
 
     <div class="goods_con">
-      <div class="kefu">客服</div>
+      <!-- <div class="kefu">客服</div> -->
       <button class="ground_buy" @click="isShowEven('拼团',2)">
-        <p class="ground_pri">￥{{proDetails.offering_price}}</p>
+        <p class="ground_pri">￥{{proDetails.original_price}}</p>
         <p class="groundBtn">发起拼团</p>
       </button>
       <button class="alone_buy" @click="isShowEven('单价',1)">
-        <p class="alone_pri">￥{{proDetails.original_price}}</p>
+        <p class="alone_pri">￥{{proDetails.offering_price}}</p>
         <p class="aloneBtn">单价购买</p>
       </button>
     </div>
@@ -291,18 +291,7 @@ export default {
       this.isLoading1 = !this.isLoading1;
     },
     back() {
-      let that = this;
-      this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
-        Toast("触发成功");
-        console.log(JSON.stringify(bridge));
-        Toast(JSON.stringify(bridge));
-
-        bridge.callHandler("isHiddenBar",function(resp) {
-          Toast("回调成功");
-          that.$router.go(-1);
-        });
-      });
-      // this.$router.go(-1);
+      this.$router.go(-1);
     },
     fetchGoodsDet: async function() {
       await http.get(api.pageviews, { id: this.goodsId });
@@ -529,7 +518,8 @@ export default {
             totalNum: this.num,
             totalNums: this.totalNums,
             buyway: this.buy_way,
-            teamId: this.teamId
+            teamId: this.teamId,
+            curPage: 'goodsDetail'
             // orderId: res.data.myorders.orderid
           }
         });
@@ -1206,7 +1196,7 @@ export default {
 }
 .showGuige {
   width: 7.5rem;
-  height: 10.34rem;
+  height: 13.34rem;
   overflow: hidden;
 }
 </style>

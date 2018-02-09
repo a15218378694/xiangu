@@ -1,7 +1,7 @@
 export default {
   recommend: "/home/recommend",//商城首页显示接口
   productmodule: "/home/productmodule",//商城首页 商品分类列表的接口
-  module: "/product/home/module",//商城首页点击去到商品某类详情模块接口
+  module: "/home/module",//商城首页点击去到商品某类详情模块接口
   lookmore: "/home/groupbooking/lookmore",//首页点击查看更多
   prodetails: "/details",//商品详情页
   pro: "/buy/pro",//商品 购买(单价或拼图)

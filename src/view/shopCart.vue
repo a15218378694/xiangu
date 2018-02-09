@@ -93,9 +93,11 @@ export default {
       let paramsObj = {};
       this.shopCartGoods.forEach((v, i) => {
         if (v.isSelected) {
+          console.log(v.sid);
           paramsObj.pid = v.pid;
           paramsObj.sid = v.sid;
           params.push(paramsObj);
+          paramsObj = {}
           v.productSizes.forEach((v1, i1) => {
             for (let key in v1) {
               if (v1.hasOwnProperty(key)) {
@@ -115,6 +117,7 @@ export default {
       });
 
       const res = await http.post1(api.order, params);
+      console.log(this.endGuigess);
       if (res.data) {
         this.$router.push({
           path: "orderDet",
@@ -125,7 +128,8 @@ export default {
             totalNum: this.num,
             totalNums: this.totalNums,
             buyway: this.buy_way,
-            teamId: this.teamId
+            teamId: this.teamId,
+            
             // orderId: res.data.myorders.orderid
           }
         });

@@ -115,7 +115,8 @@ export default {
       buyway: 1,
       teamId: "",
       totalNums: 0,
-      endGuigess: []
+      endGuigess: [],
+      lastPage: ""
     };
   },
   methods: {
@@ -135,7 +136,11 @@ export default {
         params.total_num = this.totalNum;
       }
       params.freight = this.freight;
-      params.buyway = this.buyway;
+      params.buyway = 1;
+      if (this.buyway) {
+        params.buyway = this.buyway;
+      }
+      
       params.shoppingCat = this.shoppingCatArr;
       if (this.teamId) {
         params.teamId = this.teamId;
@@ -159,7 +164,6 @@ export default {
     },
     getCurSel1() {
       let that = this;
-      
       window.getCurSel = function(perName, perPhone, perAddr) {
         that.perName = perName;
         that.perPhone = perPhone;
@@ -171,6 +175,8 @@ export default {
     }
   },
   mounted() {
+    this.getCurSel1();
+    this.lastPage = this.$route.query.curPage;
     this.orderDetData = JSON.parse(this.$route.query.orderDetData); //传过来的混合数据
     this.perName = this.orderDetData.name;
     this.perPhone = this.orderDetData.phone;
@@ -188,33 +194,41 @@ export default {
     this.teamId = this.orderDetails.teamId;
 
     //传递过来的规格
-    if (this.$route.query.checkedGuige&&JSON.parse(this.$route.query.checkedGuige).length > 0) {
+    if (
+      this.$route.query.checkedGuige &&
+      JSON.parse(this.$route.query.checkedGuige).length > 0
+    ) {
       this.checkedGuige = JSON.parse(this.$route.query.checkedGuige);
 
       if (this.$route.query.totalNums) {
-      this.totalNums = this.$route.query.totalNums;
-      
+        this.totalNums = this.$route.query.totalNums;
       }
-    } else if (this.$route.query.checkedGuige&&JSON.parse(this.$route.query.checkedGuige).length <= 0) {
+    } else if (
+      this.$route.query.checkedGuige &&
+      JSON.parse(this.$route.query.checkedGuige).length <= 0
+    ) {
       console.log(JSON.parse(this.$route.query.newGuigess));
-      this.checkedGuige[0] = JSON.parse(this.$route.query.newGuigess)
+      this.checkedGuige[0] = JSON.parse(this.$route.query.newGuigess);
       this.totalNum = this.$route.query.totalNum;
       console.log(this.totalNum);
     }
+    if (this.lastPage == "goodsDetail") {
+      this.endGuigess = [this.checkedGuige];
+    }
 
-    this.endGuigess = this.checkedGuige;
+    //下面是购物车的情况
     if (this.$route.query.endGuigess) {
       this.endGuigess = JSON.parse(this.$route.query.endGuigess);
     }
-    this.orderDetailsArr.forEach((v,i) => {
-      v.shoppingCat[0].endGuigess = this.endGuigess[i]
-      this.shoppingCatArr.push(v.shoppingCat[0])
+    this.orderDetailsArr.forEach((v, i) => {
+      //v.shoppingCat[0]拿到商品对象数据
+      v.shoppingCat[0].endGuigess = this.endGuigess[i];
+      this.shoppingCatArr.push(v.shoppingCat[0]);
     });
     // 订单商品信息集合
     this.myOrders = this.orderDetData.myorders;
     //计算商品总价
     this.comTotleGoodsPri();
-    this.getCurSel1();
   },
   components: {
     goodsItem,

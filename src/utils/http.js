@@ -1,5 +1,5 @@
 'use strict'
-var root = process.env.API_ROOT
+// var root = process.env.API_ROOT
 import axios from 'axios'
 import qs from 'qs'
 import { Indicator } from 'mint-ui';
@@ -56,7 +56,7 @@ export default {
     return axios({
       method: 'post',
       // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80      
-      baseURL: root,
+      baseURL: '',
       url,
       credentials: 'include',
       
@@ -81,7 +81,7 @@ export default {
     return axios({
       method: 'post',
       // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80      
-      baseURL: root,
+      baseURL: '',
       url,
       credentials: 'include',
       data,
@@ -104,7 +104,7 @@ export default {
     return axios({
       method: 'get',
       // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80
-      baseURL: root,
+      baseURL: '',
       url,
       params, // get 请求时带的参数
       timeout: 10000,
