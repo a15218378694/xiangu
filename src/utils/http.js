@@ -45,7 +45,21 @@ function checkCode(res) {
   //   alert(res.data.error_msg)
   // }
   if (res.data.code == -1) {
-    vuePay.showLoginFromJs("-1")
+    if (winBri.getSheBei() == "Android") {
+      vuePay.showLoginFromJs("-1")
+    }
+    console.log(winBri.getSheBei());
+    if (winBri.getSheBei() == "iPhone") {
+      let iosData = {
+        isLog: "-1"
+      };
+      winBri.setupWebViewJavascriptBridge(function (bridge) {
+        bridge.callHandler("isLogOrder", iosData, function (resp) {
+          Toast('huidiao成功')
+        });
+      });
+    }
+
   } else {
     return res
   }
@@ -59,7 +73,7 @@ export default {
       baseURL: '',
       url,
       credentials: 'include',
-      
+
       data: qs.stringify(data),
       timeout: 100000,
       headers: {

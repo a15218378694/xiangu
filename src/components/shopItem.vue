@@ -9,6 +9,9 @@
             <span class="ground_price">拼团：
               <span class="mod_ground_price">￥</span>{{item.original_price}}
             </span>
+            <span class="old_price">原价：
+              <span class="mod_old_price">￥</span>{{item.offering_price}}
+            </span>
           </div>
         </div>
       </router-link>

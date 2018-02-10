@@ -25,4 +25,5 @@ export default {
   collectproductDet: '/delete/collectproduct',//删除或者取消收藏
   submitorder: '/pro/submitorder',//立即支付
   getProPrice: '/pro/getProPrice',//根据商品规格 获得相应的价格
+  invitefriends: '/groupbooking/invitefriends',//邀请好友开团
 };

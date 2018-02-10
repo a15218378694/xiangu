@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="orderDets">
-      <nav-header>
+      <nav-header :curCom="curCom">
         <span class="orderDetTit" slot="header">拼团详情</span>
       </nav-header>
       <div class="perInfo">
@@ -83,8 +83,6 @@ import Vue from "vue";
 import http from "../utils/http";
 import api from "../utils/api";
 import goodsItem from "../components/goodsItem.vue";
-import { MessageBox } from "mint-ui";
-
 import NavHeader from "../components/navHeader.vue";
 
 export default {
@@ -102,7 +100,6 @@ export default {
       totalGoodsPri: 0,
       totalNum: 0,
       checkedGuige: [],
-      orderIdObj: {},
       orderDetData: {},
       orderId: "",
       status: 1,
@@ -116,7 +113,8 @@ export default {
       teamId: "",
       totalNums: 0,
       endGuigess: [],
-      lastPage: ""
+      lastPage: "",
+      curCom: "orderDet"
     };
   },
   methods: {
@@ -140,20 +138,27 @@ export default {
       if (this.buyway) {
         params.buyway = this.buyway;
       }
-      
+
       params.shoppingCat = this.shoppingCatArr;
       if (this.teamId) {
         params.teamId = this.teamId;
       }
       let res = await http.post1(api.submitorder, params);
       if (res.data) {
-        that.orderIdObj = res.data;
-        // that.orderIdObj
-        vuePay.showInfoFromJs(
-          res.data.orderId,
-          res.data.teamId,
-          res.data.totalPrice
-        );
+        let urlParams = `?orderId=${res.data.orderId}`;
+        if (res.data.teamId) {
+          urlParams = `?orderId=${res.data.orderId}&teamId=${res.data.teamId}`;
+        }
+        let groundDetUrl = `http://merchant.xljkj.cn/#/groundDet${urlParams}`;
+        console.log(groundDetUrl);
+        if (winBri.getSheBei() == "Android") {
+          vuePay.showInfoFromJs(
+            res.data.orderId,
+            res.data.teamId,
+            res.data.totalPrice,
+            groundDetUrl
+          );
+        }
       }
     },
     getOrderId() {
@@ -171,7 +176,9 @@ export default {
       };
     },
     editAddr() {
-      vuePay.showAddressFromJs();
+      if (winBri.getSheBei() == "Android") {
+        vuePay.showAddressFromJs();
+      }
     }
   },
   mounted() {

@@ -22,6 +22,7 @@ import { Loadmore } from 'mint-ui';
 
 import bridge from './config/bridge.js'
 Vue.prototype.$bridge = bridge
+window.winBri = bridge
 Vue.component(Loadmore.name, Loadmore);
 Vue.use(infiniteScroll);
 Vue.use(Vuex);
@@ -63,7 +64,9 @@ new function () {
   );
 }();
 router.beforeEach((to, from, next) => {
-
+  if (winBri.getSheBei() !== "iPhone" &&  winBri.getSheBei() !== "Android") {
+    util.goLogin()
+  }
   next()
 })
 new Vue({

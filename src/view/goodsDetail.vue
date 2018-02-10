@@ -519,7 +519,7 @@ export default {
             totalNums: this.totalNums,
             buyway: this.buy_way,
             teamId: this.teamId,
-            curPage: 'goodsDetail'
+            curPage: "goodsDetail"
             // orderId: res.data.myorders.orderid
           }
         });
@@ -1195,6 +1195,8 @@ export default {
   }
 }
 .showGuige {
+  touch-action: none;
+  
   width: 7.5rem;
   height: 13.34rem;
   overflow: hidden;

@@ -21,17 +21,18 @@ export default {
   methods: {},
   watch: {
     $route(to, from) {
-      if (this.$bridge.getSheBei() == "iPhone") {
+    if (this.$bridge.getSheBei() == "iPhone") {
         let iosData = {
-          fromPath: from.path,
-          toPath: to.path
+          isHidden: "0"
         };
-        console.log(JSON.stringify(iosData));
+        if (to.path == '/' || to.path == '/mall') {
+          iosData.isHidden = "1"
+        }
         let that = this;
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
           bridge.callHandler("isHiddenBar", iosData, function(resp) {
-            Toast("回调成功");
           });
+          
         });
       }
     }

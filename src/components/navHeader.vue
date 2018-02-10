@@ -1,11 +1,11 @@
 <template>
-    <div>
-        <header class="orderPageHeader bgcWhite" tag="header">
-            <img class="back" v-if="isShow" @click="back" src="../assets/img/订单详情_slices/Arrow@3x.png" alt="">
-            <slot name="header"></slot>
-        </header>
-        <div class="headerZW"></div>
-    </div>
+  <div>
+    <header class="orderPageHeader bgcWhite" tag="header">
+      <img class="back" v-if="isShow" @click="back" src="../assets/img/订单详情_slices/Arrow@3x.png" alt="">
+      <slot name="header"></slot>
+    </header>
+    <div class="headerZW"></div>
+  </div>
 
 </template>
 
@@ -16,12 +16,23 @@ export default {
       isShow: true
     };
   },
+  props: {
+    curCom: {
+      type: String,
+      default: ''
+    }
+  },
   mounted() {
     this.detCurRouter();
   },
   methods: {
     back() {
+      if (this.curCom === 'orderDet') {
+        
+      } else {
       this.$router.go(-1);
+        
+      }
     },
     detCurRouter() {
       console.log();

@@ -7,37 +7,40 @@
 
       <ground-step>
         <img class="step" slot="step1" src="../assets/img/拼团详情-未参团_slices/Group 4@3x.png" alt="">
-        <img v-if="groundStatus === 1" class="step" slot="step2" src="../assets/img/拼团详情-未参团_slices/Group 41@3x.png" alt="">
+        <img class="step" v-if="this.teamStatus != 2" slot="step2" src="../assets/img/拼团详情-未参团_slices/Group4@2x.png" alt="">
+        <img class="step" v-if="this.teamStatus == 2" slot="step2" src="../assets/img/拼团详情-未参团_slices/GroupA 41@2x.png" alt="">
+        <img class="step" v-if="this.teamStatus != 3" slot="step3" src="../assets/img/拼团详情-未参团_slices/Group 42@3x.png" alt="">
+        <img class="step" v-if="this.teamStatus == 3" slot="step3" src="../assets/img/拼团详情-未参团_slices/Group 4@2x.png" alt="">
       </ground-step>
 
       <div class="fanliBox bgcWhite">
         <div class="left">
-          <img :src="image" alt="">
+          <img :src="groundDetInfo.image" alt="">
         </div>
         <div class="right">
-          <div class="tit">{{title}}</div>
+          <div class="tit">{{groundDetInfo.title}}</div>
           <div class="item_price">
             <span class="ground_price">拼团：
               <span class="mod_ground_price">￥</span>
-              <span class="gro_num">{{price}}</span>
+              <span class="gro_num">{{groundDetInfo.price}}</span>
             </span>
           </div>
           <table cellspacing="0">
             <tr>
               <th></th>
-              <th v-for="item in rebate" :key="item.id">
+              <th v-for="item in groundDetInfo.rebate" :key="item.id">
                 {{ item.name }}
               </th>
             </tr>
             <tr>
               <td>数量</td>
-              <td v-for="item in rebate" :key="item.id">
+              <td v-for="item in groundDetInfo.rebate" :key="item.id">
                 {{ item.num }}
               </td>
             </tr>
             <tr>
               <td>返利</td>
-              <td v-for="item in rebate" :key="item.id">
+              <td v-for="item in groundDetInfo.rebate" :key="item.id">
                 {{ item.price }}
               </td>
             </tr>
@@ -52,7 +55,7 @@
       <div class="killBox bgcWhite">
         <div class="one">
           <img src="" alt=""> 已开团，离拼成还剩
-          <span>{{balancenum}}</span> 条
+          <span>{{groundDetInfo.balancenum}}</span> 条
         </div>
         <div class="two">
           剩
@@ -71,43 +74,15 @@
           <div class="left">
             <div class="leftImg"></div>
           </div>
-          <div class="center">参团人数：{{join_num}}人</div>
+          <div class="center">参团人数：{{groundDetInfo.join_num}}人</div>
           <div class="right">
             剩余库存：
-            <span>{{balancenum}}</span>条
+            <span>{{groundDetInfo.balancenum}}</span>条
           </div>
         </div>
 
-        <div v-for="item in grouppbooking_people" :key="item.id">
+        <div v-for="item in groundDetInfo.grouppbooking_people" :key="item.id">
           <div class="bot">
-            <div class="leftt">
-              <img :src="item.logo" alt="">
-            </div>
-            <div class="centerr">
-              <div class="topp">
-                <span class="com">{{item.name}}</span>
-                <span class="num">{{item.position}}</span>
-              </div>
-              <div class="bott">
-                {{item.starttime}} 开团
-              </div>
-            </div>
-          </div>
-                    <div class="bot">
-            <div class="leftt">
-              <img :src="item.logo" alt="">
-            </div>
-            <div class="centerr">
-              <div class="topp">
-                <span class="com">{{item.name}}</span>
-                <span class="num">{{item.position}}</span>
-              </div>
-              <div class="bott">
-                {{item.starttime}} 开团
-              </div>
-            </div>
-          </div>
-                    <div class="bot">
             <div class="leftt">
               <img :src="item.logo" alt="">
             </div>
@@ -125,8 +100,8 @@
       </div>
 
       <div class="sure">
-        <button class="addCart">立即参与</button>
-        <button class="goOrder">立即分享</button>
+        <button class="addCart" @click="goGoodsDet">立即参与</button>
+        <button class="goOrder" @click="goShare">立即分享</button>
       </div>
 
     </div>
@@ -140,87 +115,102 @@ import GroundStep from "../components/groundStep.vue";
 import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
+import { MessageBox } from "mint-ui";
+
 export default {
   name: "name",
   data: function() {
     return {
       clock: [],
-      groundStatus: 1,
+      teamStatus: -1,
       timer: "",
-      msg: "sucess",
-      image:
-        "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516937789180.jpeg?Expires=1832297779&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=C5IWB4LbxizV9P6o3DWsKEBhzPw%3D",
-      code: 0,
-      timeId: "164311",
-      balancenum: "12",
-      rebate: [
-        {
-          id: null,
-          oid: null,
-          name: "团长",
-          num: 10000,
-          price: 5000
-        },
-        {
-          id: null,
-          oid: null,
-          name: "营长",
-          num: 7000,
-          price: 3500
-        },
-        {
-          id: null,
-          oid: null,
-          name: "排长",
-          num: 5000,
-          price: 2500
-        }
-      ],
-      join_num: 1,
-      pid: 3,
-      title: "LED灯箱",
-      limit_time: 259200000,
-      limit_createtime: 86400000,
-      grouppbooking_people: [
-        {
-          id: null,
-          teamId: null,
-          logo:
-            "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516712381297.jpg?Expires=1832072380&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=o9RN2o1uGdidkwj7XTJlrZDAtgQ%3D",
-          name: "安度因",
-          position: "团长",
-          open_person: null,
-          starttime: 1517053500000,
-          buynum: null,
-          orderId: null
-        }
-      ],
-      openteamTimeNum: 1517053500000,
-      openteamTime: 1517053500000,
-      price: 4.5,
-      name: "安度因",
-      nowtime: 1517053500000,
-      logo:
-        "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516712381297.jpg?Expires=1832072380&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=o9RN2o1uGdidkwj7XTJlrZDAtgQ%3D",
-      position: "团长",
-      limit_num: 30000
+      orderId: "",
+      teamId: "",
+      goodsId: "",
+
+      groundDetInfo: {
+        msg: "sucess",
+        image:
+          "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516937789180.jpeg?Expires=1832297779&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=C5IWB4LbxizV9P6o3DWsKEBhzPw%3D",
+        code: 0,
+        timeId: "164311",
+        balancenum: "12",
+        rebate: [
+          {
+            id: null,
+            oid: null,
+            name: "团长",
+            num: 10000,
+            price: 5000
+          },
+          {
+            id: null,
+            oid: null,
+            name: "营长",
+            num: 7000,
+            price: 3500
+          },
+          {
+            id: null,
+            oid: null,
+            name: "排长",
+            num: 5000,
+            price: 2500
+          }
+        ],
+        join_num: 1,
+        pid: 3,
+        title: "LED灯箱",
+        limit_time: 259200000,
+        limit_createtime: 86400000,
+        grouppbooking_people: [
+          {
+            id: null,
+            teamId: null,
+            logo:
+              "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516712381297.jpg?Expires=1832072380&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=o9RN2o1uGdidkwj7XTJlrZDAtgQ%3D",
+            name: "安度因",
+            position: "团长",
+            open_person: null,
+            starttime: 1517053500000,
+            buynum: null,
+            orderId: null
+          }
+        ],
+        openteamTimeNum: 1517053500000,
+        openteamTime: 1517053500000,
+        price: 4.5,
+        name: "安度因",
+        nowtime: 1517053500000,
+        logo:
+          "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516712381297.jpg?Expires=1832072380&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=o9RN2o1uGdidkwj7XTJlrZDAtgQ%3D",
+        position: "团长",
+        limit_num: 30000
+      }
     };
   },
   mounted() {
-    // this.countdown(this.limit_time);
-    this.countdown(1517198744.64);
-    this.changeStatus();
-    // this.getGroudDet();
+    this.orderId = this.$route.query.orderId;
+    if (this.$route.query.teamId) {
+      this.teamId = this.$route.query.teamId;
+    }
+    // this.countdown(15117198744.64);
+    this.getGroudDet();
   },
   methods: {
-    changeStatus() {
-      this.groundStatus = this.$route.query.groundStatus;
-    },
     getGroudDet: async function() {
-      let params = {};
+      let params = {
+        orderId: this.orderId
+      };
+      if (this.teamId) {
+        params.teamId = this.teamId;
+      }
       const res = await http.get(api.finishpay, params);
       if (res.data) {
-        this.goodsTypes = res.data.productModel;
+        this.teamStatus = res.data.teamStatus;
+        this.goodsId = res.data.pid;
+        this.groundDetInfo = res.data.productModel;
+        this.countdown(this.groundDetInfo.limit_time);
       }
     },
     countdown: function(expire_time) {
@@ -228,6 +218,31 @@ export default {
       if (this.timer) clearTimeout(this.timer);
       var times = (expire_time - new Date().getTime() / 1000) * 1000;
       util.countdown(this, times);
+    },
+    goGoodsDet() {
+      if (this.goodsId) {
+        this.$router.push({
+          path: "goodsDetail",
+          query: {
+            goodsId: this.goodsId
+          }
+        });
+      } else {
+        MessageBox("提示", "点太快啦");
+      }
+    },
+    goShare() {
+      this.orderId = 1;
+      this.teamId = 2;
+      let urlParams = `?orderId=${this.orderId}`;
+      if (this.teamId) {
+        urlParams = `?orderId=${this.orderId}&teamId=${this.teamId}`;
+      }
+      let totUrl = `http://merchant.xljkj.cn/#/yaoqing${urlParams}`;
+      console.log(totUrl);
+      if (winBri.getSheBei() == "Android") {
+        vuePay.showShareFromJs(totUrl);
+      }
     }
   },
   components: {
@@ -265,6 +280,7 @@ export default {
       table {
         width: 4.78rem;
         border: 0.01rem solid #dadada;
+        text-align: center;
         th {
           text-align: center;
           background-color: #42bd56;

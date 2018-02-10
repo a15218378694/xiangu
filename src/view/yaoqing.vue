@@ -2,7 +2,7 @@
   <div class="yaoqingPage">
     <div class="bigBox">
       <div class="yiqi">
-        <img src="../assets/img/yaoqing/邀请好友开团_slices/邀请拼团_icn@2x.png" alt="">
+        <img src="../assets/img/yaoqing/邀请好友开团_slices/yiqi.png" alt="">
       </div>
       <div class="faqi">
         <p class="one">
@@ -10,7 +10,7 @@
           <span>返现 ¥5,000</span>
         </p>
         <p class="two">离拼成还差
-          <span>1</span> 人</p>
+          <span>{{yaoQingObj.balancenum}}</span> 人</p>
         <p class="three">
           <router-link to="playDet">查看玩法详情</router-link>
         </p>
@@ -26,40 +26,42 @@
         </div>
         <div class="infoDet">
           <div class="left">
-            <img src="../assets/img/订单详情_slices/3934756966_1131286789.400x400@3x.png" alt="">
+            <img :src="yaoQingObj.image" alt="">
           </div>
           <div class="right">
-            <div class="one">LED灯箱灯条 拉布卡布软布软布软布软膜</div>
+            <div class="one">{{yaoQingObj.title}}</div>
             <div class="three">
               <div class="pri">
                 <span class="priType">原价：</span>
                 <span>￥</span>
-                <span>4.5</span>
+                <span>{{yaoQingObj.price}}</span>
               </div>
             </div>
-              <router-link class="goDet" tag="button" to="goodsDetail">查看商品详情</router-link>
+            <router-link class="goDet" tag="button" :to="`goodsDetail?goodsId=${goodsId}`">查看商品详情</router-link>
           </div>
         </div>
+
         <table border="1" cellspacing="0">
-          <tr>
-            <th class="oneth"></th>
-            <th>团长</th>
-            <th>营长</th>
-            <th>排长</th>
+          <tr class="oneth">
+            <th></th>
+            <th v-for="item in yaoQingObj.rebate" :key="item.id">
+              {{ item.name }}
+            </th>
           </tr>
-          <tr>
-            <td class="onetd">数量</td>
-            <td>123</td>
-            <td>123</td>
-            <td>123</td>
+          <tr class="onetd">
+            <td>数量</td>
+            <td v-for="item in yaoQingObj.rebate" :key="item.id">
+              {{ item.num }}
+            </td>
           </tr>
-          <tr>
-            <td class="onetd">返利</td>
-            <td>123</td>
-            <td>123</td>
-            <td>123</td>
+          <tr class="onetd">
+            <td>返利</td>
+            <td v-for="item in yaoQingObj.rebate" :key="item.id">
+              {{ item.price }}
+            </td>
           </tr>
         </table>
+
       </div>
 
       <div class="groundPer">
@@ -71,65 +73,24 @@
           </div>
         </div>
 
-        <div class="bot">
-          <div class="leftt">
-            <img src="../assets/img/mall/商品详情_slices/象涂-商家版@2x.png" alt="">
-          </div>
-          <div class="centerr">
-            <div class="topp">
-              <span class="com">欧格星科技</span>
-              <span class="num">团长</span>
-            </div>
-            <div class="bott">
-              动态时间 开团
-            </div>
-          </div>
 
-        </div>
-                <div class="bot">
-          <div class="leftt">
-            <img src="../assets/img/mall/商品详情_slices/象涂-商家版@2x.png" alt="">
-          </div>
-          <div class="centerr">
-            <div class="topp">
-              <span class="com">欧格星科技</span>
-              <span class="num">团长</span>
-            </div>
-            <div class="bott">
-              动态时间 开团
-            </div>
-          </div>
 
-        </div>
-                <div class="bot">
-          <div class="leftt">
-            <img src="../assets/img/mall/商品详情_slices/象涂-商家版@2x.png" alt="">
-          </div>
-          <div class="centerr">
-            <div class="topp">
-              <span class="com">欧格星科技</span>
-              <span class="num">团长</span>
+        <div v-for="item in grouppbooking_people" :key="item.id">
+          <div class="bot">
+            <div class="leftt">
+              <img :src="item.logo" alt="">
             </div>
-            <div class="bott">
-              动态时间 开团
+            <div class="centerr">
+              <div class="topp">
+                <span class="com">{{item.name}}</span>
+                <span class="num">{{item.position}}</span>
+              </div>
+              <div class="bott">
+                {{item.starttime}} 开团
+              </div>
             </div>
-          </div>
 
-        </div>
-                <div class="bot">
-          <div class="leftt">
-            <img src="../assets/img/mall/商品详情_slices/象涂-商家版@2x.png" alt="">
           </div>
-          <div class="centerr">
-            <div class="topp">
-              <span class="com">欧格星科技</span>
-              <span class="num">团长</span>
-            </div>
-            <div class="bott">
-              动态时间 开团
-            </div>
-          </div>
-
         </div>
 
       </div>
@@ -147,20 +108,164 @@
 
 <script>
 // import goodsItem from "../components/goodsItem.vue";
-
+import http from "../utils/http";
+import api from "../utils/api";
+import util from "../utils/util";
 export default {
   name: "name",
   data: function() {
-    return {};
+    return {
+      yaoQingObj: {
+        grouppbooking_people: [
+          //所有的团员信息
+          {
+            id: null,
+            teamId: null,
+            logo:
+              "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
+            name: "小明",
+            position: "团长", //职位
+            open_person: null,
+            starttime: 1515555837000,
+            buynum: null,
+            orderId: null
+          },
+          {
+            id: null,
+            teamId: null,
+            logo:
+              "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
+            name: "小黄",
+            position: "营长",
+            open_person: null,
+            starttime: 1516176979000,
+            buynum: null,
+            orderId: null
+          },
+          {
+            id: null,
+            teamId: null,
+            logo:
+              "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
+            name: "小花",
+            position: "排长",
+            open_person: null,
+            starttime: 1516177332000,
+            buynum: null,
+            orderId: null
+          }
+        ],
+        msg: "success",
+        image:
+          "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516937789180.jpeg?Expires=1832297779&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=C5IWB4LbxizV9P6o3DWsKEBhzPw%3D",
+        code: 0,
+        balancenum: 9000, // 离拼成剩余数量
+        price: 4.5,
+        rebate: [
+          //返利规则
+          {
+            id: null,
+            oid: null,
+            name: "团长",
+            num: 10000,
+            price: 5000
+          },
+          {
+            id: null,
+            oid: null,
+            name: "营长",
+            num: 7000,
+            price: 3500
+          },
+          {
+            id: null,
+            oid: null,
+            name: "排长",
+            num: 5000,
+            price: 2500
+          }
+        ],
+        closeTime: 1516177362000, //拼团结束时间
+        pid: 3, //商品id
+        title: "LED灯箱",
+        buyway: "购买方式",
+        limit_num: 30000, //拼团的限购数量
+        limit_time: 259200000 //拼团时限
+      },
+
+      grouppbooking_people: [
+        //所有的团员信息
+        {
+          id: null,
+          teamId: null,
+          logo:
+            "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
+          name: "小明",
+          position: "团长", //职位
+          open_person: null,
+          starttime: 1515555837000,
+          buynum: null,
+          orderId: null
+        },
+        {
+          id: null,
+          teamId: null,
+          logo:
+            "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
+          name: "小黄",
+          position: "营长",
+          open_person: null,
+          starttime: 1516176979000,
+          buynum: null,
+          orderId: null
+        },
+        {
+          id: null,
+          teamId: null,
+          logo:
+            "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
+          name: "小花",
+          position: "排长",
+          open_person: null,
+          starttime: 1516177332000,
+          buynum: null,
+          orderId: null
+        }
+      ],
+      orderId: "",
+      teamId: "",
+      goodsId: ""
+    };
   },
-  methods: {},
+  methods: {
+    fetchyaoQingDet: async function() {
+      let params = {
+        orderId: this.orderId,
+        teamId: this.teamId
+      };
+      const res = await http.get(api.invitefriends, params);
+      if (res.data) {
+        this.yaoQingObj = res.data;
+        this.grouppbooking_people = yaoQingObj.grouppbooking_people;
+        this.goodsId = this.yaoQingObj.pid;
+      }
+    }
+  },
+  mounted() {
+    this.orderId = this.$route.query.orderId;
+    if (this.$route.query.teamId) {
+      this.teamId = this.$route.query.teamId;
+    }
+    this.fetchyaoQingDet()
+  },
   components: {}
 };
 </script>
 
 <style scoped lang="less">
 .yaoqingPage {
-  background: url("../assets/img/yaoqing/邀请好友开团_slices/背景图-顶部@2x.png") no-repeat;
+  background: url("../assets/img/yaoqing/邀请好友开团_slices/beijingdibu.png")
+    no-repeat;
   width: 7.5rem;
   min-height: 13.34rem;
   background-size: contain;
@@ -176,7 +281,7 @@ export default {
   }
   .faqi {
     text-align: center;
-    background: url("../assets/img/yaoqing/邀请好友开团_slices/发起拼团-背景@2x.png")
+    background: url("../assets/img/yaoqing/邀请好友开团_slices/faqibeijing.png")
       no-repeat;
     background-size: contain;
     width: 6.61rem;
@@ -199,7 +304,6 @@ export default {
       }
     }
     .two {
-      width: 2.39rem;
       height: 0.45rem;
       font-size: 0.32rem;
       font-family: PingFangSC-Regular;
@@ -322,6 +426,7 @@ export default {
       background: rgba(255, 255, 255, 0.5);
       border: 0.01rem solid #fff;
       margin-top: 0.2rem;
+      text-align: center;
       th {
         text-align: center;
         width: 6.05rem;
@@ -439,7 +544,7 @@ export default {
     width: 100%;
   }
 
-    .sure {
+  .sure {
     height: 1.02rem;
     line-height: 1.02rem;
     display: flex;
@@ -450,8 +555,8 @@ export default {
     left: 0;
     .addCart {
       flex: 1;
-      background:rgba(66,189,86,1);
-      color: #FFFFFF;
+      background: rgba(66, 189, 86, 1);
+      color: #ffffff;
     }
   }
 }
