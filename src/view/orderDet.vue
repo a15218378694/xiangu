@@ -150,7 +150,6 @@ export default {
           urlParams = `?orderId=${res.data.orderId}&teamId=${res.data.teamId}`;
         }
         let groundDetUrl = `http://merchant.xljkj.cn/#/groundDet${urlParams}`;
-        console.log(groundDetUrl);
         if (winBri.getSheBei() == "Android") {
           vuePay.showInfoFromJs(
             res.data.orderId,
@@ -158,6 +157,18 @@ export default {
             res.data.totalPrice,
             groundDetUrl
           );
+        } else if (winBri.getSheBei() == "iPhone") {
+          let iosData = {
+            orderId: res.data.orderId,
+            teamId: res.data.teamId,
+            money: res.data.totalPrice,
+            groundDetUrl
+          }
+          console.log(iosData);
+        this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+          bridge.callHandler("didPay", iosData, function(resp) {
+          });
+        });
         }
       }
     },
@@ -178,6 +189,10 @@ export default {
     editAddr() {
       if (winBri.getSheBei() == "Android") {
         vuePay.showAddressFromJs();
+      } else if (winBri.getSheBei() == "iPhone") {
+        this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+          bridge.callHandler("didShippingAddress", "123", function(resp) {});
+        });
       }
     }
   },

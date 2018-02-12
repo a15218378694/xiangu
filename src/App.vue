@@ -28,11 +28,9 @@ export default {
         if (to.path == '/' || to.path == '/mall') {
           iosData.isHidden = "1"
         }
-        let that = this;
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
           bridge.callHandler("isHiddenBar", iosData, function(resp) {
           });
-          
         });
       }
     }

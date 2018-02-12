@@ -27,12 +27,7 @@ export default {
   },
   methods: {
     back() {
-      if (this.curCom === 'orderDet') {
-        
-      } else {
       this.$router.go(-1);
-        
-      }
     },
     detCurRouter() {
       console.log();
