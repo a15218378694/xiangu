@@ -8,7 +8,6 @@ import "@/assets/icon/iconfont.css";
 
 import Vue from "vue";
 import App from './App'
-// import VueRouter from 'vue-router'
 import Vuex from "vuex";
 import VueLazyload from "vue-lazyload";
 import infiniteScroll from "vue-infinite-scroll";
