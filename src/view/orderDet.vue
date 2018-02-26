@@ -158,7 +158,6 @@ export default {
           this.urlParams
         }`;        
         this.orderId = res.data.orderId;
-        console.log(winBri.getSheBei()); 
         this.sendOrderID();
       }
     },
