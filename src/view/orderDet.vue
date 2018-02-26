@@ -114,7 +114,8 @@ export default {
       totalNums: 0,
       endGuigess: [],
       lastPage: "",
-      curCom: "orderDet"
+      curCom: "orderDet",
+      btn_done: false
     };
   },
   methods: {
@@ -145,36 +146,58 @@ export default {
       }
       let res = await http.post1(api.submitorder, params);
       if (res.data) {
-        let urlParams = `?orderId=${res.data.orderId}`;
+        this.teamId = res.data.teamId;
+        this.totalPrice = res.data.totalPrice;
+        this.urlParams = `?orderId=${res.data.orderId}&isMas=0`;
         if (res.data.teamId) {
-          urlParams = `?orderId=${res.data.orderId}&teamId=${res.data.teamId}`;
+          this.urlParams = `?orderId=${res.data.orderId}&teamId=${
+            res.data.teamId
+          }&isMas=0`;
         }
-        let groundDetUrl = `http://merchant.xljkj.cn/#/groundDet${urlParams}`;
-        if (winBri.getSheBei() == "Android") {
-          vuePay.showInfoFromJs(
-            res.data.orderId,
-            res.data.teamId,
-            res.data.totalPrice,
-            groundDetUrl
-          );
-        } else if (winBri.getSheBei() == "iPhone") {
-          let iosData = {
-            orderId: res.data.orderId,
-            teamId: res.data.teamId,
-            money: res.data.totalPrice,
-            groundDetUrl
-          }
-          console.log(iosData);
-        this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
-          bridge.callHandler("didPay", iosData, function(resp) {
-          });
-        });
-        }
+        this.groundDetUrl = `http://merchant.xljkj.cn/#/groundDet${
+          this.urlParams
+        }`;        
+        this.orderId = res.data.orderId;
+        console.log(winBri.getSheBei()); 
+        this.sendOrderID();
       }
     },
     getOrderId() {
+      // if (this.btn_done) {
+      //   return;
+      // }
+      // this.btn_done = true;
+      if (this.orderId) {
+        return this.sendOrderID();
+      }
       this.fetchGoodsDet();
     },
+    sendOrderID() {
+      if (winBri.getSheBei() == "Android") {
+        vuePay.showInfoFromJs(
+          this.orderId,
+          this.teamId,
+          this.totalPrice,
+          this.groundDetUrl
+        );
+      } else if (winBri.getSheBei() == "iPhone") {
+        let iosData = {
+          orderId: this.orderId,
+          teamId: this.teamId,
+          money: this.totalPrice,
+          groundDetUrl: this.groundDetUrl
+        };
+        console.log(iosData);
+        this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+          bridge.callHandler("didPay", iosData, function(resp) {});
+        });
+      }
+    },
+    // changeBtn() {
+    //   window.changeBtnDone = function() {
+    //     this.btn_done = false;
+    //   };
+    // },
     comTotleGoodsPri() {
       this.totalGoodsPri = this.prices - this.freight;
     },
@@ -198,6 +221,7 @@ export default {
   },
   mounted() {
     this.getCurSel1();
+    // this.changeBtn();
     this.lastPage = this.$route.query.curPage;
     this.orderDetData = JSON.parse(this.$route.query.orderDetData); //传过来的混合数据
     this.perName = this.orderDetData.name;

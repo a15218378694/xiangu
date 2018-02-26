@@ -75,7 +75,7 @@
             <div class="leftImg"></div>
           </div>
           <div class="center">参团人数：{{groundDetInfo.join_num}}人</div>
-          <div class="right">
+          <div class="right" v-if="groundDetInfo.grouppbooking_people.length > 3">
             剩余库存：
             <span>{{groundDetInfo.balancenum}}</span>条
           </div>
@@ -100,8 +100,8 @@
       </div>
 
       <div class="sure">
-        <button class="addCart" @click="goGoodsDet">立即参与</button>
-        <button class="goOrder" @click="goShare">立即分享</button>
+        <button class="addCart" @click="goGoodsDet" v-if="isMas == 1">立即参与</button>
+        <button class="goOrder" ref="share" @click="goShare">立即分享</button>
       </div>
 
     </div>
@@ -127,7 +127,7 @@ export default {
       orderId: "",
       teamId: "",
       goodsId: "",
-
+      isMas: 1,
       groundDetInfo: {
         msg: "sucess",
         image:
@@ -191,6 +191,12 @@ export default {
   },
   mounted() {
     this.orderId = this.$route.query.orderId;
+    if (this.$route.query.isMas) {
+      this.isMas = this.$route.query.isMas;
+    }
+    if (this.isMas == 0) {
+      this.$refs.share.style['width'] = `100%`;
+    }
     if (this.$route.query.teamId) {
       this.teamId = this.$route.query.teamId;
     }
@@ -198,7 +204,7 @@ export default {
     this.getGroudDet();
   },
   methods: {
-    getGroudDet: async function() {
+    getGroudDet: async function() {      
       let params = {
         orderId: this.orderId
       };
@@ -209,8 +215,12 @@ export default {
       if (res.data) {
         this.teamStatus = res.data.teamStatus;
         this.goodsId = res.data.pid;
-        this.groundDetInfo = res.data.productModel;
-        this.countdown(this.groundDetInfo.limit_time);
+        this.groundDetInfo = res.data;
+        if (this.isMas == 0) {
+        this.countdown(this.groundDetInfo.OpenCloseTimeNum);
+        } else {
+        this.countdown(this.groundDetInfo.gBookingCloseTime);
+        }
       }
     },
     countdown: function(expire_time) {
@@ -232,8 +242,6 @@ export default {
       }
     },
     goShare() {
-      this.orderId = 1;
-      this.teamId = 2;
       let urlParams = `?orderId=${this.orderId}`;
       if (this.teamId) {
         urlParams = `?orderId=${this.orderId}&teamId=${this.teamId}`;
@@ -242,6 +250,10 @@ export default {
       console.log(totUrl);
       if (winBri.getSheBei() == "Android") {
         vuePay.showShareFromJs(totUrl);
+      } else if (winBri.getSheBei() == "iPhone") {
+        this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+          bridge.callHandler("didPay", iosData, function(resp) {});
+        });
       }
     }
   },
@@ -286,8 +298,12 @@ export default {
           background-color: #42bd56;
           color: #fff;
           font-size: 0.24rem;
+          border-left: 0.01rem solid #dadada;
         }
-
+        th:nth-of-type(1) {
+          border-left: none;
+          
+        }
         td {
           font-size: 0.22rem;
           color: rgba(158, 159, 161, 1);

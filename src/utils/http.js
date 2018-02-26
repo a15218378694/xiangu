@@ -48,14 +48,12 @@ function checkCode(res) {
     if (winBri.getSheBei() == "Android") {
       vuePay.showLoginFromJs("-1")
     }
-    console.log(winBri.getSheBei());
     if (winBri.getSheBei() == "iPhone") {
       let iosData = {
         isLog: "-1"
       };
       winBri.setupWebViewJavascriptBridge(function (bridge) {
         bridge.callHandler("isLogOrder", iosData, function (resp) {
-          Toast('huidiao成功')
         });
       });
     }

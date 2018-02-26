@@ -46,11 +46,10 @@ export default {
   height: 0.98rem;
   line-height: 0.98rem;
   padding: 0 0.33rem;
-  margin-bottom: 0.2rem;
+  // margin-bottom: 0.2rem;
   .left {
     flex: 1;
     text-align: left;
-    padding-left: 0.32rem;
     span:first-child {
       display: inline-block;
       width: 0.26rem;

@@ -10,8 +10,8 @@
 
     <shop-item :hotGoods="product"></shop-item>
     <div class="view-more-normal" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="20">
-      <img style="width:20px;height:20px;" src="../assets/img/common/loading.gif" v-if="loading">
-      <div v-if="this.totalPage <= this.page && !loading">到底部了</div>
+      <img style="width:20px;height:20px;" src="../assets/img/common/loading_image@2x.png" v-if="loading">
+      <!-- <div v-if="this.totalPage <= this.page && !loading">到底部了</div> -->
     </div>
   </div>
 </template>

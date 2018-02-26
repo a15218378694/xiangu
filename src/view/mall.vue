@@ -5,7 +5,7 @@
           </mt-search>
         </div> -->
     <nav-header>
-      <span class="orderDetTit" slot="header">首页</span>
+      <span class="orderDetTit" slot="header">商城</span>
     </nav-header>
     <div class="mall_noGoods" v-if="!hasGoods">
       <div class="back_img"></div>
@@ -53,8 +53,8 @@
         <img class="shopCart" src="../assets/img/mall/购物车@3x.png" alt="">
       </router-link>
       <div class="view-more-normal" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="20">
-        <img style="width:20px;height:20px;" src="../assets/img/common/loading.gif" v-if="loading">
-        <div v-if="this.totalPage <= this.page && !loading">到底部了</div>
+        <img style="width:20px;height:20px;" src="../assets/img/common/loading_image@2x.png" v-if="loading">
+        <!-- <div v-if="this.totalPage <= this.page && !loading">到底部了</div> -->
       </div>
     </div>
   </div>
@@ -244,8 +244,7 @@ let mallObj = {
   }
 };
 
-export default mallObj
-
+export default mallObj;
 </script>
 
 <style lang="less">
@@ -320,6 +319,13 @@ export default mallObj
       img {
         width: 0.96rem;
         height: 0.96rem;
+      }
+      div {
+        height: 0.33rem;
+        font-size: 0.24rem;
+        font-family: PingFangSC-Regular;
+        color: rgba(102, 102, 102, 1);
+        line-height: 0.33rem;
       }
     }
   }

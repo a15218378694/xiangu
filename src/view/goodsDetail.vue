@@ -107,7 +107,7 @@
 
     </div>
 
-    <div class="hot_goods">
+    <!-- <div class="hot_goods">
       <div class="top">
         <div class="left">
           <div class="leftImg"></div>
@@ -115,10 +115,10 @@
         <div class="center">热门商品</div>
       </div>
       <shop-item :hotGoods="proDetails.recProducts"></shop-item>
-    </div>
+    </div> -->
 
     <div class="goods_con">
-      <!-- <div class="kefu">客服</div> -->
+      <div class="kefu">客服</div>
       <button class="ground_buy" @click="isShowEven('拼团',2)">
         <p class="ground_pri">￥{{proDetails.original_price}}</p>
         <p class="groundBtn">发起拼团</p>
@@ -234,7 +234,8 @@ export default {
       isLoading: false,
       goodsId: "",
       teamId: "",
-      totalNums: 0
+      totalNums: 0,
+      checkKucunFlag: true
     };
   },
 
@@ -374,11 +375,11 @@ export default {
     },
     addCart() {
       if (this.checkedGuige.length == 0) {
-        if (!this.addCheck()) {
+        if (!this.addCheck() || !this.checkKucunFlag) {
           return;
         }
         //checkedGuige.length == 0 就要去检测库存
-        this.checkKucun();
+        
         this.newGuigessAdd();
         this.newGuigessGetRequestPrice();
       }
@@ -401,18 +402,20 @@ export default {
     //点击添加所选
     addCheckGuigeItem() {
       //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套了
-      if (!this.addCheck()) {
+      console.log(this.checkKucunFlag);
+      if (!this.addCheck() || !this.checkKucunFlag) {
         return;
       }
       this.newGuigessAdd();
       this.newGuigessGetRequestPrice();
       this.checkedguigeAdd();
-      this.checkKucun();
+      
       this.clearStatus();
       this.showChecked = true;
       this.guigesNum++;
     },
     checkKucun: async function(paramsKucun) {
+      this.checkKucunFlag = true;
       this.showChecked = false;
       let params = {
         buynum: this.num,
@@ -433,6 +436,7 @@ export default {
       const res = await http.post1(api.outrepertory, params);
       if (res.data.code == -2) {
         MessageBox("提示", res.data.msg);
+        this.checkKucunFlag = false
       }
     },
     //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套
@@ -494,11 +498,11 @@ export default {
     sureGoOrder: async function() {
       //checkedGuige没数据的情况
       if (this.checkedGuige.length == 0) {
-        if (!this.addCheck()) {
+        if (!this.addCheck() || !this.checkKucunFlag) {
           return;
         }
         //没有点添加所选就在确定下单的时候再去检测库存
-        this.checkKucun();
+        
         this.newGuigessAdd();
         this.newGuigessGetRequestPrice();
       } else {
@@ -973,6 +977,8 @@ export default {
   .goods_con {
     position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     color: #7cc688;
     padding-left: 2.82rem;
     overflow: hidden;
@@ -1196,9 +1202,9 @@ export default {
 }
 .showGuige {
   touch-action: none;
-  
+
   width: 7.5rem;
-  height: 13.34rem;
+  height: 10.34rem;
   overflow: hidden;
 }
 </style>

@@ -27,7 +27,7 @@ Vue.component(Loadmore.name, Loadmore);
 Vue.use(infiniteScroll);
 Vue.use(Vuex);
 Vue.use(VueLazyload, {
-  loading: require("./assets/img/common/loading.gif")
+  loading: require("./assets/img/common/loading_image@2x.png")
 });
 
 Vue.config.productionTip = false;
