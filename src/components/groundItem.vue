@@ -2,7 +2,7 @@
     <div>
         <div class="bot" v-for="(item,index) in groundInfo" :key="index">
             <div class="leftt">
-                <img src="../assets/img/mall/商品详情_slices/象涂-商家版@2x.png" alt="">
+                <img src="../assets/img/mall/商品详情_slices/xiangtusj.png" alt="">
             </div>
             <div class="centerr">
                 <div class="topp">
@@ -15,7 +15,7 @@
                     <span class="kucun">{{item.num}}</span>库存
                 </div>
             </div>
-            <router-link tag="div" :to="{ path: 'groundDet', query: { groundStatus: 1,id: item.id }}" class="rightt">
+            <router-link tag="div" :to="{ path: 'groundDetApp', query: {orderId: item.orderId, teamId: item.teamId }}" class="rightt">
                 <button class="goGround">去拼团</button>
             </router-link>
         </div>
@@ -31,14 +31,12 @@ export default {
       killTime: []
     };
   },
-  mounted() {
+  mounted() {},
 
-  },
-  
   methods: {}
 };
 </script>
 
 <style scoped>
-    
+
 </style>

@@ -16,7 +16,7 @@
       <div class="carouse bgcWhite">
         <el-carousel indicator-position="none" type="card" height="200px">
           <el-carousel-item v-for="item in banners" :key="item.id">
-            <img :src="item.image" alt="">
+            <img :src="item.image || defaultImg" alt="">
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -77,6 +77,7 @@ let mallObj = {
   name: "name",
   data() {
     return {
+      defaultImg: '/static/img/xiangtuLogo2.png',
       groundInfo: [],
       value: "",
       active: "index",
@@ -117,7 +118,6 @@ let mallObj = {
   methods: {
     fetchHotGoods: async function(params, callS) {
       const res = await http.get(api.recommend, params);
-
       if (res.data) {
         this.loading = false;
         callS && callS(res);
@@ -317,8 +317,8 @@ export default mallObj;
     .goods_type {
       flex: 1;
       img {
-        width: 0.96rem;
-        height: 0.96rem;
+        width: 1.3rem;
+        height: 1.3rem;
       }
       div {
         height: 0.33rem;

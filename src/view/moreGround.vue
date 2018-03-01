@@ -37,7 +37,7 @@ export default {
       };
       const res = await http.get(api.lookmore, params);
       if (res.data) {
-        this.groundInfo = res.data.list;
+        this.groundInfo = res.data.gbookingMessage;
         var timeArr = [];
         for (var i = 0; i < this.groundInfo.length; i++) {
           timeArr[i] =

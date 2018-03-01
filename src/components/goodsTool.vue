@@ -6,8 +6,8 @@
         </div>
         <div class="right">
             <span class="right_item" v-for="(rule,index) in showRules" :key="index" :class="[curIndex == index ?'activeType':'']" @click="changeShow(index)">{{rule.tit}}</span>
-            <span v-if="sortType == 'up'" class="iconfont icon-z-arrowDown"></span>
-            <span v-if="sortType == 'down'" class="iconfont icon-z-arrowUp"></span>
+            <span v-show="sortType == 'up'" class="iconfont icon-z-arrowDown unDown"></span>
+            <span v-show="sortType == 'down'" class="iconfont icon-z-arrowUp unDown"></span>
             <!-- <img class="sortImg" src="../assets/img/mall/Group 4_slices (1)/Group 4@2x.png"> -->
         </div>
     </div>
@@ -45,7 +45,7 @@ export default {
   display: flex;
   height: 0.98rem;
   line-height: 0.98rem;
-  padding: 0 0.33rem;
+  padding: 0 0.4rem;
   // margin-bottom: 0.2rem;
   .left {
     flex: 1;
@@ -82,5 +82,9 @@ export default {
       color: #42bd56;
     }
   }
+}
+.unDown {
+  width: 0.16rem;
+  height: 0.16rem;
 }
 </style>

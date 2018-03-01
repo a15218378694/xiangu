@@ -5,6 +5,7 @@ import GoodsDetail from "@/view/goodsDetail.vue";
 import OrderDet from "@/view/orderDet.vue";
 import Yanzheng from "@/view/yanzheng.vue";
 import GroundDet from "@/view/groundDet.vue";
+import GroundDetApp from "@/view/groundDetApp.vue";
 import Search from "@/view/search.vue";
 import shopCart from "@/view/shopCart.vue";
 import moreGround from "@/view/moreGround.vue";
@@ -30,6 +31,10 @@ export default new Router({
     {
       path: "/groundDet",
       component: GroundDet
+    },
+    {
+      path: "/groundDetApp",
+      component: GroundDetApp
     },
     {
       path: "/search",

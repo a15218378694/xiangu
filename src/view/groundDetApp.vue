@@ -4,7 +4,6 @@
       <nav-header>
         <span class="orderDetTit" slot="header">拼团详情</span>
       </nav-header>
-
       <ground-step>
         <img class="step" slot="step1" src="../assets/img/拼团详情-未参团_slices/Group 4@3x.png" alt="">
         <img class="step" v-if="this.teamStatus != 2" slot="step2" src="../assets/img/拼团详情-未参团_slices/Group4@2x.png" alt="">
@@ -112,7 +111,7 @@
       </div>
 
       <div class="sure">
-        <button class="addCart" @click="goGoodsDet" v-if="isMas == 1">立即参与</button>
+        <button class="addCart" @click="goGoodsDet" v-if="isMas == 1">继续购买</button>
         <button class="goOrder" ref="share" @click="goShare">立即分享</button>
       </div>
 
@@ -122,12 +121,12 @@
 </template>
 
 <script>
-import NavHeader from "../components/navHeader.vue";
 import GroundStep from "../components/groundStep.vue";
 import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
 import { MessageBox } from "mint-ui";
+import NavHeader from "../components/navHeader.vue";
 export default {
   name: "name",
   data: function() {
@@ -231,9 +230,8 @@ export default {
         this.teamStatus = res.data.teamStatus;
         this.goodsId = res.data.pid;
         this.groundDetInfo = res.data;
-        this.teamId = this.groundDetInfo.grouppbooking_people[0].teamId
         if (this.isMas == 0) {
-          this.countdown(this.groundDetInfo.openCloseTime);
+          this.countdown(this.groundDetInfo.OpenCloseTimeNum);
         } else {
           this.countdown(this.groundDetInfo.gBookingCloseTime);
         }
@@ -250,8 +248,7 @@ export default {
         this.$router.push({
           path: "goodsDetail",
           query: {
-            goodsId: this.goodsId,
-            rukou: 'groundDet'
+            goodsId: this.goodsId
           }
         });
       } else {
@@ -259,8 +256,12 @@ export default {
       }
     },
     //邀请用的图片标题链接
-    goShare() {
+    getOrderObj() {
       let that = this;
+      let params = {
+        orderId: this.orderId,
+        teamId: this.teamId
+      };
       console.log(util.getCookie("merchant_login_flag"));
       let merchant_login_flag = util.getCookie("merchant_login_flag");
       let urlParams = `?orderId=${
@@ -284,22 +285,23 @@ export default {
         console.log(totUrl, tit, des, pic);
         vuePay.showShareFromJs(totUrl, tit, des, pic);
       } else if (winBri.getSheBei() == "iPhone") {
+        console.log({ totUrl, tit, des, pic });
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
           bridge.callHandler(
             "didGroupBookingShare",
             { totUrl, tit, des, pic },
-            function(resp) {
-            console.log({ totUrl, tit, des, pic });
-              
-            }
+            function(resp) {}
           );
         });
       }
     },
+    goShare() {
+      this.getOrderObj();
+    }
   },
   components: {
-    NavHeader,
-    GroundStep
+    GroundStep,
+    NavHeader
   }
 };
 </script>
@@ -446,7 +448,6 @@ export default {
           width: 0.9rem;
           height: 0.9rem;
           margin-right: 0.15rem;
-          border-radius: 50%;
         }
       }
       .centerr {

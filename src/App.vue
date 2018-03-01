@@ -21,16 +21,15 @@ export default {
   methods: {},
   watch: {
     $route(to, from) {
-    if (this.$bridge.getSheBei() == "iPhone") {
+      if (this.$bridge.getSheBei() == "iPhone") {
         let iosData = {
           isHidden: "0"
         };
-        if (to.path == '/' || to.path == '/mall') {
-          iosData.isHidden = "1"
+        if (to.path == "/" || to.path == "/mall") {
+          iosData.isHidden = "1";
         }
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
-          bridge.callHandler("isHiddenBar", iosData, function(resp) {
-          });
+          bridge.callHandler("isHiddenBar", iosData, function(resp) {});
         });
       }
     }

@@ -3,6 +3,7 @@
     <div class="shopCartPage">
       <nav-header>
         <span slot="header">购物车</span>
+        <span slot="del" class="del" @click="delGood">移出商品</span>
       </nav-header>
 
       <div v-if="hasGoods">
@@ -26,17 +27,11 @@
                   </template>
                 </div>
                 <div class="three">
-                  <!-- <div class="pri">
-                <span class="priType" v-if="item.buyway == 1">原价：</span>
-                <span class="priType" v-else>拼团：</span>
-                <span>￥</span>
-                <span>{{item.offering_price}}</span>
-              </div> -->
                   <div class="num">X{{item.buyTotalnum}}</div>
                 </div>
-                <div class="closeDel" :class="{'tranShow': (item.isTranShow)}">
+                <!-- <div class="closeDel" :class="{'tranShow': (item.isTranShow)}">
                   <span class="del" @click.stop="delGood(item,index)">删除</span>
-                </div>
+                </div> -->
               </div>
             </div>
           </v-touch>
@@ -70,6 +65,7 @@ import http from "../utils/http";
 import util from "../utils/util";
 import navHeader from "@/components/navHeader.vue";
 import { Toast } from "mint-ui";
+import { MessageBox } from "mint-ui";
 var VueTouch = require("vue-touch");
 Vue.use(VueTouch, { name: "v-touch" });
 export default {
@@ -229,21 +225,39 @@ export default {
       });
     },
     delGood(item, index) {
-      this.fetchDeledGoods(
-        [
-          {
-            pid: item.pid,
-            sid: item.sid,
-            cartNum: item.buynum
-          }
-        ],
-        res => {
-          this.shopCartGoods.splice(index, 1);
-          Toast("删除成功");
-          this.page = 1;
-          this.getShopGoods();
+      let flag = false;
+      this.shopCartGoods.forEach((v1, i1) => {
+        if (v1.isSelected) {
+          flag = true;
         }
-      );
+      });
+      if (flag) {
+        MessageBox({
+          title: "提示",
+          message: "确定要将此商品移出购物车吗?",
+          showCancelButton: true
+        }).then(aa => {
+          if (aa == "confirm") {
+            let delArr = [];
+            this.shopCartGoods.forEach((v, i) => {
+              if (v.isSelected) {
+                delArr.push({
+                  pid: v.pid,
+                  sid: v.sid,
+                  cartNum: v.buynum
+                });
+              }
+            });
+            this.fetchDeledGoods(delArr, res => {
+              Toast("删除成功");
+              this.page = 1;
+              this.getShopGoods();
+            });
+          }
+        });
+      } else {
+        return Toast('请先选择要删除的商品')
+      }
     },
     fetchDeledGoods: async function(params, callS) {
       const res = await http.post1(api.delete, params);
@@ -294,6 +308,7 @@ export default {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          line-height: 0.3rem;
           font-size: 0.3rem;
         }
         .two {
@@ -301,7 +316,7 @@ export default {
           // height: 1.44rem;
           margin-top: 0.15rem;
           .twoItem {
-            width: 3.3rem;
+            width: 4.5rem;
             height: 0.4rem;
             line-height: 0.4rem;
             margin-bottom: 0.12rem;

@@ -4,18 +4,28 @@
       <div class="yiqi">
         <img src="../assets/img/yaoqing/邀请好友开团_slices/yiqi.png" alt="">
       </div>
-      <div class="faqi">
+      <div class="faqi" v-if="yaoQingObj.status == 0">
         <p class="one">
           发起拼团
           <span>返现 ¥5,000</span>
         </p>
-        <p class="two">离拼成还差
-          <span>{{yaoQingObj.balancenum}}</span> 人</p>
+        <p class="two">离开团还差
+          <span>{{yaoQingObj.balancePerson}}</span> 人</p>
         <p class="three">
           <router-link to="playDet">查看玩法详情</router-link>
         </p>
       </div>
-
+      <div class="yikai" v-if="yaoQingObj.status == 3">
+        <p class="one">
+          参与拼团
+          <span>返现至 ¥5,000</span>
+        </p>
+        <p class="two">离拼成还剩
+          <span>{{yaoQingObj.balancenum}}</span> 条</p>
+        <p class="three">
+          <router-link to="playDet">查看玩法详情</router-link>
+        </p>
+      </div>
       <div class="groundGoodsDes">
         <div class="oneBox">
           <div class="one">
@@ -26,7 +36,7 @@
         </div>
         <div class="infoDet">
           <div class="left">
-            <img :src="yaoQingObj.image" alt="">
+            <img :src="yaoQingObj.image || defaultImg" alt="">
           </div>
           <div class="right">
             <div class="one">{{yaoQingObj.title}}</div>
@@ -73,12 +83,10 @@
           </div>
         </div>
 
-
-
         <div v-for="item in grouppbooking_people" :key="item.id">
           <div class="bot">
             <div class="leftt">
-              <img :src="item.logo" alt="">
+              <img :src="item.logo || defaultImg" alt="">
             </div>
             <div class="centerr">
               <div class="topp">
@@ -99,7 +107,7 @@
       </div>
 
       <div class="sure">
-        <button class="addCart">立即参与</button>
+        <button class="addCart" @click="lijiAdd">立即参与</button>
       </div>
     </div>
 
@@ -111,50 +119,19 @@
 import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
+import { Toast } from "mint-ui";
+
 export default {
   name: "name",
   data: function() {
     return {
+      defaultImg: "/static/img/xiangtuLogo2.png",
+      JSESSIONID: "",
+      merchant_login_flag: "",
       yaoQingObj: {
-        grouppbooking_people: [
-          //所有的团员信息
-          {
-            id: null,
-            teamId: null,
-            logo:
-              "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
-            name: "小明",
-            position: "团长", //职位
-            open_person: null,
-            starttime: 1515555837000,
-            buynum: null,
-            orderId: null
-          },
-          {
-            id: null,
-            teamId: null,
-            logo:
-              "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
-            name: "小黄",
-            position: "营长",
-            open_person: null,
-            starttime: 1516176979000,
-            buynum: null,
-            orderId: null
-          },
-          {
-            id: null,
-            teamId: null,
-            logo:
-              "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
-            name: "小花",
-            position: "排长",
-            open_person: null,
-            starttime: 1516177332000,
-            buynum: null,
-            orderId: null
-          }
-        ],
+        status: 0,
+        balancePerson: 1,
+        grouppbooking_people: [],
         msg: "success",
         image:
           "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516937789180.jpeg?Expires=1832297779&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=C5IWB4LbxizV9P6o3DWsKEBhzPw%3D",
@@ -237,28 +214,93 @@ export default {
       goodsId: ""
     };
   },
+  created() {
+    this.orderId = this.$route.query.orderId;
+    this.merchant_login_flag = this.$route.query.merchant_login_flag;
+    util.setCookie("merchant_login_flag", this.merchant_login_flag);
+    this.teamId = this.$route.query.teamId;
+    this.fetchyaoQingDet();
+  },
+  mounted() {},
+  components: {},
   methods: {
     fetchyaoQingDet: async function() {
       let params = {
         orderId: this.orderId,
         teamId: this.teamId
       };
+      console.log(params);
       const res = await http.get(api.invitefriends, params);
+      console.log(res);
       if (res.data) {
         this.yaoQingObj = res.data;
-        this.grouppbooking_people = yaoQingObj.grouppbooking_people;
+        this.grouppbooking_people = this.yaoQingObj.grouppbooking_people;
         this.goodsId = this.yaoQingObj.pid;
       }
+    },
+    lijiAdd() {
+      //判断是否唤醒app
+      var url_ios = `xiangTuAPP://?pid=http://merchant.xljkj.cn/#/groundDet?orderId=${
+        this.orderId
+      }&teamId=${this.teamId}`;
+
+      var url_ios_download =
+        "http://merchant.xljkj.cn/text/Merchantdownload/index.html";
+
+      var url_android = `ogxscheme://ogxhost/?pid=http://merchant.xljkj.cn/&pid1=/groundDet?orderId=${
+        this.orderId
+      }&teamId=${this.teamId}`;
+      console.log(url_android);
+      var url_android_download =
+        "http://merchant.xljkj.cn/text/Merchantdownload/index.html";
+
+      var u = navigator.userAgent;
+      var isAndroid = u.indexOf("Android") > -1 || u.indexOf("Adr") > -1; //android终端
+      var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+
+      var browser = {
+        versions: (function() {
+          var u = navigator.userAgent.toLowerCase();
+          return {
+            weixin: u.match(/MicroMessenger/i) == "micromessenger", //是否微信
+            qq: u.match(/QQ/i) == "qq" //是否QQ
+          };
+        })()
+      };
+      if (isAndroid == true) {
+        console.log(browser.versions.weixin);
+        if (browser.versions.weixin == true) {
+          alert(
+            "点击右上角按钮，然后在弹出的菜单中，点击在浏览器中打开，即可安装"
+          );
+        } else {
+          var loadTime = new Date();
+          location.href = url_android;
+          setTimeout(function() {
+            var outTime = new Date();
+            if (outTime - loadTime > 800) {
+              location.href = url_android_download;
+            }
+          }, 1000);
+        }
+      } else if (isiOS == true) {
+        if (browser.versions.weixin == true || browser.versions.qq == true) {
+          alert(
+            "点击右上角按钮，然后在弹出的菜单中，点击在浏览器中打开，即可安装"
+          );
+        } else {
+          var loadTime = new Date();
+          location.href = url_ios;
+          setTimeout(function() {
+            var outTime = new Date();
+            if (outTime - loadTime > 800) {
+              window.setAttribute("location", url_ios_download);
+            }
+          }, 1000);
+        }
+      }
     }
-  },
-  mounted() {
-    this.orderId = this.$route.query.orderId;
-    if (this.$route.query.teamId) {
-      this.teamId = this.$route.query.teamId;
-    }
-    this.fetchyaoQingDet()
-  },
-  components: {}
+  }
 };
 </script>
 
@@ -280,6 +322,52 @@ export default {
     }
   }
   .faqi {
+    text-align: center;
+    background: url("../assets/img/yaoqing/邀请好友开团_slices/faqibeijing.png")
+      no-repeat;
+    background-size: contain;
+    width: 6.61rem;
+    height: 2.98rem;
+    padding-top: 0.54rem;
+    margin: 0 auto;
+    margin-bottom: 0.3rem;
+    p {
+      margin: 0 auto;
+    }
+    .one {
+      width: 4.21rem;
+      height: 0.56rem;
+      font-size: 0.4rem;
+      font-family: PingFangSC-Semibold;
+      color: rgba(255, 255, 255, 1);
+      line-height: 0.56rem;
+      span {
+        color: #f0ed76;
+      }
+    }
+    .two {
+      height: 0.45rem;
+      font-size: 0.32rem;
+      font-family: PingFangSC-Regular;
+      color: rgba(255, 255, 255, 1);
+      line-height: 0.45rem;
+      span {
+        color: #f0ed76;
+      }
+    }
+    .three {
+      a {
+        width: 1.51rem;
+        height: 0.33rem;
+        font-size: 0.24rem;
+        font-family: PingFangSC-Regular;
+        color: rgba(194, 250, 255, 1);
+        line-height: 0.33rem;
+        text-decoration: underline;
+      }
+    }
+  }
+  .yikai {
     text-align: center;
     background: url("../assets/img/yaoqing/邀请好友开团_slices/faqibeijing.png")
       no-repeat;

@@ -85,7 +85,6 @@
         </div>
       </div>
       <ground-item :groundInfo="groundInfo" :clock="clock"></ground-item>
-
     </div>
 
     <div class="goods_det1">
@@ -107,7 +106,7 @@
 
     </div>
 
-    <!-- <div class="hot_goods">
+    <div class="hot_goods">
       <div class="top">
         <div class="left">
           <div class="leftImg"></div>
@@ -115,7 +114,7 @@
         <div class="center">热门商品</div>
       </div>
       <shop-item :hotGoods="proDetails.recProducts"></shop-item>
-    </div> -->
+    </div>
 
     <div class="goods_con">
       <div class="kefu">客服</div>
@@ -123,14 +122,71 @@
         <p class="ground_pri">￥{{proDetails.original_price}}</p>
         <p class="groundBtn">发起拼团</p>
       </button>
-      <button class="alone_buy" @click="isShowEven('单价',1)">
+      <button class="alone_buy" @click="isShowEven('单价',1)" v-if="this.rukou !== 'groundDet'">
         <p class="alone_pri">￥{{proDetails.offering_price}}</p>
         <p class="aloneBtn">单价购买</p>
       </button>
     </div>
 
-    <mt-popup v-model="isShow" position="bottom" popup-transition="popup-fade">
-      <div v-if="isShow" class="goods_guige">
+    <!-- <div v-if="isShow">
+      <mt-popup v-model="isShow" position="bottom">
+        <div class="goods_guige">
+          <div class="one">
+            <div class="left">
+              <img :src="proDetails.slidershowAdd[0].address" alt="">
+            </div>
+            <div class="cen">
+              <div class="tit">{{proDetails.title}}</div>
+              <div class="pinGround">
+                {{buyType}}：￥
+                <span v-if="buyType == '单价'">{{proDetails.offering_price}}</span>
+                <span v-if="buyType == '拼团'">{{proDetails.original_price}}</span>
+              </div>
+            </div>
+            <img class="close" @click="isShowEven('close')" src="../assets/img/mall/guige/关闭@3x.png" alt="">
+          </div>
+          <span v-if="isLoading"></span>
+          <scroll ref="listContent" :data="guigess" class="scrollBox" :refreshDelay="refreshDelay">
+            <div>
+              <div class="two" v-for="(guigesObj,indexss) in guigess" :key="indexss">
+                <div class="guigeType">{{guigesObj.sizes}}</div>
+                <div>
+                  <button v-for="(guigeObj,guigeIndex) in guigesObj.sizeslist" :key="guigeIndex" :class="[guigesObj.curIndex == guigeIndex ? 'guigeTypeItemActive' : '','guigeTypeItem']" @click="checkGuige(indexss,guigeIndex,guigesObj,guigeObj)">{{guigeObj.sizes}}</button>
+                </div>
+              </div>
+            </div>
+          </scroll>
+
+          <div class="needNum">
+            <span>需要数量：</span>
+            <input v-model="num" type="text" placeholder="请输入购买数量">
+            <img src="../assets/img/mall/guige/提示@3x.png" alt="">
+          </div>
+          <div class="res">
+            <div class="resGuiges" v-if="showChecked">
+              <template v-if="checkedGuige.length > 0" v-for="(item,index) in checkedGuige">
+                <div :key="index" class="resGuigeItems">
+                  <template v-for="(addedItem,addedIndex) in item">
+                    <span class="resGuigeItem" :key="addedIndex">
+                      {{addedItem.sizes || addedItem.num}}
+                      <span v-if="addedItem.num">份</span>
+                    </span>
+                  </template>
+                </div>
+              </template>
+
+            </div>
+            <button @click="addCheckGuigeItem">添加所选</button>
+          </div>
+          <div class="sure">
+            <button v-if="buy_way == 1" class="addCart" @click="addCart">加入购物车</button>
+            <button class="goOrder" @click="sureGoOrder">确定下单</button>
+          </div>
+        </div>
+      </mt-popup>
+    </div> -->
+    <mt-popup v-model="isShow" position="bottom">
+      <div class="goods_guige">
         <div class="one">
           <div class="left">
             <img :src="proDetails.slidershowAdd[0].address" alt="">
@@ -159,7 +215,7 @@
 
         <div class="needNum">
           <span>需要数量：</span>
-          <input v-model="num" type="text" placeholder="输入数量（1万起）">
+          <input v-model="num" type="text" placeholder="请输入购买数量">
           <img src="../assets/img/mall/guige/提示@3x.png" alt="">
         </div>
         <div class="res">
@@ -172,7 +228,6 @@
                     <span v-if="addedItem.num">份</span>
                   </span>
                 </template>
-                <img @click="delSelGuige(index)" src="../assets/img/mall/guige/Group 23@3x.png" alt="">
               </div>
             </template>
 
@@ -185,11 +240,6 @@
         </div>
       </div>
     </mt-popup>
-
-    <!-- <div v-if="isShow" class="zhezhao">
-
-    </div> -->
-    <!-- </mt-popup> -->
 
   </div>
 </template>
@@ -218,10 +268,12 @@ export default {
       isCollect: false,
       isShow: false,
       buyType: "",
-      proDetails: {},
+      proDetails: {
+        slidershowAdd: [{}]
+      },
       groundInfo: [],
       clock: [],
-      guigess: {},
+      guigess: [],
       newGuigess: [],
       checkedGuige: [],
       totalLength: 0,
@@ -235,12 +287,17 @@ export default {
       goodsId: "",
       teamId: "",
       totalNums: 0,
-      checkKucunFlag: true
+      checkKucunFlag: true,
+      rukou: ''
     };
   },
 
   mounted() {
     this.goodsId = this.$route.query.goodsId;
+    this.rukou = this.$route.query.rukou;
+    if (this.rukou == 'groundDet') {
+      this.isShow = true
+    }
     if (this.$route.query.teamId) {
       this.teamId = this.$route.query.teamId;
     }
@@ -379,7 +436,7 @@ export default {
           return;
         }
         //checkedGuige.length == 0 就要去检测库存
-        
+
         this.newGuigessAdd();
         this.newGuigessGetRequestPrice();
       }
@@ -396,20 +453,21 @@ export default {
         this.clearStatus();
         this.clearAllSelGuige();
         MessageBox("提示", res.data.msg);
+        this.isShow = !this.isShow;
         return;
       }
     },
     //点击添加所选
     addCheckGuigeItem() {
       //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套了
-      console.log(this.checkKucunFlag);
+      // console.log(this.checkKucunFlag);
       if (!this.addCheck() || !this.checkKucunFlag) {
         return;
       }
       this.newGuigessAdd();
       this.newGuigessGetRequestPrice();
       this.checkedguigeAdd();
-      
+
       this.clearStatus();
       this.showChecked = true;
       this.guigesNum++;
@@ -436,7 +494,7 @@ export default {
       const res = await http.post1(api.outrepertory, params);
       if (res.data.code == -2) {
         MessageBox("提示", res.data.msg);
-        this.checkKucunFlag = false
+        this.checkKucunFlag = false;
       }
     },
     //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套
@@ -502,7 +560,7 @@ export default {
           return;
         }
         //没有点添加所选就在确定下单的时候再去检测库存
-        
+
         this.newGuigessAdd();
         this.newGuigessGetRequestPrice();
       } else {
@@ -1111,6 +1169,7 @@ export default {
       position: relative;
       span {
         color: #828284;
+        font-size: 0.28rem;
       }
       input {
         width: 4.44rem;
@@ -1119,6 +1178,7 @@ export default {
         padding-left: 0.1rem;
         border-radius: 0.03rem;
         color: #828284;
+        font-size: 0.26rem;
       }
       .liuyan {
         border: none;
@@ -1134,21 +1194,32 @@ export default {
     }
 
     .res {
-      padding: 0.3rem;
+      padding: 0.2rem 0.32rem;
       padding-bottom: 1.32rem;
       .resGuiges {
-        margin: 0.5rem 0.3rem 0.5rem 0;
         color: #fff;
-        font-size: 0.2rem;
         padding-left: 0.03rem;
+        margin-bottom: 0.2rem;
         .resGuigeItems {
-          height: 0.6rem;
-          line-height: 0.6rem;
+          height: 0.4rem;
+
+          background: rgba(79, 80, 84, 1);
+
+          border-radius: 0.05rem;
+
+          line-height: 0.34rem;
           position: relative;
-          margin-bottom: 0.2rem;
+          margin-bottom: 0.12rem;
           background-color: #4f5054;
           .resGuigeItem {
             margin-right: 0.03rem;
+            // display: inline-block;
+            // height: 0.25rem;
+
+            font-size: 0.18rem;
+            font-family: PingFangSC-Regular;
+            color: rgba(255, 255, 255, 1);
+            // line-height: 0.25rem;
           }
           img {
             width: 0.5rem;
@@ -1201,8 +1272,6 @@ export default {
   }
 }
 .showGuige {
-  touch-action: none;
-
   width: 7.5rem;
   height: 10.34rem;
   overflow: hidden;

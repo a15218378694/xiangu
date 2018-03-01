@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="orderDets">
-      <nav-header :curCom="curCom">
+      <nav-header>
         <span class="orderDetTit" slot="header">拼团详情</span>
       </nav-header>
-      <div class="perInfo">
+      <div class="perInfo" @click="editAddr">
         <div class="shouhuo">
           <span class="shouhuoren">收货人：</span>
           <span class="ming">{{perName}}</span>
@@ -17,7 +17,7 @@
             <!-- <span class="qu">龙华</span> -->
           </span>
         </div>
-        <img class="bianji" @click="editAddr" src="../assets/img/订单详情_slices/编辑@3x.png" alt="">
+        <img class="bianji" src="../assets/img/订单详情_slices/编辑@3x.png" alt="">
       </div>
 
       <div class="goods_det1">
@@ -84,7 +84,14 @@ import http from "../utils/http";
 import api from "../utils/api";
 import goodsItem from "../components/goodsItem.vue";
 import NavHeader from "../components/navHeader.vue";
-
+import { Toast } from "mint-ui";
+// let flagg = true
+// router.beforeEach((to, from, next) => {
+//   if (from.path !== '/goodsDetail') {
+//     flagg = false
+//   }
+//   next()
+// })
 export default {
   name: "name",
   data: function() {
@@ -156,8 +163,9 @@ export default {
         }
         this.groundDetUrl = `http://merchant.xljkj.cn/#/groundDet${
           this.urlParams
-        }`;        
+        }`;
         this.orderId = res.data.orderId;
+        console.log(this.groundDetUrl);
         this.sendOrderID();
       }
     },
@@ -166,6 +174,7 @@ export default {
       //   return;
       // }
       // this.btn_done = true;
+      if (!this.perName || !this.perPhone || !this.perAddr) return;
       if (this.orderId) {
         return this.sendOrderID();
       }
@@ -192,17 +201,22 @@ export default {
         });
       }
     },
-    // changeBtn() {
-    //   window.changeBtnDone = function() {
-    //     this.btn_done = false;
-    //   };
-    // },
     comTotleGoodsPri() {
       this.totalGoodsPri = this.prices - this.freight;
     },
     getCurSel1() {
       let that = this;
       window.getCurSel = function(perName, perPhone, perAddr) {
+        if (that.$bridge.getSheBei() == "iPhone") {
+          let iosData = {
+            isHidden: "0"
+          };
+          that.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+            bridge.callHandler("isHiddenBar", iosData, function(resp) {});
+          });
+        }
+        Toast(perPhone);
+        that.perPhone = "";
         that.perName = perName;
         that.perPhone = perPhone;
         that.perAddr = perAddr;
@@ -213,7 +227,7 @@ export default {
         vuePay.showAddressFromJs();
       } else if (winBri.getSheBei() == "iPhone") {
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
-          bridge.callHandler("didShippingAddress", "123", function(resp) {});
+          bridge.callHandler("didShippingAddress", "123", function() {});
         });
       }
     }
