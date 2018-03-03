@@ -169,14 +169,14 @@ export default {
       const tipInfo =
         "即将跳转，如果唤醒APP后没进入拼团详情或者登录页面，请关闭APP重试";
       var url_ios = `xiangTuAPP://?pid=${
-        api.testBaseUrl
+        api.baseUrl
       }/&pid1=/groundDetApp?orderId=${this.orderId}&teamId=${this.teamId}`;
 
       var url_ios_download =
         "http://merchant.xljkj.cn/text/Merchantdownload/index.html";
 
       var url_android = `ogxscheme://ogxhost/?pid=${
-        api.testBaseUrl
+        api.baseUrl
       }/&pid1=/groundDetApp?orderId=${this.orderId}&teamId=${this.teamId}`;
       console.log(url_android);
       var url_android_download =

@@ -148,7 +148,7 @@ export default {
     }
     that.page++;
     callb();
-  }, 
+  },
   goLogin: async function (callBa) {
     let params = {
       phone: 18872209853
@@ -159,7 +159,57 @@ export default {
       code: 1234
     });
     if (res.data) {
-      callBa&&callBa()
+      callBa && callBa()
     }
-  }
+  },
+  //操作多个定时器
+  grounding: async function (that,typ) {
+    let params = {};
+    const res = await http.get(api.groupbooking, params);
+    if (res.data) {
+      if (res.data.gbookingMessage) {
+        if (typ !== 'more') {
+        this.groundInfo = res.data.gbookingMessage.splice(0, 2);
+        } else {
+          this.groundInfo = res.data.gbookingMessage
+        }
+        that.groundInfo = [
+          //正在拼团的商品
+          {
+            id: 3, // 商品id
+            title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源1", // 商品标题
+            num: 356000, // 商品库存数量
+            groupbooking_sum: 100, // 拼团人数
+            surplusTime: 1520062982698, // 拼团剩余时间
+            hours: 6, //剩余的小时数
+            minutes: 58 //剩余的分钟
+          },
+          {
+            id: 4,
+            title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源2",
+            num: 356000,
+            groupbooking_sum: 100,
+            surplusTime: 1520062582698,
+            hours: 6,
+            minutes: 58
+          },
+          {
+            id: 5,
+            title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源3",
+            num: 356000,
+            groupbooking_sum: 100,
+            surplusTime: 1520073982698,
+            hours: 6,
+            minutes: 58
+          }
+        ];
+        var timeArr = [];
+        for (var i = 0; i < that.groundInfo.length; i++) {
+          timeArr[i] = that.groundInfo[i].surplusTime / 1000;
+        }
+        console.log(timeArr);
+        that.clock = this.countdownMore(timeArr, that);
+      }
+    }
+  },
 };

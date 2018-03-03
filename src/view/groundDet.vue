@@ -48,9 +48,9 @@
         </div>
       </div>
 
-      <div class="detTit">
+      <!-- <div class="detTit">
         <a href="javascript:;">查看订单详情</a>
-      </div>
+      </div> -->
 
       <div class="killBox bgcWhite">
         <div class="one" v-if="groundDetInfo.teamStatus == 1">
@@ -216,10 +216,10 @@ export default {
         this.teamId
       }&merchant_login_flag=${merchant_login_flag}`;
 
-      let totUrl = `${api.testBaseUrl}/#/yaoqing${urlParams}`;
+      let totUrl = `${api.baseUrl}/#/yaoqing${urlParams}`;
       let tit = "我正在发起拼团，邀请您一起来开团，一起享受最高优惠价格";
       let des = `目前离开团还差${this.groundDetInfo.balancePerson}人`;
-      let pic = `${api.testBaseUrl}/static/img/yiqi.91cc4db.png`;
+      let pic = `${api.baseUrl}/static/img/yiqi.91cc4db.png`;
       if (this.groundDetInfo.teamStatus == 2) {
         tit = "我正在参与拼团，邀请您一起来参团，一起享受最高优惠价格";
         des = `目前离拼成还差${this.groundDetInfo.balancenum}条`;

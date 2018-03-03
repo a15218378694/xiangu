@@ -129,63 +129,6 @@
       </button>
     </div>
 
-    <!-- <div v-if="isShow">
-      <mt-popup v-model="isShow" position="bottom">
-        <div class="goods_guige">
-          <div class="one">
-            <div class="left">
-              <img :src="proDetails.slidershowAdd[0].address" alt="">
-            </div>
-            <div class="cen">
-              <div class="tit">{{proDetails.title}}</div>
-              <div class="pinGround">
-                {{buyType}}：￥
-                <span v-if="buyType == '单价'">{{proDetails.offering_price}}</span>
-                <span v-if="buyType == '拼团'">{{proDetails.original_price}}</span>
-              </div>
-            </div>
-            <img class="close" @click="isShowEven('close')" src="../assets/img/mall/guige/关闭@3x.png" alt="">
-          </div>
-          <span v-if="isLoading"></span>
-          <scroll ref="listContent" :data="guigess" class="scrollBox" :refreshDelay="refreshDelay">
-            <div>
-              <div class="two" v-for="(guigesObj,indexss) in guigess" :key="indexss">
-                <div class="guigeType">{{guigesObj.sizes}}</div>
-                <div>
-                  <button v-for="(guigeObj,guigeIndex) in guigesObj.sizeslist" :key="guigeIndex" :class="[guigesObj.curIndex == guigeIndex ? 'guigeTypeItemActive' : '','guigeTypeItem']" @click="checkGuige(indexss,guigeIndex,guigesObj,guigeObj)">{{guigeObj.sizes}}</button>
-                </div>
-              </div>
-            </div>
-          </scroll>
-
-          <div class="needNum">
-            <span>需要数量：</span>
-            <input v-model="num" type="text" placeholder="请输入购买数量">
-            <img src="../assets/img/mall/guige/提示@3x.png" alt="">
-          </div>
-          <div class="res">
-            <div class="resGuiges" v-if="showChecked">
-              <template v-if="checkedGuige.length > 0" v-for="(item,index) in checkedGuige">
-                <div :key="index" class="resGuigeItems">
-                  <template v-for="(addedItem,addedIndex) in item">
-                    <span class="resGuigeItem" :key="addedIndex">
-                      {{addedItem.sizes || addedItem.num}}
-                      <span v-if="addedItem.num">份</span>
-                    </span>
-                  </template>
-                </div>
-              </template>
-
-            </div>
-            <button @click="addCheckGuigeItem">添加所选</button>
-          </div>
-          <div class="sure">
-            <button v-if="buy_way == 1" class="addCart" @click="addCart">加入购物车</button>
-            <button class="goOrder" @click="sureGoOrder">确定下单</button>
-          </div>
-        </div>
-      </mt-popup>
-    </div> -->
     <mt-popup v-model="isShow" position="bottom">
       <div class="goods_guige">
         <div class="one">
@@ -246,6 +189,7 @@
 </template>
 
 <script>
+let buyNumRule = 200
 import Vue from "vue";
 import http from "../utils/http";
 import api from "../utils/api";
@@ -374,18 +318,7 @@ export default {
       }
     },
     fetchGroundItem: async function() {
-      let params = {};
-      const res = await http.get(api.groupbooking, params);
-      if (res.data) {
-        this.groundInfo = res.data.gbookingMessage.splice(0, 1);
-        var timeArr = [];
-        for (var i = 0; i < this.groundInfo.length; i++) {
-          timeArr[i] =
-            this.groundInfo[i].statime / 1000 +
-            this.groundInfo[i].limtime / 1000;
-        }
-        this.clock = util.countdownMore(timeArr, this);
-      }
+      util.grounding(this);
     },
 
     //guigeIndex  guigeObj对应的索引    guigesObj最外层对象   guigeObj最外层对象的sizeslist数组里面的对象
@@ -473,7 +406,7 @@ export default {
     addCheckGuigeItem() {
       //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套了
       // console.log(this.checkKucunFlag);
-      if (!this.addCheck() || !this.checkKucunFlag) {
+      if (!this.addCheck() || !this.checkKucunFlag || this.buyGoodsRule()) {
         return;
       }
       this.newGuigessAdd();
@@ -566,7 +499,7 @@ export default {
     sureGoOrder: async function() {
       //checkedGuige没数据的情况
       if (this.checkedGuige.length == 0) {
-        if (!this.addCheck() || !this.checkKucunFlag) {
+        if (!this.addCheck() || !this.checkKucunFlag || this.buyGoodsRule()) {
           return;
         }
         //没有点添加所选就在确定下单的时候再去检测库存
@@ -724,6 +657,36 @@ export default {
       this.numNum = Number(this.num);
       if (!Number.isInteger(this.numNum) || this.numNum <= 0) {
         return MessageBox("提示", "请输入规范数量");
+      }
+    },
+    //每个商品对应购买规则
+    buyGoodsRule() {
+      if (this.buy_way == 1) {
+        return true
+      }
+      if (this.goodsId == 1) {
+        buyNumRule = 200
+      } else if (this.goodsId == 2) {
+        buyNumRule = 400
+      }else if (this.goodsId == 4) {
+        buyNumRule = 100
+      } else if (this.goodsId == 5) {
+        buyNumRule = 30
+      }
+      if (this.goodsId == 1 || this.goodsId == 2 || this.goodsId == 4 || this.goodsId == 5) {
+        if (this.num%buyNumRule) {
+          Toast(`购买数量必须以${buyNumRule}条的倍数进行购买`)
+          return false
+        } else {
+          return true
+        }
+      } else if (this.goodsId == 3) {
+        if (this.num < 200) {
+          Toast(`购买数量需200条起订`)
+          return false
+        } else {
+          return true
+        }
       }
     }
   }

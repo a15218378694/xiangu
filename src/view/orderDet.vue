@@ -154,7 +154,7 @@ export default {
           this.urlParams = `?orderId=${res.data.orderId}&teamId=${
             this.teamId
           }&isMas=0`;
-          this.groundDetUrl = `${api.testBaseUrl}/#/groundDet${this.urlParams}`;
+          this.groundDetUrl = `${api.baseUrl}/#/groundDet${this.urlParams}`;
           this.orderId = res.data.orderId;
           console.log(this.groundDetUrl);
           this.sendOrderID();

@@ -1,8 +1,5 @@
 'use strict'
 var root = process.env.API_ROOT
-if (process.env.NODE_ENV == "development") {
-  root = ''
-}
 import axios from 'axios'
 import qs from 'qs'
 import { Indicator } from 'mint-ui';

@@ -10,13 +10,13 @@
                     <span class="num">{{item.groupbooking_sum}}人已参与</span>
                 </div>
                 <div class="bott">
-                    <span v-text="clockArr"></span>
+                    <span v-if="clock.length > 0">剩{{clock[index][0]}}:{{clock[index][1]}}:{{clock[index][2]}}</span>
                     <span class="kill_time"></span>结束，剩
                     <span class="kucun">{{item.num}}</span>库存
                 </div>
             </div>
             <router-link tag="div" :to="{ path: 'groundDet', query: {orderId: item.orderId, teamId: item.teamId }}" class="rightt">
-                <button class="goGround">去拼团</button>
+                <span class="goGround">去拼团</span>
             </router-link>
         </div>
     </div>
@@ -25,20 +25,22 @@
 <script>
 export default {
   name: "name",
-  props: ["groundInfo", "clock"],
+  props: {
+    groundInfo: {
+      default: () => [],
+      type: Array
+    },
+    clock: {
+      default: () => [],
+      type: Array
+    }
+  },
   data: function() {
     return {
-      killTime: [],
-      clockArr: []
+      killTime: []
     };
   },
-  mounted() {
-    this.groundInfo.forEach((v, index) => {
-      this.clockArr = `剩${this.clock[index][0]}:${this.clock[index][1]}:${
-        this.clock[index][2]
-      }`;
-    });
-  },
+  mounted() {},
 
   methods: {}
 };

@@ -1,8 +1,8 @@
 .grounding {
     padding: 0 0.4rem;
     background-color: #fff;
-    .bot { 
-        padding: 0.2rem 0; 
+    .bot {
+        padding: 0.2rem 0;
         display: flex;
         .leftt {
             img {
@@ -20,7 +20,15 @@
             .topp {
                 text-align: left;
                 .com {
-                    padding-right: 0.15rem;
+                    display: inline-block;
+                    vertical-align: middle;
+                    width: 1.8rem;
+                    height: 0.42rem; // text-overflow: ellipsis;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    font-family: PingFangSC-Regular;
+                    color: rgba(79, 80, 84, 1);
+                    line-height: 0.42rem; // padding-right: 0.15rem;
                     font-size: 0.3rem;
                 }
                 .num {
@@ -29,20 +37,26 @@
                 }
             }
             .bott {
-                color: #9e9fa1;
+                width: 4.2rem;
+                height: 0.37rem;
+                font-size: 0.26rem;
+                font-family: PingFangSC-Regular;
+                color: rgba(158, 159, 161, 1);
+                line-height: 0.37rem;
                 .kill_time {
                     color: #ff6d00;
-                    margin: 0 0.1rem;
                 }
                 .kucun {
                     color: #ff6d00;
-                    margin: 0 0.1rem;
                 }
             }
         }
         .rightt {
             padding: 0.095rem 0;
+            position: relative;
             .goGround {
+                display: inline-block;
+                vertical-align: middle;
                 border: 0.01rem solid #42bd56 !important;
                 color: #42bd56;
                 width: 1.2rem;
@@ -50,8 +64,9 @@
                 background: rgba(225, 243, 226, 1);
                 border-radius: 0.05rem;
                 line-height: 0.58rem;
+                // margin-bottom:0.05rem;
                 text-align: center;
-                border-radius: 0.15rem;
+                border-radius: 0.05rem;
             }
         }
     }

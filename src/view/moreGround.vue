@@ -1,12 +1,12 @@
 <template>
-    <div>
-      <nav-header>
-                <span class="orderDetTit" slot="header">更多拼团</span>        
-      </nav-header>      
-      <div class="grounding" style="margin: 0;">
-          <ground-item :groundInfo="groundInfo" :clock="clock"></ground-item>
-      </div>
+  <div>
+    <nav-header>
+      <span class="orderDetTit" slot="header">更多拼团</span>
+    </nav-header>
+    <div class="grounding" style="margin: 0;">
+      <ground-item :groundInfo="groundInfo" :clock="clock"></ground-item>
     </div>
+  </div>
 </template>
 
 <script>
@@ -32,20 +32,7 @@ export default {
   },
   methods: {
     grounding: async function() {
-      let params = {
-        page: this.page
-      };
-      const res = await http.get(api.lookmore, params);
-      if (res.data) {
-        this.groundInfo = res.data.gbookingMessage;
-        var timeArr = [];
-        for (var i = 0; i < this.groundInfo.length; i++) {
-          timeArr[i] =
-            this.groundInfo[i].statime / 1000 +
-            this.groundInfo[i].limtime / 1000;
-        }
-        this.clock = util.countdownMore(timeArr, this);
-      }
+      util.grounding(this,'more');
     }
   },
   components: {

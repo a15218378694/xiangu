@@ -1,5 +1,5 @@
 export default {
-  testBaseUrl: 'http://test.merchant.xljkj.cn',
+  baseUrl: 'http://test.merchant.xljkj.cn',
   baseUrl: 'http://merchant.xljkj.cn',
   recommend: "/home/recommend",//商城首页显示接口
   productmodule: "/home/productmodule",//商城首页 商品分类列表的接口
