@@ -70,7 +70,9 @@
           <span class="totPri">{{prices}}</span>
         </span>
         <span class="right" @click="getOrderId">
-          <button>立即支付</button>
+          <button :class="[daoji? 'unClick': '']">立即支付
+            <span v-if="daoji">{{daoji}}秒</span>
+          </button>
         </span>
       </div>
     </div>
@@ -85,13 +87,8 @@ import api from "../utils/api";
 import goodsItem from "../components/goodsItem.vue";
 import NavHeader from "../components/navHeader.vue";
 import { Toast } from "mint-ui";
-// let flagg = true
-// router.beforeEach((to, from, next) => {
-//   if (from.path !== '/goodsDetail') {
-//     flagg = false
-//   }
-//   next()
-// })
+import { MessageBox } from "mint-ui";
+
 export default {
   name: "name",
   data: function() {
@@ -122,7 +119,8 @@ export default {
       endGuigess: [],
       lastPage: "",
       curCom: "orderDet",
-      btn_done: false
+      btn_done: false,
+      daoji: 3
     };
   },
   methods: {
@@ -148,33 +146,28 @@ export default {
       }
 
       params.shoppingCat = this.shoppingCatArr;
-      if (this.teamId) {
-        params.teamId = this.teamId;
-      }
-      let res = await http.post1(api.submitorder, params);
-      if (res.data) {
-        this.teamId = res.data.teamId;
-        this.totalPrice = res.data.totalPrice;
-        this.urlParams = `?orderId=${res.data.orderId}&isMas=0`;
-        if (res.data.teamId) {
+      params.teamId = this.teamId;
+      if (params.teamId !== "") {
+        let res = await http.post1(api.submitorder, params);
+        if (res.data) {
+          this.totalPrice = res.data.totalPrice;
           this.urlParams = `?orderId=${res.data.orderId}&teamId=${
-            res.data.teamId
+            this.teamId
           }&isMas=0`;
+          this.groundDetUrl = `${api.testBaseUrl}/#/groundDet${this.urlParams}`;
+          this.orderId = res.data.orderId;
+          console.log(this.groundDetUrl);
+          this.sendOrderID();
         }
-        this.groundDetUrl = `http://merchant.xljkj.cn/#/groundDet${
-          this.urlParams
-        }`;
-        this.orderId = res.data.orderId;
-        console.log(this.groundDetUrl);
-        this.sendOrderID();
       }
     },
     getOrderId() {
-      // if (this.btn_done) {
-      //   return;
-      // }
-      // this.btn_done = true;
-      if (!this.perName || !this.perPhone || !this.perAddr) return;
+      if (this.daoji) {
+        return
+      }
+      if (!this.perName || !this.perPhone || !this.perAddr) {
+        return MessageBox('提示','请填写完整收货信息')
+      };
       if (this.orderId) {
         return this.sendOrderID();
       }
@@ -195,7 +188,7 @@ export default {
           money: this.totalPrice,
           groundDetUrl: this.groundDetUrl
         };
-        console.log(iosData);
+        // Toast(this.groundDetUrl);
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
           bridge.callHandler("didPay", iosData, function(resp) {});
         });
@@ -207,15 +200,9 @@ export default {
     getCurSel1() {
       let that = this;
       window.getCurSel = function(perName, perPhone, perAddr) {
-        if (that.$bridge.getSheBei() == "iPhone") {
-          let iosData = {
-            isHidden: "0"
-          };
-          that.$bridge.setupWebViewJavascriptBridge(function(bridge) {
-            bridge.callHandler("isHiddenBar", iosData, function(resp) {});
-          });
-        }
-        Toast(perPhone);
+        console.log(perName, perPhone, perAddr);
+        // that.hidBar = true;
+        // Toast(perPhone);
         that.perPhone = "";
         that.perName = perName;
         that.perPhone = perPhone;
@@ -226,13 +213,20 @@ export default {
       if (winBri.getSheBei() == "Android") {
         vuePay.showAddressFromJs();
       } else if (winBri.getSheBei() == "iPhone") {
+        // Toast(this.teamId);
+        // if (this.teamId !== "novalues") {
+        //   this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+        //     bridge.callHandler("didOuterShippingAddress", "123", function() {});
+        //   });
+        // } else {
+        // }
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
           bridge.callHandler("didShippingAddress", "123", function() {});
         });
       }
     }
   },
-  mounted() {
+  created() {
     this.getCurSel1();
     // this.changeBtn();
     this.lastPage = this.$route.query.curPage;
@@ -250,7 +244,7 @@ export default {
     // this.shoppingCatArr = this.orderDetailsArr[0].shoppingCat; // 订单商品数组
     this.freight = this.orderDetails.freight; //运费
     this.buyway = this.$route.query.buyway;
-    this.teamId = this.orderDetails.teamId;
+    this.teamId = this.orderDetData.teamId;
 
     //传递过来的规格
     if (
@@ -288,10 +282,20 @@ export default {
     this.myOrders = this.orderDetData.myorders;
     //计算商品总价
     this.comTotleGoodsPri();
+    this.timer = setInterval(() => {
+      this.daoji--;
+    }, 1000);
   },
   components: {
     goodsItem,
     NavHeader
+  },
+  watch: {
+    daoji() {
+      if (!this.daoji) {
+        clearInterval(this.timer)
+      }
+    }
   }
 };
 </script>
@@ -434,5 +438,8 @@ export default {
       }
     }
   }
+}
+.unClick {
+  background-color: #8a8a8a !important;
 }
 </style>

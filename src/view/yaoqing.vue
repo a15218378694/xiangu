@@ -7,7 +7,7 @@
       <div class="faqi" v-if="yaoQingObj.status == 0">
         <p class="one">
           发起拼团
-          <span>返现 ¥5,000</span>
+          <span>返现至 ¥5,000</span>
         </p>
         <p class="two">离开团还差
           <span>{{yaoQingObj.balancePerson}}</span> 人</p>
@@ -120,6 +120,7 @@ import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
 import { Toast } from "mint-ui";
+// import { MessageBox } from "mint-ui";
 
 export default {
   name: "name",
@@ -129,86 +130,11 @@ export default {
       JSESSIONID: "",
       merchant_login_flag: "",
       yaoQingObj: {
-        status: 0,
-        balancePerson: 1,
         grouppbooking_people: [],
-        msg: "success",
-        image:
-          "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516937789180.jpeg?Expires=1832297779&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=C5IWB4LbxizV9P6o3DWsKEBhzPw%3D",
-        code: 0,
-        balancenum: 9000, // 离拼成剩余数量
-        price: 4.5,
-        rebate: [
-          //返利规则
-          {
-            id: null,
-            oid: null,
-            name: "团长",
-            num: 10000,
-            price: 5000
-          },
-          {
-            id: null,
-            oid: null,
-            name: "营长",
-            num: 7000,
-            price: 3500
-          },
-          {
-            id: null,
-            oid: null,
-            name: "排长",
-            num: 5000,
-            price: 2500
-          }
-        ],
-        closeTime: 1516177362000, //拼团结束时间
-        pid: 3, //商品id
-        title: "LED灯箱",
-        buyway: "购买方式",
-        limit_num: 30000, //拼团的限购数量
-        limit_time: 259200000 //拼团时限
+        rebate: []
       },
 
-      grouppbooking_people: [
-        //所有的团员信息
-        {
-          id: null,
-          teamId: null,
-          logo:
-            "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
-          name: "小明",
-          position: "团长", //职位
-          open_person: null,
-          starttime: 1515555837000,
-          buynum: null,
-          orderId: null
-        },
-        {
-          id: null,
-          teamId: null,
-          logo:
-            "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
-          name: "小黄",
-          position: "营长",
-          open_person: null,
-          starttime: 1516176979000,
-          buynum: null,
-          orderId: null
-        },
-        {
-          id: null,
-          teamId: null,
-          logo:
-            "Expires=1832067698&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=n8R65M0mKm1%2B4LECMIaC2nPag44%3D",
-          name: "小花",
-          position: "排长",
-          open_person: null,
-          starttime: 1516177332000,
-          buynum: null,
-          orderId: null
-        }
-      ],
+      grouppbooking_people: [],
       orderId: "",
       teamId: "",
       goodsId: ""
@@ -240,16 +166,18 @@ export default {
     },
     lijiAdd() {
       //判断是否唤醒app
-      var url_ios = `xiangTuAPP://?pid=http://merchant.xljkj.cn/#/groundDet?orderId=${
-        this.orderId
-      }&teamId=${this.teamId}`;
+      const tipInfo =
+        "即将跳转，如果唤醒APP后没进入拼团详情或者登录页面，请关闭APP重试";
+      var url_ios = `xiangTuAPP://?pid=${
+        api.testBaseUrl
+      }/&pid1=/groundDetApp?orderId=${this.orderId}&teamId=${this.teamId}`;
 
       var url_ios_download =
         "http://merchant.xljkj.cn/text/Merchantdownload/index.html";
 
-      var url_android = `ogxscheme://ogxhost/?pid=http://merchant.xljkj.cn/&pid1=/groundDet?orderId=${
-        this.orderId
-      }&teamId=${this.teamId}`;
+      var url_android = `ogxscheme://ogxhost/?pid=${
+        api.testBaseUrl
+      }/&pid1=/groundDetApp?orderId=${this.orderId}&teamId=${this.teamId}`;
       console.log(url_android);
       var url_android_download =
         "http://merchant.xljkj.cn/text/Merchantdownload/index.html";
@@ -268,13 +196,14 @@ export default {
         })()
       };
       if (isAndroid == true) {
-        console.log(browser.versions.weixin);
         if (browser.versions.weixin == true) {
           alert(
             "点击右上角按钮，然后在弹出的菜单中，点击在浏览器中打开，即可安装"
           );
         } else {
           var loadTime = new Date();
+          // MessageBox("提示", tipInfo);
+
           location.href = url_android;
           setTimeout(function() {
             var outTime = new Date();
@@ -289,6 +218,7 @@ export default {
             "点击右上角按钮，然后在弹出的菜单中，点击在浏览器中打开，即可安装"
           );
         } else {
+          // MessageBox("提示", tipInfo);
           var loadTime = new Date();
           location.href = url_ios;
           setTimeout(function() {

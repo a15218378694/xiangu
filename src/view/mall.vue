@@ -77,7 +77,7 @@ let mallObj = {
   name: "name",
   data() {
     return {
-      defaultImg: '/static/img/xiangtuLogo2.png',
+      defaultImg: "/static/img/xiangtuLogo2.png",
       groundInfo: [],
       value: "",
       active: "index",
@@ -156,13 +156,51 @@ let mallObj = {
       const res = await http.get(api.groupbooking, params);
       if (res.data) {
         if (res.data.gbookingMessage) {
-          this.groundInfo = res.data.gbookingMessage.splice(0, 1);
+          // this.groundInfo = res.data.gbookingMessage.splice(0, 1);
+          this.groundInfo = [
+            //正在拼团的商品
+            {
+              id: 3, // 商品id
+              title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源1", // 商品标题
+              num: 356000, // 商品库存数量
+              groupbooking_sum: 100, // 拼团人数
+              surplusTime: 1520060452751, // 拼团剩余时间
+              hours: 6, //剩余的小时数
+              minutes: 58 //剩余的分钟
+            },
+            {
+              id: 4,
+              title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源2",
+              num: 356000,
+              groupbooking_sum: 100,
+              surplusTime: 25094000,
+              hours: 6,
+              minutes: 58
+            },
+            {
+              id: 5,
+              title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源3",
+              num: 356000,
+              groupbooking_sum: 100,
+              surplusTime: 25094000,
+              hours: 6,
+              minutes: 58
+            },
+            {
+              id: 6,
+              title: "LED灯箱灯条 拉不卡布软膜广告灯箱光4",
+              num: 356000,
+              groupbooking_sum: 100,
+              surplusTime: 25094000,
+              hours: 6,
+              minutes: 58
+            }
+          ];
           var timeArr = [];
           for (var i = 0; i < this.groundInfo.length; i++) {
-            timeArr[i] =
-              this.groundInfo[i].statime / 1000 +
-              this.groundInfo[i].limtime / 1000;
+            timeArr[i] = this.groundInfo[i].surplusTime / 1000;
           }
+          console.log(timeArr);
           this.clock = util.countdownMore(timeArr, this);
         }
       }

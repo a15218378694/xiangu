@@ -57,13 +57,13 @@
           未开团，离成团还差
           <span>{{groundDetInfo.balancePerson}}</span> 人
         </div>
-        <div class="one" v-if="groundDetInfo.teamStatus == 2">
+        <div class="one" v-if="groundDetInfo.teamStatus == 2 && groundDetInfo.balancenum > 0">
           已开团，离拼成还剩
           <span>{{groundDetInfo.balancenum}}</span> 条
         </div>
-        <div class="one" v-if="groundDetInfo.teamStatus == 3">
+        <div class="one" v-if="groundDetInfo.teamStatus == 3 && groundDetInfo.balancenum <= 0">
           拼团成功，
-          <span>{{groundDetInfo.limit_num}}</span> 条已全部拼完
+          <span>{{groundDetInfo.limit_num}}K</span> 条已全部拼完
         </div>
         <div class="one" v-if="groundDetInfo.teamStatus == 4">
           拼团失败，离拼成还剩
@@ -75,8 +75,13 @@
           <span>{{clock[1]}}</span>:
           <span>{{clock[2]}}</span>自动结束
         </div>
-        <div class="three">
+        <div class="three" v-if="groundDetInfo.teamStatus != 11">
           快去邀请好友参团吧！
+          <router-link to="playDet">玩法详情</router-link>
+        </div>
+        <div class="three" v-if="groundDetInfo.teamStatus == 11">
+          <div>支付的金额将自动返回到你的钱包</div>
+          <div>人缘太差了</div>
           <router-link to="playDet">玩法详情</router-link>
         </div>
       </div>
@@ -112,7 +117,8 @@
       </div>
 
       <div class="sure">
-        <button class="addCart" @click="goGoodsDet" v-if="isMas == 1">立即参与</button>
+        <!-- v-if="isMas == 1" -->
+        <button class="addCart" @click="goGoodsDet">立即参与</button>
         <button class="goOrder" ref="share" @click="goShare">立即分享</button>
       </div>
 
@@ -132,7 +138,7 @@ export default {
   name: "name",
   data: function() {
     return {
-      defaultImg: '/static/img/xiangtuLogo2.png',            
+      defaultImg: "/static/img/xiangtuLogo2.png",
       clock: [],
       teamStatus: -1,
       timer: "",
@@ -141,63 +147,8 @@ export default {
       goodsId: "",
       isMas: 1,
       groundDetInfo: {
-        msg: "sucess",
-        image:
-          "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516937789180.jpeg?Expires=1832297779&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=C5IWB4LbxizV9P6o3DWsKEBhzPw%3D",
-        code: 0,
-        timeId: "164311",
-        balancenum: "12",
-        rebate: [
-          {
-            id: null,
-            oid: null,
-            name: "团长",
-            num: 10000,
-            price: 5000
-          },
-          {
-            id: null,
-            oid: null,
-            name: "营长",
-            num: 7000,
-            price: 3500
-          },
-          {
-            id: null,
-            oid: null,
-            name: "排长",
-            num: 5000,
-            price: 2500
-          }
-        ],
-        join_num: 1,
-        pid: 3,
-        title: "LED灯箱",
-        limit_time: 259200000,
-        limit_createtime: 86400000,
-        grouppbooking_people: [
-          {
-            id: null,
-            teamId: null,
-            logo:
-              "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516712381297.jpg?Expires=1832072380&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=o9RN2o1uGdidkwj7XTJlrZDAtgQ%3D",
-            name: "安度因",
-            position: "团长",
-            open_person: null,
-            starttime: 1517053500000,
-            buynum: null,
-            orderId: null
-          }
-        ],
-        openteamTimeNum: 1517053500000,
-        openteamTime: 1517053500000,
-        price: 4.5,
-        name: "安度因",
-        nowtime: 1517053500000,
-        logo:
-          "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516712381297.jpg?Expires=1832072380&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=o9RN2o1uGdidkwj7XTJlrZDAtgQ%3D",
-        position: "团长",
-        limit_num: 30000
+        rebate: [],
+        grouppbooking_people: []
       }
     };
   },
@@ -206,13 +157,13 @@ export default {
     if (this.$route.query.isMas) {
       this.isMas = this.$route.query.isMas;
     }
-    if (this.isMas == 0) {
-      this.$refs.share.style["width"] = `100%`;
-    }
+    // if (this.isMas == 0) {
+    //   this.$refs.share.style["width"] = `100%`;
+    // }
     if (this.$route.query.teamId) {
       this.teamId = this.$route.query.teamId;
     }
-    // this.countdown(15117198744.64);
+    // this.countdown((new Date().getTime() + 30000) / 1000);
     this.getGroudDet();
   },
   methods: {
@@ -221,21 +172,19 @@ export default {
         this.orderId = 10871879897;
       }
       let params = {
-        orderId: this.orderId
+        orderId: this.orderId,
+        teamId: this.teamId
       };
-      if (this.teamId) {
-        params.teamId = this.teamId;
-      }
       const res = await http.get(api.finishpay, params);
       if (res.data) {
         this.teamStatus = res.data.teamStatus;
         this.goodsId = res.data.pid;
         this.groundDetInfo = res.data;
-        this.teamId = this.groundDetInfo.grouppbooking_people[0].teamId
-        if (this.isMas == 0) {
-          this.countdown(this.groundDetInfo.openCloseTime);
+        this.teamId = this.groundDetInfo.grouppbooking_people[0].teamId;
+        if (this.groundDetInfo.teamStatus == 1) {
+          this.countdown(this.groundDetInfo.openCloseTime / 1000);
         } else {
-          this.countdown(this.groundDetInfo.gBookingCloseTime);
+          this.countdown(this.groundDetInfo.gBookingCloseTime / 1000);
         }
       }
     },
@@ -251,7 +200,8 @@ export default {
           path: "goodsDetail",
           query: {
             goodsId: this.goodsId,
-            rukou: 'groundDet'
+            rukou: "groundDet",
+            teamId: this.teamId
           }
         });
       } else {
@@ -261,21 +211,15 @@ export default {
     //邀请用的图片标题链接
     goShare() {
       let that = this;
-      console.log(util.getCookie("merchant_login_flag"));
       let merchant_login_flag = util.getCookie("merchant_login_flag");
-      let urlParams = `?orderId=${
-        this.orderId
+      let urlParams = `?orderId=${this.orderId}&teamId=${
+        this.teamId
       }&merchant_login_flag=${merchant_login_flag}`;
-      if (this.teamId) {
-        urlParams = `?orderId=${this.orderId}&teamId=${
-          this.teamId
-        }&merchant_login_flag=${merchant_login_flag}`;
-      }
 
-      let totUrl = `http://merchant.xljkj.cn/#/yaoqing${urlParams}`;
+      let totUrl = `${api.testBaseUrl}/#/yaoqing${urlParams}`;
       let tit = "我正在发起拼团，邀请您一起来开团，一起享受最高优惠价格";
       let des = `目前离开团还差${this.groundDetInfo.balancePerson}人`;
-      let pic = "http://merchant.xljkj.cn/static/img/yiqi.91cc4db.png";
+      let pic = `${api.testBaseUrl}/static/img/yiqi.91cc4db.png`;
       if (this.groundDetInfo.teamStatus == 2) {
         tit = "我正在参与拼团，邀请您一起来参团，一起享受最高优惠价格";
         des = `目前离拼成还差${this.groundDetInfo.balancenum}条`;
@@ -289,13 +233,12 @@ export default {
             "didGroupBookingShare",
             { totUrl, tit, des, pic },
             function(resp) {
-            console.log({ totUrl, tit, des, pic });
-              
+              console.log({ totUrl, tit, des, pic });
             }
           );
         });
       }
-    },
+    }
   },
   components: {
     NavHeader,
@@ -392,8 +335,8 @@ export default {
       }
     }
     .three {
-      height: 0.46rem;
-      line-height: 0.46rem;
+      // height: 0.46rem;
+      // line-height: 0.46rem;
       a {
         text-decoration: underline;
         color: #59b9e1;

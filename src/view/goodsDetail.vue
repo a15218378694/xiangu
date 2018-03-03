@@ -120,7 +120,8 @@
       <div class="kefu">客服</div>
       <button class="ground_buy" @click="isShowEven('拼团',2)">
         <p class="ground_pri">￥{{proDetails.original_price}}</p>
-        <p class="groundBtn">发起拼团</p>
+        <p class="groundBtn" v-if="rukou == 'groundDet'">立即拼团</p>
+        <p class="groundBtn" v-if="rukou !== 'groundDet'">发起拼团</p>
       </button>
       <button class="alone_buy" @click="isShowEven('单价',1)" v-if="this.rukou !== 'groundDet'">
         <p class="alone_pri">￥{{proDetails.offering_price}}</p>
@@ -288,18 +289,23 @@ export default {
       teamId: "",
       totalNums: 0,
       checkKucunFlag: true,
-      rukou: ''
+      rukou: "",
+      appPage: 0
     };
   },
-
-  mounted() {
+  created() {
     this.goodsId = this.$route.query.goodsId;
-    this.rukou = this.$route.query.rukou;
-    if (this.rukou == 'groundDet') {
-      this.isShow = true
+    if (this.$route.query.appPage) {
+      this.appPage = this.$route.query.appPage;
     }
+    this.rukou = this.$route.query.rukou;
     if (this.$route.query.teamId) {
       this.teamId = this.$route.query.teamId;
+    }
+  },
+  mounted() {
+    if (this.rukou == "groundDet") {
+      this.isShowEven("拼团", 2);
     }
     this.fetchGoodsDet();
     this.fetchGroundItem(); //拿到团购列表商品中的第一项
@@ -326,13 +332,16 @@ export default {
         id: this.goodsId,
         buy_way
       };
-      if (this.teamId) {
+      let fetchApi = api.unitprice;
+
+      if (buy_way == 2) {
         params.teamId = this.teamId;
+        fetchApi = api.pro;
       }
-      const res = await http.get(api.pro, params);
+      const res = await http.get(fetchApi, params);
       if (res.data) {
         if (buy_way == 2 && res.data.code == 2) {
-          return MessageBox("提示", "已经开团啦，不能发起拼团了");
+          return MessageBox("提示", res.data.msg);
         }
         this.isShow = !this.isShow;
         setTimeout(() => {
@@ -359,6 +368,9 @@ export default {
       const res = await http.get(api.prodetails, params);
       if (res.data) {
         this.proDetails = res.data.proDetails;
+        if (this.appPage == 0) {
+          this.teamId = res.data.teamId;
+        }
       }
     },
     fetchGroundItem: async function() {
@@ -477,11 +489,9 @@ export default {
       this.showChecked = false;
       let params = {
         buynum: this.num,
-        pid: this.proDetails.id
+        pid: this.proDetails.id,
+        teamId: this.teamId
       };
-      if (this.teamId) {
-        params.teamId = this.teamId;
-      }
       this.newGuigess.map((v, i) => {
         if (i == 0) {
           params.coulour = v.sizes;
@@ -569,8 +579,16 @@ export default {
 
       //发送给后端的数据只是从checkedGuige中抽取出来的
       let params = this.getParams();
+
+      if (this.buy_way == 2) {
+        params[0].teamId = this.teamId;
+      }
+      console.log(params);
       const res = await http.post1(api.order, params);
       if (res.data) {
+        if (this.buy_way == 2 && res.data.code == 2) {
+          return MessageBox("提示", res.data.msg);
+        }
         this.$router.push({
           path: "orderDet",
           query: {
@@ -720,18 +738,21 @@ export default {
     z-index: 33;
     top: 0;
     left: 0;
-    padding: 0.3rem;
     .back {
       width: 0.8rem;
       height: 0.8rem;
       float: left;
+      padding: 0.3rem;
+      box-sizing: content-box;
     }
     .toShopCart {
       float: right;
       .shopCart {
         width: 0.8rem;
         height: 0.8rem;
-        margin-right: 0.3rem;
+        padding: 0.3rem;
+        padding-right: 0.15rem;
+        box-sizing: content-box;
       }
     }
 
@@ -739,6 +760,9 @@ export default {
       width: 0.8rem;
       height: 0.8rem;
       float: right;
+      padding: 0.3rem;
+      padding-left: 0.15rem;
+      box-sizing: content-box;
     }
   }
 

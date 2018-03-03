@@ -12,7 +12,7 @@ module.exports = {
     proxyTable: {
       "**": {
         changeOrigin: true,
-        target: "http://merchant.xljkj.cn:80"
+        target: "http://test.merchant.xljkj.cn:80"
       }
     }, 
     

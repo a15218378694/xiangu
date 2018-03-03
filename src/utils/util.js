@@ -51,7 +51,7 @@ export default {
   },
 
   countdown(that, total_micro_second) {
-    console.log(total_micro_second);
+    // console.log(total_micro_second);
 
     if (total_micro_second <= 0 || isNaN(total_micro_second)) {
       that.clock = [0, 0, 0].map(this.formatNumber);

@@ -4,6 +4,7 @@
       <nav-header>
         <span class="orderDetTit" slot="header">拼团详情</span>
       </nav-header>
+
       <ground-step>
         <img class="step" slot="step1" src="../assets/img/拼团详情-未参团_slices/Group 4@3x.png" alt="">
         <img class="step" v-if="this.teamStatus != 2" slot="step2" src="../assets/img/拼团详情-未参团_slices/Group4@2x.png" alt="">
@@ -111,7 +112,7 @@
       </div>
 
       <div class="sure">
-        <button class="addCart" @click="goGoodsDet" v-if="isMas == 1">继续购买</button>
+        <button class="addCart" @click="goGoodsDet">立即参与</button>
         <button class="goOrder" ref="share" @click="goShare">立即分享</button>
       </div>
 
@@ -121,17 +122,17 @@
 </template>
 
 <script>
+import NavHeader from "../components/navHeader.vue";
 import GroundStep from "../components/groundStep.vue";
 import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
 import { MessageBox } from "mint-ui";
-import NavHeader from "../components/navHeader.vue";
 export default {
   name: "name",
   data: function() {
     return {
-      defaultImg: '/static/img/xiangtuLogo2.png',            
+      defaultImg: "/static/img/xiangtuLogo2.png",
       clock: [],
       teamStatus: -1,
       timer: "",
@@ -140,63 +141,8 @@ export default {
       goodsId: "",
       isMas: 1,
       groundDetInfo: {
-        msg: "sucess",
-        image:
-          "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516937789180.jpeg?Expires=1832297779&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=C5IWB4LbxizV9P6o3DWsKEBhzPw%3D",
-        code: 0,
-        timeId: "164311",
-        balancenum: "12",
-        rebate: [
-          {
-            id: null,
-            oid: null,
-            name: "团长",
-            num: 10000,
-            price: 5000
-          },
-          {
-            id: null,
-            oid: null,
-            name: "营长",
-            num: 7000,
-            price: 3500
-          },
-          {
-            id: null,
-            oid: null,
-            name: "排长",
-            num: 5000,
-            price: 2500
-          }
-        ],
-        join_num: 1,
-        pid: 3,
-        title: "LED灯箱",
-        limit_time: 259200000,
-        limit_createtime: 86400000,
-        grouppbooking_people: [
-          {
-            id: null,
-            teamId: null,
-            logo:
-              "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516712381297.jpg?Expires=1832072380&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=o9RN2o1uGdidkwj7XTJlrZDAtgQ%3D",
-            name: "安度因",
-            position: "团长",
-            open_person: null,
-            starttime: 1517053500000,
-            buynum: null,
-            orderId: null
-          }
-        ],
-        openteamTimeNum: 1517053500000,
-        openteamTime: 1517053500000,
-        price: 4.5,
-        name: "安度因",
-        nowtime: 1517053500000,
-        logo:
-          "http://merchant-service.oss-cn-beijing.aliyuncs.com/install/1516712381297.jpg?Expires=1832072380&OSSAccessKeyId=LTAI81SVaJvQn4sl&Signature=o9RN2o1uGdidkwj7XTJlrZDAtgQ%3D",
-        position: "团长",
-        limit_num: 30000
+        rebate: [],
+        grouppbooking_people: []
       }
     };
   },
@@ -205,9 +151,9 @@ export default {
     if (this.$route.query.isMas) {
       this.isMas = this.$route.query.isMas;
     }
-    if (this.isMas == 0) {
-      this.$refs.share.style["width"] = `100%`;
-    }
+    // if (this.isMas == 0) {
+    //   this.$refs.share.style["width"] = `100%`;
+    // }
     if (this.$route.query.teamId) {
       this.teamId = this.$route.query.teamId;
     }
@@ -220,20 +166,19 @@ export default {
         this.orderId = 10871879897;
       }
       let params = {
-        orderId: this.orderId
+        orderId: this.orderId,
+        teamId: this.teamId
       };
-      if (this.teamId) {
-        params.teamId = this.teamId;
-      }
       const res = await http.get(api.finishpay, params);
       if (res.data) {
         this.teamStatus = res.data.teamStatus;
         this.goodsId = res.data.pid;
         this.groundDetInfo = res.data;
-        if (this.isMas == 0) {
-          this.countdown(this.groundDetInfo.OpenCloseTimeNum);
+        this.teamId = this.groundDetInfo.grouppbooking_people[0].teamId
+        if (this.groundDetInfo.teamStatus == 1) {
+          this.countdown(this.groundDetInfo.openCloseTime / 1000);
         } else {
-          this.countdown(this.groundDetInfo.gBookingCloseTime);
+          this.countdown(this.groundDetInfo.gBookingCloseTime / 1000);
         }
       }
     },
@@ -248,7 +193,10 @@ export default {
         this.$router.push({
           path: "goodsDetail",
           query: {
-            goodsId: this.goodsId
+            goodsId: this.goodsId,
+            rukou: 'groundDet',
+            teamId: this.teamId,
+            appPage: 1
           }
         });
       } else {
@@ -256,27 +204,18 @@ export default {
       }
     },
     //邀请用的图片标题链接
-    getOrderObj() {
+    goShare() {
       let that = this;
-      let params = {
-        orderId: this.orderId,
-        teamId: this.teamId
-      };
       console.log(util.getCookie("merchant_login_flag"));
       let merchant_login_flag = util.getCookie("merchant_login_flag");
-      let urlParams = `?orderId=${
-        this.orderId
+      let urlParams = `?orderId=${this.orderId}&teamId=${
+        this.teamId
       }&merchant_login_flag=${merchant_login_flag}`;
-      if (this.teamId) {
-        urlParams = `?orderId=${this.orderId}&teamId=${
-          this.teamId
-        }&merchant_login_flag=${merchant_login_flag}`;
-      }
 
-      let totUrl = `http://merchant.xljkj.cn/#/yaoqing${urlParams}`;
+      let totUrl = `${api.testBaseUrl}/#/yaoqing${urlParams}`;
       let tit = "我正在发起拼团，邀请您一起来开团，一起享受最高优惠价格";
       let des = `目前离开团还差${this.groundDetInfo.balancePerson}人`;
-      let pic = "http://merchant.xljkj.cn/static/img/yiqi.91cc4db.png";
+      let pic = `${api.testBaseUrl}/static/img/yiqi.91cc4db.png`;
       if (this.groundDetInfo.teamStatus == 2) {
         tit = "我正在参与拼团，邀请您一起来参团，一起享受最高优惠价格";
         des = `目前离拼成还差${this.groundDetInfo.balancenum}条`;
@@ -285,23 +224,22 @@ export default {
         console.log(totUrl, tit, des, pic);
         vuePay.showShareFromJs(totUrl, tit, des, pic);
       } else if (winBri.getSheBei() == "iPhone") {
-        console.log({ totUrl, tit, des, pic });
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
           bridge.callHandler(
             "didGroupBookingShare",
             { totUrl, tit, des, pic },
-            function(resp) {}
+            function(resp) {
+            console.log({ totUrl, tit, des, pic });
+              
+            }
           );
         });
       }
     },
-    goShare() {
-      this.getOrderObj();
-    }
   },
   components: {
-    GroundStep,
-    NavHeader
+    NavHeader,
+    GroundStep
   }
 };
 </script>
@@ -448,6 +386,7 @@ export default {
           width: 0.9rem;
           height: 0.9rem;
           margin-right: 0.15rem;
+          border-radius: 50%;
         }
       }
       .centerr {

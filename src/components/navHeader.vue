@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { Toast } from "mint-ui";
+
 export default {
   data: function() {
     return {
@@ -22,12 +24,13 @@ export default {
   },
   methods: {
     back() {
-      if (window.location.hash.indexOf("groundDetApp") > -1) {
+      if (window.location.hash.includes("groundDetApp")) {
+        Toast('groundDetApp')
         if (winBri.getSheBei() == "Android") {
           vuePay.showGoHomeFromJs();
         } else if (winBri.getSheBei() == "iPhone") {
           this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
-            bridge.callHandler("didShippingAddress", "123", function() {});
+            bridge.callHandler("didQuitAtPresent", "123", function() {});
           });
         }
         return

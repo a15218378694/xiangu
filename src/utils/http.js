@@ -1,5 +1,8 @@
 'use strict'
-// var root = process.env.API_ROOT
+var root = process.env.API_ROOT
+if (process.env.NODE_ENV == "development") {
+  root = ''
+}
 import axios from 'axios'
 import qs from 'qs'
 import { Indicator } from 'mint-ui';
@@ -30,7 +33,7 @@ function checkStatus(response) {
   // 异常状态下，把错误信息返回去
   return {
     status: -404,
-    msg: '网络异常，请返回重新进入该页面'
+    msg: '网络异常，请稍后重试'
   }
 }
 
@@ -68,7 +71,7 @@ export default {
     return axios({
       method: 'post',
       // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80      
-      baseURL: '',
+      baseURL: root,
       url,
       credentials: 'include',
 
@@ -93,7 +96,7 @@ export default {
     return axios({
       method: 'post',
       // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80      
-      baseURL: '',
+      baseURL: root,
       url,
       credentials: 'include',
       data,
@@ -116,7 +119,7 @@ export default {
     return axios({
       method: 'get',
       // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80
-      baseURL: '',
+      baseURL: root,
       url,
       params, // get 请求时带的参数
       timeout: 10000,
