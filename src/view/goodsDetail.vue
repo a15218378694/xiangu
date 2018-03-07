@@ -159,7 +159,7 @@
 
         <div class="needNum">
           <span>需要数量：</span>
-          <input v-model="num" type="text" placeholder="请输入购买数量">
+          <input v-model="num" type="text" :placeholder="placeHold">
           <img src="../assets/img/mall/guige/提示@3x.png" alt="">
         </div>
         <div class="res">
@@ -189,7 +189,7 @@
 </template>
 
 <script>
-let buyNumRule = 200
+let buyNumRule = 200;
 import Vue from "vue";
 import http from "../utils/http";
 import api from "../utils/api";
@@ -201,6 +201,8 @@ import { Popup } from "mint-ui";
 import { MessageBox } from "mint-ui";
 import { Toast } from "mint-ui";
 import { Swipe, SwipeItem } from "mint-ui";
+import { mapState } from "vuex";
+
 Vue.component(Popup.name, Popup);
 Vue.component(Swipe.name, Swipe);
 Vue.component(SwipeItem.name, SwipeItem);
@@ -234,11 +236,26 @@ export default {
       totalNums: 0,
       checkKucunFlag: true,
       rukou: "",
-      appPage: 0
+      appPage: 0,
+      placeHold: ""
     };
+  },
+  computed: {
+    ...mapState(["cartCount"])
   },
   created() {
     this.goodsId = this.$route.query.goodsId;
+    if (this.goodsId == 1) {
+      this.placeHold = `400条的倍数进行购买`;
+    } else if (this.goodsId == 2) {
+      this.placeHold = `200条起订`;
+    } else if (this.goodsId == 3) {
+      this.placeHold = `200条的倍数进行购买`;
+    } else if (this.goodsId == 4) {
+      this.placeHold = `30台的倍数进行购买`;
+    } else if (this.goodsId == 5) {
+      this.placeHold = `100台的倍数进行购买`;
+    }
     if (this.$route.query.appPage) {
       this.appPage = this.$route.query.appPage;
     }
@@ -390,10 +407,12 @@ export default {
     },
     //调起加入购物车接口
     addCartEven: async function() {
+      let that = this;
       this.showChecked = false;
       let params = this.getParams();
       const res = await http.post1(api.addPro, params);
       if (res.data) {
+        this.$store.commit("updateCartCount", 1);
         this.guigesNum = 0;
         this.clearStatus();
         this.clearAllSelGuige();
@@ -406,7 +425,7 @@ export default {
     addCheckGuigeItem() {
       //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套了
       // console.log(this.checkKucunFlag);
-      if (!this.addCheck() || !this.checkKucunFlag || this.buyGoodsRule()) {
+      if (!this.addCheck() || !this.checkKucunFlag || !this.buyGoodsRule()) {
         return;
       }
       this.newGuigessAdd();
@@ -477,6 +496,7 @@ export default {
     //清空规格状态以及清空一套规格
     clearStatus() {
       this.num = "";
+      this.numNum = "";
       this.newGuigess = [];
       this.guigess.forEach((v, i) => {
         v.curIndex = -1;
@@ -499,7 +519,7 @@ export default {
     sureGoOrder: async function() {
       //checkedGuige没数据的情况
       if (this.checkedGuige.length == 0) {
-        if (!this.addCheck() || !this.checkKucunFlag || this.buyGoodsRule()) {
+        if (!this.addCheck() || !this.checkKucunFlag || !this.buyGoodsRule()) {
           return;
         }
         //没有点添加所选就在确定下单的时候再去检测库存
@@ -662,30 +682,40 @@ export default {
     //每个商品对应购买规则
     buyGoodsRule() {
       if (this.buy_way == 1) {
-        return true
+        return true;
       }
-      if (this.goodsId == 1) {
-        buyNumRule = 200
-      } else if (this.goodsId == 2) {
-        buyNumRule = 400
-      }else if (this.goodsId == 4) {
-        buyNumRule = 100
+      if (this.goodsId == 3) {
+        buyNumRule = 200;
+      } else if (this.goodsId == 1) {
+        buyNumRule = 400;
       } else if (this.goodsId == 5) {
-        buyNumRule = 30
+        buyNumRule = 100;
+      } else if (this.goodsId == 4) {
+        buyNumRule = 30;
       }
-      if (this.goodsId == 1 || this.goodsId == 2 || this.goodsId == 4 || this.goodsId == 5) {
-        if (this.num%buyNumRule) {
-          Toast(`购买数量必须以${buyNumRule}条的倍数进行购买`)
-          return false
+      if (
+        this.goodsId == 3 ||
+        this.goodsId == 1 ||
+        this.goodsId == 4 ||
+        this.goodsId == 5
+      ) {
+        if (this.num % buyNumRule) {
+          if (this.goodsId == 1 || this.goodsId == 3) {
+            MessageBox(`提示`, `购买数量必须以${buyNumRule}条的倍数进行购买`);
+            return false;
+          } else if (this.goodsId == 4 || this.goodsId == 5) {
+            MessageBox(`提示`, `购买数量必须以${buyNumRule}台的倍数进行购买`);
+            return false;
+          }
         } else {
-          return true
+          return true;
         }
-      } else if (this.goodsId == 3) {
+      } else if (this.goodsId == 2) {
         if (this.num < 200) {
-          Toast(`购买数量需200条起订`)
-          return false
+          MessageBox(`提示`, `购买数量需200条起订`);
+          return false;
         } else {
-          return true
+          return true;
         }
       }
     }
