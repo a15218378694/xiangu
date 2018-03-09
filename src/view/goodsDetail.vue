@@ -1,5 +1,5 @@
 <template>
-  <div :class="[isShow? 'showGuige': '','goods_det']">
+  <div :class="[isShow? '': '','goods_det']">
 
     <div class="con">
       <img class="back" @click="back" src="../assets/img/mall/商品详情_slices/Group@2x.png" alt="">
@@ -159,7 +159,7 @@
 
         <div class="needNum">
           <span>需要数量：</span>
-          <input v-model="num" type="text" :placeholder="placeHold">
+          <input v-model.number="num" type="number" :placeholder="placeHold">
           <img src="../assets/img/mall/guige/提示@3x.png" alt="">
         </div>
         <div class="res">
@@ -185,12 +185,16 @@
       </div>
     </mt-popup>
 
+    <transition name="fade">
+      <div class="specs_cover" @click="showChooseList" v-if="isShow"></div>
+    </transition>
   </div>
 </template>
 
 <script>
 let buyNumRule = 200;
 import Vue from "vue";
+import axios from "axios";
 import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
@@ -225,7 +229,6 @@ export default {
       checkedGuige: [],
       totalLength: 0,
       num: "",
-      numNum: 0,
       paramsSureOrder: {},
       buy_way: 1,
       guigesNum: 0,
@@ -279,6 +282,11 @@ export default {
   methods: {
     //单价购买或者发起拼团或者关闭
     isShowEven(buyTypeTit, buy_way) {
+      if (this.$bridge.getSheBei() == "Android") {
+        let token = util.getStore("token");
+        Toast("getStore的" + token);
+        axios.defaults.headers.common["tonken"] = token;
+      }
       if (buyTypeTit == "close") {
         this.isShow = !this.isShow;
         return;
@@ -461,7 +469,6 @@ export default {
     },
     //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套
     addCheck() {
-      this.numNum = Number(this.num);
       let flag = true;
       if (this.guigesNum >= 3) {
         flag = false;
@@ -469,14 +476,14 @@ export default {
       } else if (!this.checkKong(this.newGuigess)) {
         flag = false;
         MessageBox("提示", `请先选择规格并且各类型规格必选`);
-      } else if (!Number.isInteger(this.numNum) || this.numNum <= 0) {
+      } else if (!Number.isInteger(this.num) || this.num <= 0) {
         flag = false;
         MessageBox("提示", `请规范输入商品数量并且大于0`);
       }
       return flag;
     },
     newGuigessAdd() {
-      this.newGuigess.push({ num: this.numNum });
+      this.newGuigess.push({ num: this.num });
     },
     //在checkedguige中增加以显示出来
     checkedguigeAdd() {
@@ -496,7 +503,6 @@ export default {
     //清空规格状态以及清空一套规格
     clearStatus() {
       this.num = "";
-      this.numNum = "";
       this.newGuigess = [];
       this.guigess.forEach((v, i) => {
         v.curIndex = -1;
@@ -674,8 +680,7 @@ export default {
       }
     },
     checkNum() {
-      this.numNum = Number(this.num);
-      if (!Number.isInteger(this.numNum) || this.numNum <= 0) {
+      if (!Number.isInteger(this.num) || this.num <= 0) {
         return MessageBox("提示", "请输入规范数量");
       }
     },
@@ -1288,9 +1293,18 @@ export default {
     width: 100%;
   }
 }
-.showGuige {
-  width: 7.5rem;
-  height: 10.34rem;
-  overflow: hidden;
+// .showGuige {
+//   width: 7.5rem;
+//   height: 10.34rem;
+//   overflow: hidden;
+// }
+.specs_cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 17;
 }
 </style>
