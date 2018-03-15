@@ -1,11 +1,26 @@
 'use strict'
-var root = process.env.API_ROOT
+var root = ''
+var rootPos = ''
+if (process.env.NODE_ENV == 'production') {
+  rootPos = 'http://api.map.baidu.com'
+  let isTestBaseAPI = location.href.includes('test')
+  root = 'http://merchant.xljkj.cn'
+  if (isTestBaseAPI) {
+    root = 'http://test.merchant.xljkj.cn'
+  }
+}
 import axios from 'axios'
 import qs from 'qs'
-import { Indicator } from 'mint-ui';
-import { Toast } from "mint-ui";
+import util from './util'
+import {
+  Indicator
+} from 'mint-ui';
+import {
+  Toast
+} from "mint-ui";
 
 axios.defaults.withCredentials = true
+// axios.defaults.headers.common['tonken'] = util.getStore('token')
 axios.interceptors.request.use(config => {
 
   Indicator.open('加载中...');
@@ -30,16 +45,19 @@ function checkStatus(response) {
   // 异常状态下，把错误信息返回去
   return {
     status: -404,
-    msg: '网络异常，请稍后重试'
+    msg: response.data.msg
   }
 }
 
 function checkCode(res) {
-  Indicator.close();  
+  Indicator.close();
   // 如果code异常(这里已经包括网络错误，服务器错误，后端抛出的错误)，可以弹出一个错误提示，告诉用户
   if (res.status === -404) {
-    Toast(res.msg)
-  } else {
+    if (res.msg) {
+      Toast(res.msg)
+    } else {
+      Toast('出问题了，请将问题反馈给我们吧')
+    }
   }
   // if (res.data && (!res.data.success)) {
   //   alert(res.data.error_msg)
@@ -53,12 +71,14 @@ function checkCode(res) {
         isLog: "-1"
       };
       winBri.setupWebViewJavascriptBridge(function (bridge) {
-        bridge.callHandler("isLogOrder", iosData, function (resp) {
-        });
+        bridge.callHandler("isLogOrder", iosData, function (resp) {});
       });
     }
 
   } else {
+    // return new Promise((resolve, reject) => {
+    //     resolve(res)
+    // });
     return res
   }
 }
@@ -75,7 +95,6 @@ export default {
       data: qs.stringify(data),
       timeout: 100000,
       headers: {
-        // 'token': 'merchant_login_flag=18872209853_1517966682308_818610',
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
       }
@@ -83,11 +102,11 @@ export default {
       (response) => {
         return checkStatus(response)
       }
-      ).then(
+    ).then(
       (res) => {
         return checkCode(res)
       }
-      )
+    )
   },
   post1(url, data) {
     return axios({
@@ -106,11 +125,11 @@ export default {
       (response) => {
         return checkStatus(response)
       }
-      ).then(
+    ).then(
       (res) => {
         return checkCode(res)
       }
-      )
+    )
   },
   get(url, params) {
     return axios({
@@ -127,10 +146,31 @@ export default {
       (response) => {
         return checkStatus(response)
       }
-      ).then(
+    ).then(
       (res) => {
         return checkCode(res)
       }
-      )
+    )
+  },
+  getPos(url, params) {
+    return axios({
+      method: 'get',
+      // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80
+      baseURL: rootPos,
+      url,
+      params, // get 请求时带的参数
+      timeout: 10000,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    }).then(
+      (response) => {
+        return checkStatus(response)
+      }
+    ).then(
+      (res) => {
+        return checkCode(res)
+      }
+    )
   }
 }

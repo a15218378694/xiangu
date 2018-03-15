@@ -3,29 +3,6 @@ import api from './api'
 
 
 export default {
-  //获取cookie、
-  getCookie(name) {
-    // 传一个字符串以|;|隔开变量，看cookie中是否有name(变量)
-    var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
-    if (arr = document.cookie.match(reg))
-      return (arr[2]);
-    else
-      return null;
-  },
-  //设置cookie,增加到vue实例方便全局调用
-  setCookie(c_name, value, expiredays) {
-    var exdate = new Date();
-    exdate.setDate(exdate.getDate() + expiredays);
-    document.cookie = c_name + "=" + escape(value) + ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString());
-  },
-  //删除cookie
-  delCookie(name) {
-    var exp = new Date();
-    exp.setTime(exp.getTime() - 1);
-    var cval = getCookie(name);
-    if (cval != null)
-      document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
-  },
 
   formatNumber(n) {
     n = n.toString();
@@ -50,15 +27,21 @@ export default {
     return [hr, min, sec].map(this.formatNumber);
   },
 
-  countdown(that, total_micro_second) {
+ async countdown(that, total_micro_second) {
     // console.log(total_micro_second);
-
     if (total_micro_second <= 0 || isNaN(total_micro_second)) {
       that.clock = [0, 0, 0].map(this.formatNumber);
+      
+      let params = {
+        teamId: that.teamId,
+        orderId: that.orderId
+      }
+      await http.get(api.finishcutdown,params)
+      that.getGroudDet(false,that.getGroundDetCall)
       if (that.timer != undefined) {
         clearTimeout(that.timer);
       }
-      // timeout则跳出递归
+      // timeout则跳出递归 
       return;
     } else {
       // 渲染倒计时时钟
@@ -90,8 +73,8 @@ export default {
   //格式化多个时间戳
   countdownMore(timeArr, that) {
     // 清除定时器
-    if (this.timer) {
-      clearTimeout(this.timer);
+    if (that.timer) {
+      clearTimeout(that.timer);
     }
     var times = [];
     timeArr.map(function (v, i) {
@@ -149,67 +132,97 @@ export default {
     that.page++;
     callb();
   },
-  goLogin: async function (callBa) {
+  goLogin: async function () {
     let params = {
-      phone: 18872209853
+      phone: 15218378694
     };
     const res = await http.post(api.send_SMS_verifyCode, params);
-    await http.post(api.login_by_verifyCode, {
-      phone: 18872209853,
-      code: 1234
-    });
     if (res.data) {
-      callBa && callBa()
+      const res1 = await http.post(api.login_by_verifyCode, {
+        phone: 15218378694,
+        code: 1234
+      });
+      if (res1.data) {
+        this.setStore('token', res1.data.tonken)
+      }
     }
+
   },
   //操作多个定时器
-  grounding: async function (that,typ) {
+  grounding: async function (that, typ) {
     let params = {};
     const res = await http.get(api.groupbooking, params);
     if (res.data) {
       if (res.data.gbookingMessage) {
         if (typ !== 'more') {
-        this.groundInfo = res.data.gbookingMessage.splice(0, 2);
+          that.groundInfo = res.data.gbookingMessage.splice(0, 2);
         } else {
-          this.groundInfo = res.data.gbookingMessage
+          that.groundInfo = res.data.gbookingMessage
         }
-        that.groundInfo = [
-          //正在拼团的商品
-          {
-            id: 3, // 商品id
-            title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源1", // 商品标题
-            num: 356000, // 商品库存数量
-            groupbooking_sum: 100, // 拼团人数
-            surplusTime: 1520062982698, // 拼团剩余时间
-            hours: 6, //剩余的小时数
-            minutes: 58 //剩余的分钟
-          },
-          {
-            id: 4,
-            title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源2",
-            num: 356000,
-            groupbooking_sum: 100,
-            surplusTime: 1520062582698,
-            hours: 6,
-            minutes: 58
-          },
-          {
-            id: 5,
-            title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源3",
-            num: 356000,
-            groupbooking_sum: 100,
-            surplusTime: 1520073982698,
-            hours: 6,
-            minutes: 58
-          }
-        ];
+        // that.groundInfo = [
+        //   //正在拼团的商品
+        //   {
+        //     id: 3, // 商品id
+        //     title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源1", // 商品标题
+        //     num: 356000, // 商品库存数量
+        //     groupbooking_sum: 100, // 拼团人数
+        //     surplusTime: 1520062982698, // 拼团剩余时间
+        //     hours: 6, //剩余的小时数
+        //     minutes: 58 //剩余的分钟
+        //   },
+        //   {
+        //     id: 4,
+        //     title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源2",
+        //     num: 356000,
+        //     groupbooking_sum: 100,
+        //     surplusTime: 1520062582698,
+        //     hours: 6,
+        //     minutes: 58
+        //   },
+        //   {
+        //     id: 5,
+        //     title: "LED灯箱灯条 拉不卡布软膜广告灯箱光源3",
+        //     num: 356000,
+        //     groupbooking_sum: 100,
+        //     surplusTime: 1520073982698,
+        //     hours: 6,
+        //     minutes: 58
+        //   }
+        // ];
         var timeArr = [];
         for (var i = 0; i < that.groundInfo.length; i++) {
           timeArr[i] = that.groundInfo[i].surplusTime / 1000;
         }
-        console.log(timeArr);
+        // console.log(timeArr);
         that.clock = this.countdownMore(timeArr, that);
       }
     }
   },
+  timestampToTime(timestamp) {
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+    var D = date.getDate() + ' ';
+    var h = date.getHours() + ':';
+    var m = date.getMinutes() + ':';
+    var s = date.getSeconds();
+    return Y + M + D + h + m + s;
+  },
+  setStore(name, content) {
+    if (!name) return;
+    console.log(typeof content !== 'string');
+    if (typeof content !== 'string') {
+      content = JSON.stringify(content);
+    }
+    window.localStorage.setItem(name, content);
+  },
+  getStore(name) {
+    if (!name) return;
+    return window.localStorage.getItem(name);
+  },
+  removeStore(name) {
+    if (!name) return;
+    window.localStorage.removeItem(name);
+  }
 };

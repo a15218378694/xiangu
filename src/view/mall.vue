@@ -70,6 +70,8 @@ import goodsTool from "../components/goodsTool.vue";
 import navHeader from "../components/navHeader.vue";
 import { Carousel, CarouselItem } from "element-ui";
 import { Search } from "mint-ui";
+import { mapState } from "vuex";
+
 Vue.component(Search.name, Search);
 Vue.component(Carousel.name, Carousel);
 Vue.component(CarouselItem.name, CarouselItem);
@@ -109,11 +111,15 @@ let mallObj = {
       banners: []
     };
   },
+  computed: {
+    ...mapState(["cartCount"])
+  },
   mounted() {
     this.getGoods();
     this.fetchType();
     this.grounding();
     this.getBanner();
+    // this.getCartCount();
   },
   methods: {
     fetchHotGoods: async function(params, callS) {
@@ -152,7 +158,8 @@ let mallObj = {
       }
     },
     grounding() {
-      util.grounding(this)
+      // api.groupbooking
+      util.grounding(this);
     },
     toSearch() {
       this.$router.push({
@@ -221,7 +228,15 @@ let mallObj = {
     },
     loadTop() {
       util.loadTop(this);
-    }
+    },
+    // getCartCount: async function(params = {}) {
+    //   const res = await http.get(api.showPro, params);
+    //   console.log(res);
+      
+    //   if (res.data) {
+    //     this.$store.commit("updateCartCount",res.data.list.length);
+    //   }
+    // },
   },
   components: {
     groundItem,

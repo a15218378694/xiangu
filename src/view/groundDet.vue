@@ -2,15 +2,19 @@
   <div>
     <div class="groundDetPage">
       <nav-header>
-        <span class="orderDetTit" slot="header">拼团详情</span>
+        <span class="orderDetTit" slot="header">拼团详情Det</span>
       </nav-header>
 
       <ground-step>
-        <img class="step" slot="step1" src="../assets/img/拼团详情-未参团_slices/Group 4@3x.png" alt="">
-        <img class="step" v-if="this.teamStatus != 2" slot="step2" src="../assets/img/拼团详情-未参团_slices/Group4@2x.png" alt="">
-        <img class="step" v-if="this.teamStatus == 2" slot="step2" src="../assets/img/拼团详情-未参团_slices/GroupA 41@2x.png" alt="">
-        <img class="step" v-if="this.teamStatus != 3" slot="step3" src="../assets/img/拼团详情-未参团_slices/Group 42@3x.png" alt="">
-        <img class="step" v-if="this.teamStatus == 3" slot="step3" src="../assets/img/拼团详情-未参团_slices/Group 4@2x.png" alt="">
+        <!-- 绿色 -->
+        <img class="step" slot="step1" src="../assets/img/拼团详情-未参团_slices/act1.png" alt="">
+        <!-- 绿色 -->
+        <!-- v-if="this.status != 3 && this.status != 9 && this.status != 11" -->
+        <img class="step" v-if="this.teamStatus == 2 || this.teamStatus == 3 || this.teamStatus == 5" slot="step2" src="../assets/img/拼团详情-未参团_slices/act2.png" alt="">
+        <img class="step" v-else slot="step2" src="../assets/img/拼团详情-未参团_slices/def2.png" alt="">
+        <img class="step" v-if="this.teamStatus == 3" slot="step3" src="../assets/img/拼团详情-未参团_slices/active3.png" alt="">
+        <!-- v-if="this.status != 9" -->
+        <img class="step" v-else slot="step3" src="../assets/img/拼团详情-未参团_slices/def3.png" alt="">
       </ground-step>
 
       <div class="fanliBox bgcWhite">
@@ -48,12 +52,8 @@
         </div>
       </div>
 
-      <!-- <div class="detTit">
-        <a href="javascript:;">查看订单详情</a>
-      </div> -->
-
       <div class="killBox bgcWhite">
-        <div class="one" v-if="groundDetInfo.teamStatus == 1">
+        <div class="one" v-if="groundDetInfo.teamStatus == 1 && groundDetInfo.balancePerson > 0">
           未开团，离成团还差
           <span>{{groundDetInfo.balancePerson}}</span> 人
         </div>
@@ -61,30 +61,38 @@
           已开团，离拼成还剩
           <span>{{groundDetInfo.balancenum}}</span> 条
         </div>
-        <div class="one" v-if="groundDetInfo.teamStatus == 3 && groundDetInfo.balancenum <= 0">
+        <div class="one" v-if="groundDetInfo.teamStatus == 3">
           拼团成功，
           <span>{{groundDetInfo.limit_num}}K</span> 条已全部拼完
         </div>
-        <div class="one" v-if="groundDetInfo.teamStatus == 4">
+        <div class="one" v-if="groundDetInfo.teamStatus == 4 && groundDetInfo.balancenum > 0">
           拼团失败，离拼成还剩
           <span>{{groundDetInfo.balancenum}}</span> 条
         </div>
-        <div class="two">
+        <div class="two" v-if="groundDetInfo.teamStatus != 3 && groundDetInfo.teamStatus != 4">
           剩
-          <span>{{clock[0]}}</span>:
-          <span>{{clock[1]}}</span>:
-          <span>{{clock[2]}}</span>自动结束
+          <span>{{clock[0] || '00'}}</span>:
+          <span>{{clock[1] || '00'}}</span>:
+          <span>{{clock[2] || '00'}}</span>自动结束
         </div>
-        <div class="three" v-if="groundDetInfo.teamStatus != 11">
+        <div class="three" v-if="groundDetInfo.teamStatus != 4 && groundDetInfo.teamStatus != 3">
           快去邀请好友参团吧！
           <router-link to="playDet">玩法详情</router-link>
         </div>
-        <div class="three" v-if="groundDetInfo.teamStatus == 11">
+        <div class="three" v-if="groundDetInfo.teamStatus == 3">
+          我们将根据你所填写的地址进行发货 具体请查看
+          <router-link to="playDet">玩法详情</router-link>
+        </div>
+        <div class="three" v-if="groundDetInfo.teamStatus == 4">
           <div>支付的金额将自动返回到你的钱包</div>
           <div>人缘太差了</div>
           <router-link to="playDet">玩法详情</router-link>
         </div>
       </div>
+
+      <!-- <div class="detTit" @click="goOrderDet">
+        <span href="javascript:;">查看订单详情</span>
+      </div> -->
 
       <div class="entryGround">
         <div class="top">
@@ -117,9 +125,10 @@
       </div>
 
       <div class="sure">
-        <!-- v-if="isMas == 1" -->
-        <button class="addCart" @click="goGoodsDet">立即参与</button>
-        <button class="goOrder" ref="share" @click="goShare">立即分享</button>
+        <button class="addCart" @click="goGoodsDet" v-if="this.teamStatus == 2">{{leftText}}</button>
+        <button class="goOrder" @click="goShare" v-if="this.teamStatus != 5">{{rightText}}</button>
+        <!-- <button class="addCart" @click="goGoodsDet">去去去</button> -->
+        <!-- <button class="goOrder" @click="goShare">去去去</button> -->
       </div>
 
     </div>
@@ -145,29 +154,46 @@ export default {
       orderId: "",
       teamId: "",
       goodsId: "",
-      isMas: 1,
       groundDetInfo: {
         rebate: [],
         grouppbooking_people: []
-      }
+      },
+      leftText: "",
+      rightText: ""
     };
   },
-  mounted() {
+  created() {
     this.orderId = this.$route.query.orderId;
-    if (this.$route.query.isMas) {
-      this.isMas = this.$route.query.isMas;
-    }
-    // if (this.isMas == 0) {
-    //   this.$refs.share.style["width"] = `100%`;
-    // }
     if (this.$route.query.teamId) {
       this.teamId = this.$route.query.teamId;
     }
-    // this.countdown((new Date().getTime() + 30000) / 1000);
-    this.getGroudDet();
+    this.getGroudDet(true, this.getGroundDetCall);
   },
   methods: {
-    getGroudDet: async function() {
+    getGroundDetCall(res) {
+      this.teamStatus = res.data.teamStatus;
+      if (this.teamStatus == 1) {
+        this.leftText = "";
+        this.rightText = "邀请好友开团";
+      } else if (this.teamStatus == 2) {
+        this.leftText = "立即参与";
+        this.rightText = "立即分享";
+      } else if (this.teamStatus == 3) {
+        this.leftText = "";
+        this.rightText = "晒单领取大奖";
+      } else if (this.teamStatus == 4 || this.teamStatus == 5) {
+        this.leftText = "";
+        this.rightText = "";
+      }
+      this.status = res.data.status;
+      this.goodsId = res.data.pid;
+      this.groundDetInfo = res.data;
+      this.teamId = this.groundDetInfo.grouppbooking_people[0].teamId;
+      this.groundDetInfo.grouppbooking_people.forEach(v => {
+        v.starttime = util.timestampToTime(v.starttime);
+      });
+    },
+    getGroudDet: async function(flag = true, calls) {
       if (winBri.getSheBei() !== "iPhone" && winBri.getSheBei() !== "Android") {
         this.orderId = 10871879897;
       }
@@ -177,18 +203,19 @@ export default {
       };
       const res = await http.get(api.finishpay, params);
       if (res.data) {
-        this.teamStatus = res.data.teamStatus;
-        this.goodsId = res.data.pid;
-        this.groundDetInfo = res.data;
-        this.teamId = this.groundDetInfo.grouppbooking_people[0].teamId;
-        if (this.groundDetInfo.teamStatus == 1) {
-          this.countdown(this.groundDetInfo.openCloseTime / 1000);
-        } else {
-          this.countdown(this.groundDetInfo.gBookingCloseTime / 1000);
+        calls && calls(res);
+
+        if (flag) {
+          if (this.groundDetInfo.teamStatus == 1) {
+            this.countdown(this.groundDetInfo.openCloseTime / 1000);
+          } else {
+            this.countdown(this.groundDetInfo.gBookingCloseTime / 1000);
+            // this.countdown((new Date().getTime() + 10000) / 1000);
+          }
         }
       }
     },
-    countdown: function(expire_time) {
+    countdown(expire_time) {
       // 清除定时器
       if (this.timer) clearTimeout(this.timer);
       var times = (expire_time - new Date().getTime() / 1000) * 1000;
@@ -201,20 +228,22 @@ export default {
           query: {
             goodsId: this.goodsId,
             rukou: "groundDet",
-            teamId: this.teamId
+            teamId: this.teamId,
+            appPage: 1
           }
         });
       } else {
         MessageBox("提示", "点太快啦");
       }
     },
+
     //邀请用的图片标题链接
     goShare() {
       let that = this;
-      let merchant_login_flag = util.getCookie("merchant_login_flag");
+      let token = localStorage.getItem("token");
       let urlParams = `?orderId=${this.orderId}&teamId=${
         this.teamId
-      }&merchant_login_flag=${merchant_login_flag}`;
+      }&token=${token}`;
 
       let totUrl = `${api.baseUrl}/#/yaoqing${urlParams}`;
       let tit = "我正在发起拼团，邀请您一起来开团，一起享受最高优惠价格";
@@ -238,7 +267,8 @@ export default {
           );
         });
       }
-    }
+    },
+    goOrderDet() {}
   },
   components: {
     NavHeader,
@@ -431,6 +461,8 @@ export default {
     height: 1.02rem;
     line-height: 1.02rem;
     position: fixed;
+    z-index: 999;
+    background-color: #fff;
     bottom: 0;
     left: 0;
     width: 100%;

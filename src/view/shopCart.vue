@@ -29,7 +29,7 @@
                 <div class="three">
                   <div class="num">X{{item.buyTotalnum}}</div>
                 </div>
-                <!-- <div class="closeDel" :class="{'tranShow': (item.isTranShow)}">
+                <!-- <div class="closeDel" :class="{'tranShow': shopCartGoods[index].isTranShow}">
                   <span class="del" @click.stop="delGood(item,index)">删除</span>
                 </div> -->
               </div>
@@ -37,8 +37,8 @@
           </v-touch>
         </div>
 
-        <div class="view-more-normal" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="20">
-          <img style="width:20px;height:20px;" src="../assets/img/common/loading_image@2x.png" v-if="loading">
+        <div class="view-more-normal" v-if="shopCartGoods.length && loading" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="20">
+          <img style="width:20px;height:20px;" src="../assets/img/common/loading_image@2x.png">
           <!-- <div v-if="this.totalPage <= this.page && !loading">到底部了</div> -->
         </div>
 
@@ -54,7 +54,7 @@
         </div>
       </div>
     </div>
-    <div v-if="!hasGoods" class="empty">购物车是空的</div>
+    <div v-if="!shopCartGoods.length" class="empty">购物车是空的</div>
   </div>
 </template>
 
@@ -72,7 +72,7 @@ export default {
   data: function() {
     return {
       totalPrice: 0,
-      shopCartGoods: [],
+      shopCartGoods: [{}],
       page: 1,
       totalPage: 0,
       busy: true,
@@ -84,7 +84,6 @@ export default {
     };
   },
   mounted() {
-    this.comTot();
     this.getShopGoods();
     // if (this.shopCartGoods.length == 0) {
     //   this.hasGoods = false;
@@ -132,7 +131,7 @@ export default {
             totalNum: this.num,
             totalNums: this.totalNums,
             buyway: this.buy_way,
-            teamId: this.teamId
+            teamId: `novalues`
 
             // orderId: res.data.myorders.orderid
           }
@@ -140,7 +139,12 @@ export default {
       }
     },
     goPayPri() {
-      this.sureGoOrder(this.totalPrice);
+      let flag = this.isSelFlag(this.shopCartGoods);
+      if (!flag) {
+        this.sureGoOrder(this.totalPrice);
+      } else {
+        Toast("请先选择商品");
+      }
     },
     onSwipeLeft(item) {
       item.isTranShow = true;
@@ -182,16 +186,19 @@ export default {
         },
         res => {
           this.loading = false;
-          this.shopCartGoods = res.data.list;
+          let list = [...res.data.list];
+          list.forEach((v, i) => {
+            v.isSelected = false;
+            v.isTranShow = false;
+          });
+          this.shopCartGoods = [...list];
           if (this.shopCartGoods.length > 0) {
             this.hasGoods = true;
           } else {
             this.hasGoods = false;
           }
-          this.shopCartGoods.forEach((v, i) => {
-            v.isSelected = false;
-            v.isTranShow = false;
-          });
+              this.comTot();
+
           this.totalPage = res.data.page_total;
           if (this.page == this.totalPage) {
             this.busy = true;
@@ -225,13 +232,8 @@ export default {
       });
     },
     delGood(item, index) {
-      let flag = false;
-      this.shopCartGoods.forEach((v1, i1) => {
-        if (v1.isSelected) {
-          flag = true;
-        }
-      });
-      if (flag) {
+      let flag = this.isSelFlag(this.shopCartGoods);
+      if (!flag) {
         MessageBox({
           title: "提示",
           message: "确定要将此商品移出购物车吗?",
@@ -256,7 +258,7 @@ export default {
           }
         });
       } else {
-        return Toast('请先选择要删除的商品')
+        return Toast("请先选择要删除的商品");
       }
     },
     fetchDeledGoods: async function(params, callS) {
@@ -265,6 +267,11 @@ export default {
         this.loading = false;
         callS && callS(res);
       }
+    },
+    isSelFlag(arr) {
+      return arr.every(v => {
+        return v.isSelected == false;
+      });
     }
   },
   components: {
@@ -355,7 +362,7 @@ export default {
           position: absolute;
           top: 0.3rem;
           right: 0;
-          // transform: translateX(50%);
+          transform: translateX(150%);
           width: 1.3rem;
           height: 1.6rem;
           transition: transform 0.2s;

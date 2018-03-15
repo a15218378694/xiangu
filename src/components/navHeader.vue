@@ -24,8 +24,7 @@ export default {
   },
   methods: {
     back() {
-      if (window.location.hash.includes("groundDetApp")) {
-        Toast('groundDetApp')
+      if (window.location.hash.includes("groundDetApp") || window.location.hash.includes("groundDetOut")) {
         if (winBri.getSheBei() == "Android") {
           vuePay.showGoHomeFromJs();
         } else if (winBri.getSheBei() == "iPhone") {
@@ -34,6 +33,15 @@ export default {
           });
         }
         return
+      } else if (window.location.hash.includes("groundDet") && !window.location.hash.includes("groundDetApp") && !window.location.hash.includes("groundDetOut")) {
+        if (winBri.getSheBei() == "iPhone") {
+          this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
+            bridge.callHandler("returnShoppingHome", "123", function() {});
+          });
+        } else if (winBri.getSheBei() == "Android") {
+          // return this.$router.push('mall')
+          vuePay.showGoHomeFromJs();
+        }
       }
       this.$router.go(-1);
     },

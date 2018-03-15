@@ -9,14 +9,61 @@ module.exports = {
     // Paths
     assetsSubDirectory: "static",
     assetsPublicPath: "/",
-    // proxyTable: {
-    //   "**": {
-    //     changeOrigin: true,
-    //     target: "http://test.merchant.xljkj.cn:80"
-    //   }
-    // }, 
-    
-    // Various Dev Server settings
+    proxyTable: {
+      "/home": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/details": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/buy": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/pro": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/shoppingcat": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/login": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/statistics": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/groupbooking": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/collectproduct": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/delete": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/sharedetails": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/delete": {
+        target: "http://test.merchant.xljkj.cn:80",
+        changeOrigin: true
+      },
+      "/location": {
+        target: 'http://api.map.baidu.com',
+        changeOrigin: true
+      }
+    },
+    // Various Dev Server settings   
     host: "localhost", // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
@@ -45,8 +92,8 @@ module.exports = {
 
     // Paths
     assetsRoot: path.resolve(__dirname, "../dist"),
-    assetsSubDirectory: "static", 
-    assetsPublicPath: "/",  
+    assetsSubDirectory: "static",
+    assetsPublicPath: "/",
 
     /**
      * Source Maps

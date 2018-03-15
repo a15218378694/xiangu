@@ -2,7 +2,7 @@
   <div>
     <div class="orderDets">
       <nav-header>
-        <span class="orderDetTit" slot="header">拼团详情</span>
+        <span class="orderDetTit" slot="header">订单详情</span>
       </nav-header>
       <div class="perInfo" @click="editAddr">
         <div class="shouhuo">
@@ -147,27 +147,26 @@ export default {
 
       params.shoppingCat = this.shoppingCatArr;
       params.teamId = this.teamId;
-      if (params.teamId !== "") {
-        let res = await http.post1(api.submitorder, params);
-        if (res.data) {
-          this.totalPrice = res.data.totalPrice;
-          this.urlParams = `?orderId=${res.data.orderId}&teamId=${
-            this.teamId
-          }&isMas=0`;
-          this.groundDetUrl = `${api.baseUrl}/#/groundDet${this.urlParams}`;
-          this.orderId = res.data.orderId;
-          console.log(this.groundDetUrl);
-          this.sendOrderID();
+      let res = await http.post1(api.submitorder, params);
+      if (res.data) {
+        if (res.data.code == 2) {
+          return MessageBox("提示", res.data.msg);
         }
+        this.totalPrice = res.data.totalPrice;
+        this.urlParams = `?orderId=${res.data.orderId}&teamId=${this.teamId}`;
+        this.groundDetUrl = `${api.baseUrl}/#/groundDet${this.urlParams}`;
+        this.orderId = res.data.orderId;
+        this.sendOrderID();
       }
     },
     getOrderId() {
       if (this.daoji) {
-        return
+        return;
       }
       if (!this.perName || !this.perPhone || !this.perAddr) {
-        return MessageBox('提示','请填写完整收货信息')
-      };
+        return MessageBox("提示", "请填写完整收货信息");
+      }
+
       if (this.orderId) {
         return this.sendOrderID();
       }
@@ -244,7 +243,7 @@ export default {
     // this.shoppingCatArr = this.orderDetailsArr[0].shoppingCat; // 订单商品数组
     this.freight = this.orderDetails.freight; //运费
     this.buyway = this.$route.query.buyway;
-    this.teamId = this.orderDetData.teamId;
+    this.teamId = this.$route.query.teamId;
 
     //传递过来的规格
     if (
@@ -293,7 +292,7 @@ export default {
   watch: {
     daoji() {
       if (!this.daoji) {
-        clearInterval(this.timer)
+        clearInterval(this.timer);
       }
     }
   }

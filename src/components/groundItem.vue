@@ -6,7 +6,7 @@
             </div>
             <div class="centerr">
                 <div class="topp">
-                    <span class="com">{{item.title}}</span>
+                    <span class="com">{{item.name}}</span>
                     <span class="num">{{item.groupbooking_sum}}人已参与</span>
                 </div>
                 <div class="bott">

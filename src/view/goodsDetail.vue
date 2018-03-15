@@ -1,10 +1,10 @@
 <template>
-  <div :class="[isShow? '': '','goods_det']">
+  <div :class="[isShow? 'showGuige': '','goods_det']">
 
     <div class="con">
       <img class="back" @click="back" src="../assets/img/mall/商品详情_slices/Group@2x.png" alt="">
-      <img v-if="!isCollect" @click="collect(0)" class="collect" src="../assets/img/mall/商品详情_slices/收藏@2x.png" alt="">
-      <img v-else class="collect" @click="collect(1)" src="../assets/img/mall/商品详情_slices/收藏2@2x.png" alt="">
+      <img v-if="isCollect == 1" class="collect" @click="collect(1)" src="../assets/img/mall/商品详情_slices/收藏2@2x.png" alt="">
+      <img v-else-if="isCollect == 2" @click="collect(0)" class="collect" src="../assets/img/mall/商品详情_slices/收藏@2x.png" alt="">
       <router-link class="toShopCart" to="shopCart">
         <img class="shopCart" src="../assets/img/mall/商品详情_slices/购物车@2x.png" alt="">
       </router-link>
@@ -163,7 +163,8 @@
           <img src="../assets/img/mall/guige/提示@3x.png" alt="">
         </div>
         <div class="res">
-          <div class="resGuiges" v-if="showChecked">
+          <!-- v-if="showChecked" -->
+          <div class="resGuiges">
             <template v-if="checkedGuige.length > 0" v-for="(item,index) in checkedGuige">
               <div :key="index" class="resGuigeItems">
                 <template v-for="(addedItem,addedIndex) in item">
@@ -184,10 +185,6 @@
         </div>
       </div>
     </mt-popup>
-
-    <transition name="fade">
-      <div class="specs_cover" @click="showChooseList" v-if="isShow"></div>
-    </transition>
   </div>
 </template>
 
@@ -216,7 +213,7 @@ export default {
     return {
       isLoading1: false,
       refreshDelay: 120,
-      isCollect: false,
+      isCollect: "",
       isShow: false,
       buyType: "",
       proDetails: {
@@ -232,7 +229,7 @@ export default {
       paramsSureOrder: {},
       buy_way: 1,
       guigesNum: 0,
-      showChecked: false,
+      // showChecked: false,
       isLoading: false,
       goodsId: "",
       teamId: "",
@@ -243,22 +240,18 @@ export default {
       placeHold: ""
     };
   },
+  watch: {
+    isShow() {
+      this.guigesNum = 0;
+      this.clearStatus();
+      this.clearAllSelGuige();
+    }
+  },
   computed: {
     ...mapState(["cartCount"])
   },
   created() {
     this.goodsId = this.$route.query.goodsId;
-    if (this.goodsId == 1) {
-      this.placeHold = `400条的倍数进行购买`;
-    } else if (this.goodsId == 2) {
-      this.placeHold = `200条起订`;
-    } else if (this.goodsId == 3) {
-      this.placeHold = `200条的倍数进行购买`;
-    } else if (this.goodsId == 4) {
-      this.placeHold = `30台的倍数进行购买`;
-    } else if (this.goodsId == 5) {
-      this.placeHold = `100台的倍数进行购买`;
-    }
     if (this.$route.query.appPage) {
       this.appPage = this.$route.query.appPage;
     }
@@ -293,6 +286,21 @@ export default {
       }
       this.buyType = buyTypeTit;
       this.buy_way = buy_way;
+      if (this.buy_way == 1) {
+        this.placeHold = "请输入购买数量";
+      } else {
+        if (this.goodsId == 1) {
+          this.placeHold = `400条的倍数进行购买`;
+        } else if (this.goodsId == 2) {
+          this.placeHold = `200条起订`;
+        } else if (this.goodsId == 3) {
+          this.placeHold = `200条的倍数进行购买`;
+        } else if (this.goodsId == 4) {
+          this.placeHold = `30台的倍数进行购买`;
+        } else if (this.goodsId == 5) {
+          this.placeHold = `100台的倍数进行购买`;
+        }
+      }
       this.fetchGuigeDet(buy_way);
     },
     fetchGuigeDet: async function(buy_way) {
@@ -336,7 +344,12 @@ export default {
       };
       const res = await http.get(api.prodetails, params);
       if (res.data) {
+        //1是已收藏，2是未收藏，登录状态下才赋值
+        if (res.data.loginStatus == 1) {
+          this.isCollect = res.data.collect == 1 ? 1 : 2;
+        }
         this.proDetails = res.data.proDetails;
+        //从首页进来，appPage == 0
         if (this.appPage == 0) {
           this.teamId = res.data.teamId;
         }
@@ -400,13 +413,16 @@ export default {
         }
       }
     },
-    addCart() {
+    async addCart() {
       if (this.checkedGuige.length == 0) {
-        if (!this.addCheck() || !this.checkKucunFlag) {
+        if (!this.addCheck()) {
           return;
         }
         //checkedGuige.length == 0 就要去检测库存
-
+        await this.checkKucun();
+        if (!this.checkKucunFlag) {
+          return;
+        }
         this.newGuigessAdd();
         this.newGuigessGetRequestPrice();
       }
@@ -416,24 +432,25 @@ export default {
     //调起加入购物车接口
     addCartEven: async function() {
       let that = this;
-      this.showChecked = false;
+      // this.showChecked = false;
       let params = this.getParams();
       const res = await http.post1(api.addPro, params);
       if (res.data) {
         this.$store.commit("updateCartCount", 1);
-        this.guigesNum = 0;
-        this.clearStatus();
-        this.clearAllSelGuige();
         MessageBox("提示", res.data.msg);
         this.isShow = !this.isShow;
         return;
       }
     },
     //点击添加所选
-    addCheckGuigeItem() {
+    async addCheckGuigeItem() {
       //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套了
       // console.log(this.checkKucunFlag);
-      if (!this.addCheck() || !this.checkKucunFlag || !this.buyGoodsRule()) {
+      if (!this.addCheck() || !this.buyGoodsRule() || this.checkIsHas()) {
+        return;
+      }
+      await this.checkKucun();
+      if (!this.checkKucunFlag) {
         return;
       }
       this.newGuigessAdd();
@@ -441,16 +458,30 @@ export default {
       this.checkedguigeAdd();
 
       this.clearStatus();
-      this.showChecked = true;
+      // this.showChecked = true;
       this.guigesNum++;
+    },
+    checkIsHas() {
+      let sliceArr = [];
+      this.checkedGuige.forEach((v, i) => {
+        sliceArr[i] = v.slice(0, 3);
+      });
+      let flag = JSON.stringify(sliceArr).includes(
+        JSON.stringify(this.newGuigess)
+      );
+      if (flag) {
+        MessageBox("提示", "不能选择完全一样的规格，您可关闭弹框重新选择");
+      }
+      return flag;
     },
     checkKucun: async function(paramsKucun) {
       this.checkKucunFlag = true;
-      this.showChecked = false;
+      // this.showChecked = false;
       let params = {
         buynum: this.num,
         pid: this.proDetails.id,
-        teamId: this.teamId
+        teamId: this.teamId,
+        buyway: this.buy_way
       };
       this.newGuigess.map((v, i) => {
         if (i == 0) {
@@ -461,11 +492,17 @@ export default {
           params.powers = v.sizes;
         }
       });
+      if (this.num > 1000000) {
+        MessageBox("提示", "购买数量不能超过100万");
+        this.checkKucunFlag = false;
+        return this.checkKucunFlag;
+      }
       const res = await http.post1(api.outrepertory, params);
       if (res.data.code == -2) {
         MessageBox("提示", res.data.msg);
         this.checkKucunFlag = false;
       }
+      return this.checkKucunFlag;
     },
     //addCheck   检测是否全选  输入的数量是否正常  添加的商品规格是否超过3套
     addCheck() {
@@ -525,11 +562,14 @@ export default {
     sureGoOrder: async function() {
       //checkedGuige没数据的情况
       if (this.checkedGuige.length == 0) {
-        if (!this.addCheck() || !this.checkKucunFlag || !this.buyGoodsRule()) {
+        if (!this.addCheck() || !this.buyGoodsRule()) {
           return;
         }
         //没有点添加所选就在确定下单的时候再去检测库存
-
+        await this.checkKucun();
+        if (!this.checkKucunFlag) {
+          return;
+        }
         this.newGuigessAdd();
         this.newGuigessGetRequestPrice();
       } else {
@@ -666,7 +706,7 @@ export default {
         pid: this.proDetails.id
       });
       if (res.data) {
-        this.isCollect = !this.isCollect;
+        this.isCollect = 1;
         return Toast("收藏成功");
       }
     },
@@ -675,7 +715,7 @@ export default {
         { pid: this.proDetails.id }
       ]);
       if (res.data) {
-        this.isCollect = !this.isCollect;
+        this.isCollect = 2;
         return Toast("取消收藏");
       }
     },
@@ -1293,18 +1333,18 @@ export default {
     width: 100%;
   }
 }
-// .showGuige {
-//   width: 7.5rem;
-//   height: 10.34rem;
-//   overflow: hidden;
-// }
-.specs_cover {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 17;
+.showGuige {
+  width: 7.5rem;
+  height: 10.34rem;
+  overflow: hidden;
 }
+// .specs_cover {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   background-color: rgba(0, 0, 0, 0.4);
+//   z-index: 17;
+// }
 </style>

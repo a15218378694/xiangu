@@ -1,18 +1,20 @@
 import Vue from "vue";
 import Router from "vue-router";
-import mall from "@/view/mall.vue";
-import GoodsDetail from "@/view/goodsDetail.vue";
-import OrderDet from "@/view/orderDet.vue";
-import Yanzheng from "@/view/yanzheng.vue";
-import GroundDet from "@/view/groundDet.vue";
-import GroundDetApp from "@/view/groundDetApp.vue";
-import Search from "@/view/search.vue";
-import shopCart from "@/view/shopCart.vue";
-import moreGround from "@/view/moreGround.vue";
-import typeDet from "@/view/typeDet.vue";
-import playDet from "@/view/playDet.vue";
-import yaoqing from "@/view/yaoqing.vue";
 Vue.use(Router);
+
+const mall = () => import('@/view/mall.vue')
+const GoodsDetail = () => import('@/view/GoodsDetail.vue')
+const OrderDet = () => import('@/view/OrderDet.vue')
+const GroundDet = () => import('@/view/GroundDet.vue')
+const GroundDetApp = () => import('@/view/GroundDetApp.vue')
+const Search = () => import('@/view/Search.vue')
+const shopCart = () => import('@/view/shopCart.vue')
+const moreGround = () => import('@/view/moreGround.vue')
+const typeDet = () => import('@/view/typeDet.vue')
+const playDet = () => import('@/view/playDet.vue')
+const yaoqing = () => import('@/view/yaoqing.vue')
+const groundDetSerList = () => import('@/view/groundDetSerList.vue')
+
 
 export default new Router({
   routes: [
@@ -41,8 +43,8 @@ export default new Router({
       component: Search
     },
     {
-      path: "/yanzheng",
-      component: Yanzheng
+      path: "/groundDetOut",
+      component: groundDetSerList
     },
     {
       path: "/mall",

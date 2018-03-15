@@ -11,15 +11,26 @@ import App from './App'
 import Vuex from "vuex";
 import VueLazyload from "vue-lazyload";
 import infiniteScroll from "vue-infinite-scroll";
-import http from "./utils/http";
-import api from "./utils/api";
-import router from "./router";
 import util from "./utils/util";
+import router from "./router";
+import axios from 'axios';
 import "mint-ui/lib/style.css";
-import bridge1 from './constant/nativeJSBridge';
-import { Loadmore } from 'mint-ui';
+import api from "./utils/api";
+import bridgeBack from './constant/nativeJSBridge';
+import {
+  Loadmore
+} from 'mint-ui';
+import {
+  Toast
+} from "mint-ui";
 
 import bridge from './config/bridge.js'
+import FastClick from 'fastclick'
+if ('addEventListener' in document) {
+  document.addEventListener('DOMContentLoaded', function () {
+    FastClick.attach(document.body);
+  }, false);
+}
 Vue.prototype.$bridge = bridge
 window.winBri = bridge
 Vue.component(Loadmore.name, Loadmore);
@@ -27,6 +38,16 @@ Vue.use(infiniteScroll);
 Vue.use(Vuex);
 Vue.use(VueLazyload, {
   loading: require("./assets/img/common/loading_image@2x.png")
+});
+const store = new Vuex.Store({
+  state: {
+    cartCount: 0
+  },
+  mutations: {
+    updateCartCount(state, cartCount) {
+      state.cartCount += cartCount;
+    }
+  }
 });
 
 Vue.config.productionTip = false;
@@ -47,10 +68,10 @@ new function () {
     document
       .getElementsByTagName("html")[0]
       .setAttribute(
-      "style",
-      "font-size:" +
-      _self.widthProportion() * _self.fontSize +
-      "px !important"
+        "style",
+        "font-size:" +
+        _self.widthProportion() * _self.fontSize +
+        "px !important"
       );
   };
   _self.changePage();
@@ -62,17 +83,38 @@ new function () {
     false
   );
 }();
+
+
+
 router.beforeEach((to, from, next) => {
-  if (winBri.getSheBei() !== "iPhone" &&  winBri.getSheBei() !== "Android") {
+  if (winBri.getSheBei() !== "iPhone" && winBri.getSheBei() !== "Android") {
     util.goLogin()
   }
   next()
 })
-
 new Vue({
   el: "#app",
   router,
-  bridge1,
-  template: "<App/>",
-  components: { App }
+  created() {
+    let token = util.getStore("token");
+    Toast("getStore的" + token);
+    axios.defaults.headers.common["tonken"] = token;
+    this.chanToken()
+  },
+  methods: {
+    chanToken() {
+      window.changeToken = function (hyToken) {
+        let token1 = util.getStore('token')
+        if (hyToken === "" || hyToken === null) {
+          token1 = ""
+        }
+        Toast('chanToken自己获取的' + token1)
+        Toast('传过来的' + hyToken)
+        axios.defaults.headers.common['tonken'] = hyToken || token1
+      }
+    }
+  },
+  bridgeBack,
+  store,
+  render: h => h(App)
 });

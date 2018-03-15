@@ -4,7 +4,7 @@
       <div class="yiqi">
         <img src="../assets/img/yaoqing/邀请好友开团_slices/yiqi.png" alt="">
       </div>
-      <div class="faqi" v-if="yaoQingObj.status == 0">
+      <div class="faqi" v-if="yaoQingObj.teamStatus == 1 || yaoQingObj.teamStatus == 4">
         <p class="one">
           发起拼团
           <span>返现至 ¥5,000</span>
@@ -15,7 +15,7 @@
           <router-link to="playDet">查看玩法详情</router-link>
         </p>
       </div>
-      <div class="yikai" v-if="yaoQingObj.status == 3">
+      <div class="yikai" v-if="yaoQingObj.teamStatus == 2 || yaoQingObj.teamStatus == 3 || yaoQingObj.teamStatus == 5">
         <p class="one">
           参与拼团
           <span>返现至 ¥5,000</span>
@@ -127,8 +127,7 @@ export default {
   data: function() {
     return {
       defaultImg: "/static/img/xiangtuLogo2.png",
-      JSESSIONID: "",
-      merchant_login_flag: "",
+      token: "",
       yaoQingObj: {
         grouppbooking_people: [],
         rebate: []
@@ -142,8 +141,8 @@ export default {
   },
   created() {
     this.orderId = this.$route.query.orderId;
-    this.merchant_login_flag = this.$route.query.merchant_login_flag;
-    util.setCookie("merchant_login_flag", this.merchant_login_flag);
+    this.token = this.$route.query.token;
+    util.setStore("token", this.token);
     this.teamId = this.$route.query.teamId;
     this.fetchyaoQingDet();
   },
@@ -156,7 +155,7 @@ export default {
         teamId: this.teamId
       };
       console.log(params);
-      const res = await http.get(api.invitefriends, params);
+      const res = await http.get(api.sharedetails, params);
       console.log(res);
       if (res.data) {
         this.yaoQingObj = res.data;
@@ -265,7 +264,7 @@ export default {
       margin: 0 auto;
     }
     .one {
-      width: 4.21rem;
+      // width: 4.21rem;
       height: 0.56rem;
       font-size: 0.4rem;
       font-family: PingFangSC-Semibold;
