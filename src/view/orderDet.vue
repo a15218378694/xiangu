@@ -83,10 +83,10 @@
 <script>
 import Vue from "vue";
 import http from "../utils/http";
+import util from '../utils/util';
 import api from "../utils/api";
 import goodsItem from "../components/goodsItem.vue";
 import NavHeader from "../components/navHeader.vue";
-import { Toast } from "mint-ui";
 import { MessageBox } from "mint-ui";
 
 export default {
@@ -120,7 +120,9 @@ export default {
       lastPage: "",
       curCom: "orderDet",
       btn_done: false,
-      daoji: 3
+      daoji: 3,
+      province: '',
+      city: ''
     };
   },
   methods: {
@@ -130,23 +132,23 @@ export default {
         name: this.perName, //收货人
         telephone: this.perPhone, // 收货人电话
         address: this.perAddr, //收货人地址
+        totalprice: this.prices,
+        freight: this.freight,
+        shoppingCat: this.shoppingCatArr,
+        teamId: this.teamId,
+        province: this.perProvi,
+        city: this.perCity,
+        buyway: 1,
         remarkMessage: this.liuyanInfo //留言信息
       };
-      // params.orderId = this.orderId;
-      params.totalprice = this.prices;
       if (this.totalNums > 0) {
         params.total_num = this.totalNums;
       } else if (this.totalNums <= 0) {
         params.total_num = this.totalNum;
       }
-      params.freight = this.freight;
-      params.buyway = 1;
       if (this.buyway) {
         params.buyway = this.buyway;
       }
-
-      params.shoppingCat = this.shoppingCatArr;
-      params.teamId = this.teamId;
       let res = await http.post1(api.submitorder, params);
       if (res.data) {
         if (res.data.code == 2) {
@@ -187,7 +189,6 @@ export default {
           money: this.totalPrice,
           groundDetUrl: this.groundDetUrl
         };
-        // Toast(this.groundDetUrl);
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
           bridge.callHandler("didPay", iosData, function(resp) {});
         });
@@ -198,27 +199,20 @@ export default {
     },
     getCurSel1() {
       let that = this;
-      window.getCurSel = function(perName, perPhone, perAddr) {
-        console.log(perName, perPhone, perAddr);
-        // that.hidBar = true;
-        // Toast(perPhone);
+      window.getCurSel = function(perName, perPhone, perAddr, perProvi, perCity) {
+        console.log(perName, perPhone, perAddr, perProvi, perCity);
         that.perPhone = "";
         that.perName = perName;
         that.perPhone = perPhone;
         that.perAddr = perAddr;
+        that.perProvi = perProvi;
+        that.perCity = perCity;
       };
     },
     editAddr() {
       if (winBri.getSheBei() == "Android") {
         vuePay.showAddressFromJs();
       } else if (winBri.getSheBei() == "iPhone") {
-        // Toast(this.teamId);
-        // if (this.teamId !== "novalues") {
-        //   this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
-        //     bridge.callHandler("didOuterShippingAddress", "123", function() {});
-        //   });
-        // } else {
-        // }
         this.$bridge.setupWebViewJavascriptBridge(function(bridge) {
           bridge.callHandler("didShippingAddress", "123", function() {});
         });
@@ -233,6 +227,8 @@ export default {
     this.perName = this.orderDetData.name;
     this.perPhone = this.orderDetData.phone;
     this.perAddr = this.orderDetData.address;
+    this.perProvi = this.orderDetData.province;
+    this.perCity = this.orderDetData.city;
     // this.orderId = this.$route.query.orderId; //订单号
     this.status = this.orderDetData.myorders.status; //订单状态：1、待付款，2、待发货，3、待成团，4、已发货，5、已完成，6、已关闭7，待退款'
     this.proNum = this.orderDetData.myorders.proNum; // 商品的总数量
@@ -245,8 +241,9 @@ export default {
     this.buyway = this.$route.query.buyway;
     this.teamId = this.$route.query.teamId;
 
-    //传递过来的规格
-    if (
+    //传递过来的规格  分不清的时候就看vue的状态管理，浏览器插件
+    
+    if (//多套规格
       this.$route.query.checkedGuige &&
       JSON.parse(this.$route.query.checkedGuige).length > 0
     ) {
@@ -254,7 +251,7 @@ export default {
 
       if (this.$route.query.totalNums) {
         this.totalNums = this.$route.query.totalNums;
-      }
+      } //一套规格
     } else if (
       this.$route.query.checkedGuige &&
       JSON.parse(this.$route.query.checkedGuige).length <= 0

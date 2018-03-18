@@ -1,9 +1,12 @@
 import http from './http'
 import api from './api'
+import { Toast } from "mint-ui";
 
 
 export default {
-
+  toastEven(msg) {
+    Toast(msg)
+  },
   formatNumber(n) {
     n = n.toString();
     return n[1] ? n : "0" + n;
@@ -27,17 +30,17 @@ export default {
     return [hr, min, sec].map(this.formatNumber);
   },
 
- async countdown(that, total_micro_second) {
+  async countdown(that, total_micro_second) {
     // console.log(total_micro_second);
     if (total_micro_second <= 0 || isNaN(total_micro_second)) {
       that.clock = [0, 0, 0].map(this.formatNumber);
-      
+
       let params = {
         teamId: that.teamId,
         orderId: that.orderId
       }
-      await http.get(api.finishcutdown,params)
-      that.getGroudDet(false,that.getGroundDetCall)
+      await http.get(api.finishcutdown, params)
+      that.getGroudDet(false, that.getGroundDetCall)
       if (that.timer != undefined) {
         clearTimeout(that.timer);
       }
@@ -200,7 +203,7 @@ export default {
   },
   timestampToTime(timestamp) {
     var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
-    
+
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
     var D = date.getDate() + ' ';

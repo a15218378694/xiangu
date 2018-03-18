@@ -9,8 +9,12 @@
           发起拼团
           <span>返现至 ¥5,000</span>
         </p>
-        <p class="two">离开团还差
-          <span>{{yaoQingObj.balancePerson}}</span> 人</p>
+        <p class="two" v-if="yaoQingObj.teamStatus == 1">离开团还差
+          <span>{{yaoQingObj.balancePerson}}</span> 人
+        </p>
+        <p class="two" v-if="yaoQingObj.teamStatus == 4">此拼团已结束
+          <span>{{yaoQingObj.balancePerson}}</span> 人
+        </p>
         <p class="three">
           <router-link to="playDet">查看玩法详情</router-link>
         </p>
@@ -59,19 +63,16 @@
             </th>
           </tr>
           <tr class="onetd">
-            <td>数量</td>
-            <td v-for="item in yaoQingObj.rebate" :key="item.id">
-              {{ item.num }}
-            </td>
-          </tr>
-          <tr class="onetd">
-            <td>返利</td>
+            <td>补贴</td>
             <td v-for="item in yaoQingObj.rebate" :key="item.id">
               {{ item.price }}
             </td>
           </tr>
         </table>
-
+        <div class="tip">
+          开团/参与人都将享有随机返现 最高可达
+          <span>10%</span>
+        </div>
       </div>
 
       <div class="groundPer">
@@ -106,7 +107,7 @@
       <div class="konghe1">
       </div>
 
-      <div class="sure">
+      <div class="sure" v-if="yaoQingObj.teamStatus != 4">
         <button class="addCart" @click="lijiAdd">立即参与</button>
       </div>
     </div>
@@ -119,8 +120,6 @@
 import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
-import { Toast } from "mint-ui";
-// import { MessageBox } from "mint-ui";
 
 export default {
   name: "name",
@@ -461,6 +460,21 @@ export default {
 
       .oneth,
       .onetd {
+      }
+    }
+    .tip {
+      margin-top: 0.18rem;
+      height: 0.3rem;
+      font-size: 0.22rem;
+      font-family: PingFangSC-Regular;
+      color: rgba(158, 159, 161, 1);
+      line-height: 0.3rem;
+      span {
+        height: 0.33rem;
+        font-size: 0.24rem;
+        font-family: PingFangSC-Medium;
+        color: rgba(255, 109, 0, 1);
+        line-height: 0.33rem;
       }
     }
   }

@@ -37,18 +37,16 @@
               </th>
             </tr>
             <tr>
-              <td>数量</td>
-              <td v-for="item in groundDetInfo.rebate" :key="item.id">
-                {{ item.num }}
-              </td>
-            </tr>
-            <tr>
-              <td>返利</td>
+              <td>补贴</td>
               <td v-for="item in groundDetInfo.rebate" :key="item.id">
                 {{ item.price }}
               </td>
             </tr>
           </table>
+          <div class="tip">
+            开团/参与人都将享有随机返现 最高可达
+            <span>10%</span>
+          </div>
         </div>
       </div>
 
@@ -319,6 +317,21 @@ export default {
           font-size: 0.22rem;
           color: rgba(158, 159, 161, 1);
           border: 0.01rem solid #dadada;
+        }
+      }
+      .tip {
+        margin-top: 0.18rem;
+        height: 0.3rem;
+        font-size: 0.22rem;
+        font-family: PingFangSC-Regular;
+        color: rgba(158, 159, 161, 1);
+        line-height: 0.3rem;
+        span {
+          height: 0.33rem;
+          font-size: 0.24rem;
+          font-family: PingFangSC-Medium;
+          color: rgba(255, 109, 0, 1);
+          line-height: 0.33rem;
         }
       }
     }

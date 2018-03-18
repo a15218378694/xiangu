@@ -7,6 +7,8 @@ import "@/assets/css/groundItem.css";
 import "@/assets/icon/iconfont.css";
 
 import Vue from "vue";
+import VueJsonp from 'vue-jsonp'
+Vue.use(VueJsonp)
 import App from './App'
 import Vuex from "vuex";
 import VueLazyload from "vue-lazyload";
@@ -20,9 +22,6 @@ import bridgeBack from './constant/nativeJSBridge';
 import {
   Loadmore
 } from 'mint-ui';
-import {
-  Toast
-} from "mint-ui";
 
 import bridge from './config/bridge.js'
 import FastClick from 'fastclick'
@@ -31,6 +30,7 @@ if ('addEventListener' in document) {
     FastClick.attach(document.body);
   }, false);
 }
+Vue.config.devtools = true
 Vue.prototype.$bridge = bridge
 window.winBri = bridge
 Vue.component(Loadmore.name, Loadmore);
@@ -96,8 +96,9 @@ new Vue({
   el: "#app",
   router,
   created() {
+    window.vm = this;
     let token = util.getStore("token");
-    Toast("getStore的" + token);
+    util.toastEven("getStore的" + token);
     axios.defaults.headers.common["tonken"] = token;
     this.chanToken()
   },
@@ -108,8 +109,8 @@ new Vue({
         if (hyToken === "" || hyToken === null) {
           token1 = ""
         }
-        Toast('chanToken自己获取的' + token1)
-        Toast('传过来的' + hyToken)
+        util.toastEven('chanToken自己获取的' + token1)
+        util.toastEven('传过来的' + hyToken)
         axios.defaults.headers.common['tonken'] = hyToken || token1
       }
     }

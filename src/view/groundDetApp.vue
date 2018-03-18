@@ -37,18 +37,16 @@
               </th>
             </tr>
             <tr>
-              <td>数量</td>
-              <td v-for="item in groundDetInfo.rebate" :key="item.id">
-                {{ item.num }}
-              </td>
-            </tr>
-            <tr>
-              <td>返利</td>
+              <td>补贴</td>
               <td v-for="item in groundDetInfo.rebate" :key="item.id">
                 {{ item.price }}
               </td>
             </tr>
           </table>
+          <div class="tip">
+            开团/参与人都将享有随机返现 最高可达
+            <span>10%</span>
+          </div>
         </div>
       </div>
 
@@ -141,8 +139,8 @@ import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
 import { fetchJSON } from "../utils/fetch";
-
 import { MessageBox } from "mint-ui";
+
 export default {
   name: "name",
   data: function() {
@@ -164,6 +162,7 @@ export default {
     };
   },
   created() {
+    this.getData();
     this.getLocal();
     this.orderId = this.$route.query.orderId;
     if (this.$route.query.teamId) {
@@ -174,14 +173,25 @@ export default {
     getLocal() {
       let that = this;
       window.getProvi = function(prov) {
+        util.toastEven(prov);
         that.province = prov;
         that.getGroudDet(true, that.getGroundDetCall);
       };
     },
+    getData() {
+      console.log(123);
+      this.$jsonp("http://api.map.baidu.com/location/ip", { ak: 'Pswwb3LjDlxDt5KhGQxqn6zhS8hbQAHv' })
+        .then(json => {
+          console.log(json.content.address_detail.province);
+        })
+        .catch(err => {
+          // Failed.
+        });
+    },
     getGroundDetCall(res) {
       this.teamStatus = res.data.teamStatus;
       if (this.teamStatus == 1) {
-        this.leftText = ""; 
+        this.leftText = "";
         this.rightText = "邀请好友开团";
       } else if (this.teamStatus == 2) {
         this.leftText = "立即参与";
@@ -202,9 +212,8 @@ export default {
       });
     },
     async getGroudDet(flag = true, calls) {
-      //PC端
       let that = this;
-
+      //PC端
       if (winBri.getSheBei() !== "iPhone" && winBri.getSheBei() !== "Android") {
         that.orderId = 10871879897;
       }
@@ -329,6 +338,21 @@ export default {
           font-size: 0.22rem;
           color: rgba(158, 159, 161, 1);
           border: 0.01rem solid #dadada;
+        }
+      }
+      .tip {
+        margin-top: 0.18rem;
+        height: 0.3rem;
+        font-size: 0.22rem;
+        font-family: PingFangSC-Regular;
+        color: rgba(158, 159, 161, 1);
+        line-height: 0.3rem;
+        span {
+          height: 0.33rem;
+          font-size: 0.24rem;
+          font-family: PingFangSC-Medium;
+          color: rgba(255, 109, 0, 1);
+          line-height: 0.33rem;
         }
       }
     }

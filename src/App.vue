@@ -10,7 +10,6 @@ import axios from "axios";
 import http from "./utils/http";
 import api from "./utils/api";
 import util from "./utils/util";
-import { Toast } from "mint-ui";
 export default {
   name: "app",
   data() {
@@ -26,7 +25,7 @@ export default {
     $route(to, from) {
       if (this.$bridge.getSheBei() == "Android") {
         let token = util.getStore("token");
-        Toast("getStore的" + token);
+        util.toastEven("getStore的" + token);
         axios.defaults.headers.common["tonken"] = token;
       }
       if (this.$bridge.getSheBei() == "iPhone") {

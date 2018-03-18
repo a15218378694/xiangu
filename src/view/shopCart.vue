@@ -64,7 +64,6 @@ import api from "../utils/api";
 import http from "../utils/http";
 import util from "../utils/util";
 import navHeader from "@/components/navHeader.vue";
-import { Toast } from "mint-ui";
 import { MessageBox } from "mint-ui";
 var VueTouch = require("vue-touch");
 Vue.use(VueTouch, { name: "v-touch" });
@@ -143,7 +142,7 @@ export default {
       if (!flag) {
         this.sureGoOrder(this.totalPrice);
       } else {
-        Toast("请先选择商品");
+        util.toastEven("请先选择商品");
       }
     },
     onSwipeLeft(item) {
@@ -251,14 +250,14 @@ export default {
               }
             });
             this.fetchDeledGoods(delArr, res => {
-              Toast("删除成功");
+              util.toastEven("删除成功");
               this.page = 1;
               this.getShopGoods();
             });
           }
         });
       } else {
-        return Toast("请先选择要删除的商品");
+        return util.toastEven("请先选择要删除的商品");
       }
     },
     fetchDeledGoods: async function(params, callS) {

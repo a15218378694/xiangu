@@ -1,7 +1,7 @@
 <template>
   <div :class="[isShow? 'showGuige': '','goods_det']">
 
-    <div class="con">
+    <div class="con" :class="{'iph' : isIph}">
       <img class="back" @click="back" src="../assets/img/mall/商品详情_slices/Group@2x.png" alt="">
       <img v-if="isCollect == 1" class="collect" @click="collect(1)" src="../assets/img/mall/商品详情_slices/收藏2@2x.png" alt="">
       <img v-else-if="isCollect == 2" @click="collect(0)" class="collect" src="../assets/img/mall/商品详情_slices/收藏@2x.png" alt="">
@@ -200,7 +200,6 @@ import groundItem from "../components/groundItem.vue";
 import scroll from "../components/scroll.vue";
 import { Popup } from "mint-ui";
 import { MessageBox } from "mint-ui";
-import { Toast } from "mint-ui";
 import { Swipe, SwipeItem } from "mint-ui";
 import { mapState } from "vuex";
 
@@ -237,7 +236,8 @@ export default {
       checkKucunFlag: true,
       rukou: "",
       appPage: 0,
-      placeHold: ""
+      placeHold: "",
+      isIph: ""
     };
   },
   watch: {
@@ -261,6 +261,9 @@ export default {
     }
   },
   mounted() {
+    if (winBri.getSheBei() == "iPhone") {
+      this.isIph = true;
+    }
     if (this.rukou == "groundDet") {
       this.isShowEven("拼团", 2);
     }
@@ -277,7 +280,7 @@ export default {
     isShowEven(buyTypeTit, buy_way) {
       if (this.$bridge.getSheBei() == "Android") {
         let token = util.getStore("token");
-        Toast("getStore的" + token);
+        util.toastEven("getStore的" + token);
         axios.defaults.headers.common["tonken"] = token;
       }
       if (buyTypeTit == "close") {
@@ -707,7 +710,7 @@ export default {
       });
       if (res.data) {
         this.isCollect = 1;
-        return Toast("收藏成功");
+        return util.toastEven("收藏成功");
       }
     },
     delColl: async function() {
@@ -716,7 +719,7 @@ export default {
       ]);
       if (res.data) {
         this.isCollect = 2;
-        return Toast("取消收藏");
+        return util.toastEven("取消收藏");
       }
     },
     checkNum() {
@@ -1338,13 +1341,4 @@ export default {
   height: 10.34rem;
   overflow: hidden;
 }
-// .specs_cover {
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   background-color: rgba(0, 0, 0, 0.4);
-//   z-index: 17;
-// }
 </style>

@@ -32,3 +32,9 @@
 .headerZW {
   height: 1.2rem;
 }
+.iphHeight {
+  line-height: 1.6rem !important;
+}
+.iph {
+  top: 0.2rem !important;
+}
