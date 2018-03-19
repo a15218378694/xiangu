@@ -2,7 +2,8 @@
   <div>
     <div class="groundDetPage">
       <nav-header>
-        <span class="orderDetTit" slot="header">拼团详情Det</span>
+        <span class="orderDetTit" slot="header">拼团详情</span>
+        <!-- <span class="orderDetTit" slot="header">拼团详情Det</span> -->
       </nav-header>
 
       <ground-step>
@@ -123,10 +124,8 @@
       </div>
 
       <div class="sure">
-        <button class="addCart" @click="goGoodsDet" v-if="this.teamStatus == 2">{{leftText}}</button>
-        <button class="goOrder" @click="goShare" v-if="this.teamStatus != 5">{{rightText}}</button>
-        <!-- <button class="addCart" @click="goGoodsDet">去去去</button> -->
-        <!-- <button class="goOrder" @click="goShare">去去去</button> -->
+        <button class="addCart" @click="goGoodsDet" v-if="leftText && this.teamStatus != 5 && this.teamStatus != 4 && this.teamStatus != 3">{{leftText}}</button>
+        <button class="goOrder" @click="goShare" v-if="this.teamStatus != 5 && this.teamStatus != 4 && this.teamStatus != 3">{{rightText}}</button>
       </div>
 
     </div>
@@ -157,7 +156,10 @@ export default {
         grouppbooking_people: []
       },
       leftText: "",
-      rightText: ""
+      rightText: "",
+      sureApi: "",
+      province: "",
+      joinTeam: 1
     };
   },
   created() {
@@ -165,23 +167,63 @@ export default {
     if (this.$route.query.teamId) {
       this.teamId = this.$route.query.teamId;
     }
-    this.getGroudDet(true, this.getGroundDetCall);
+    this.sureApi = api.finishpay;
+    if (this.$route.query.prePage === "mall") {
+      this.sureApi = api.gototuxedo;
+    }
+    this.getData();
   },
   methods: {
     getGroundDetCall(res) {
       this.teamStatus = res.data.teamStatus;
-      if (this.teamStatus == 1) {
-        this.leftText = "";
-        this.rightText = "邀请好友开团";
-      } else if (this.teamStatus == 2) {
-        this.leftText = "立即参与";
-        this.rightText = "立即分享";
-      } else if (this.teamStatus == 3) {
-        this.leftText = "";
-        this.rightText = "晒单领取大奖";
-      } else if (this.teamStatus == 4 || this.teamStatus == 5) {
-        this.leftText = "";
-        this.rightText = "";
+      if (res.data.joinTeam) {
+        this.joinTeam = res.data.joinTeam;
+      }
+      //mall是外部
+      if (this.$route.query.prePage === "mall") {
+        if (this.joinTeam == 1) {
+          if (this.teamStatus == 1) {
+            this.leftText = "";
+            this.rightText = "邀请好友开团";
+          } else if (this.teamStatus == 2) {
+            this.leftText = "继续购买";
+            this.rightText = "立即分享";
+          } else if (this.teamStatus == 3) {
+            this.leftText = "";
+            this.rightText = "晒单领取大奖";
+          } else if (this.teamStatus == 4 || this.teamStatus == 5) {
+            this.leftText = "";
+            this.rightText = "";
+          }
+        } else if (this.joinTeam == 2) {
+          if (this.teamStatus == 1) {
+            this.leftText = "立即参与";
+            this.rightText = "邀请好友开团";
+          } else if (this.teamStatus == 2) {
+            this.leftText = "立即参与";
+            this.rightText = "立即分享";
+          } else if (this.teamStatus == 3) {
+            this.leftText = "";
+            this.rightText = "晒单领取大奖";
+          } else if (this.teamStatus == 4 || this.teamStatus == 5) {
+            this.leftText = "";
+            this.rightText = "";
+          }
+        }
+      } else {
+        if (this.teamStatus == 1) {
+          this.leftText = "";
+          this.rightText = "邀请好友开团";
+        } else if (this.teamStatus == 2) {
+          this.leftText = "继续购买";
+          this.rightText = "立即分享";
+        } else if (this.teamStatus == 3) {
+          this.leftText = "";
+          this.rightText = "晒单领取大奖";
+        } else if (this.teamStatus == 4 || this.teamStatus == 5) {
+          this.leftText = "";
+          this.rightText = "";
+        }
       }
       this.status = res.data.status;
       this.goodsId = res.data.pid;
@@ -191,6 +233,21 @@ export default {
         v.starttime = util.timestampToTime(v.starttime);
       });
     },
+    getData() {
+      let that = this;
+      this.$jsonp("http://api.map.baidu.com/location/ip", {
+        ak: "Pswwb3LjDlxDt5KhGQxqn6zhS8hbQAHv"
+      })
+        .then(json => {
+          let prov = json.content.address_detail.province;
+          util.toastEven(prov);
+          that.province = prov;
+          that.getGroudDet(true, that.getGroundDetCall);
+        })
+        .catch(err => {
+          // Failed.
+        });
+    },
     getGroudDet: async function(flag = true, calls) {
       if (winBri.getSheBei() !== "iPhone" && winBri.getSheBei() !== "Android") {
         this.orderId = 10871879897;
@@ -199,10 +256,12 @@ export default {
         orderId: this.orderId,
         teamId: this.teamId
       };
-      const res = await http.get(api.finishpay, params);
+      if (this.sureApi === api.gototuxedo) {
+        params.province = this.province;
+      }
+      const res = await http.get(this.sureApi, params);
       if (res.data) {
         calls && calls(res);
-
         if (flag) {
           if (this.groundDetInfo.teamStatus == 1) {
             this.countdown(this.groundDetInfo.openCloseTime / 1000);
@@ -219,8 +278,20 @@ export default {
       var times = (expire_time - new Date().getTime() / 1000) * 1000;
       util.countdown(this, times);
     },
-    goGoodsDet() {
+    async goGoodsDet() {
       if (this.goodsId) {
+        if (this.leftText === "立即参与") {
+          let params = {
+            teamId: this.teamId,
+            pid: this.goodsId,
+            buy_way: 2,
+            province: this.province
+          };
+          const res = await http.get(api.imjoin, params);
+          if (res.data.code == -2) {
+           return MessageBox("提示", res.data.msg);
+          }
+        }
         this.$router.push({
           path: "goodsDetail",
           query: {
@@ -298,7 +369,7 @@ export default {
         color: rgba(79, 80, 84, 1);
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+        // white-space: nowrap;
       }
       table {
         width: 4.78rem;

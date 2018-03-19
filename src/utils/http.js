@@ -1,6 +1,6 @@
 'use strict'
 var root = ''
-var rootPos = ''
+var rootPos = '' 
 if (process.env.NODE_ENV == 'production') {
   rootPos = 'http://api.map.baidu.com'
   let isTestBaseAPI = location.href.includes('test')

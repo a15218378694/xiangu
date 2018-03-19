@@ -29,7 +29,7 @@
         </template>
       </div>
 
-      <div class="grounding" v-if="groundInfo.length > 0">
+      <!-- <div class="grounding" v-if="groundInfo.length > 0">
         <div class="top">
           <div class="left">
             <div class="leftImg"></div>
@@ -42,7 +42,7 @@
 
         <ground-item :groundInfo="groundInfo" :clock="clock"></ground-item>
 
-      </div>
+      </div> -->
 
       <goods-tool @getToolGoods="fetchHot" :showRules='showRules'>
         <span slot="goodsToolTit">热门商品</span>

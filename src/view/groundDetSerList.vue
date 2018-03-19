@@ -2,7 +2,8 @@
   <div>
     <div class="groundDetPage">
       <nav-header>
-        <span class="orderDetTit" slot="header">拼团详情List</span>
+        <span class="orderDetTit" slot="header">拼团详情</span>
+        <!-- <span class="orderDetTit" slot="header">拼团详情List</span> -->
       </nav-header>
 
       <ground-step>
@@ -123,8 +124,8 @@
       </div>
 
       <div class="sure">
-        <button class="addCart" @click="goGoodsDet" v-if="this.teamStatus == 2">{{leftText}}</button>
-        <button class="goOrder" @click="goShare" v-if="this.teamStatus != 5">{{rightText}}</button>
+        <button class="addCart" @click="goGoodsDet" v-if="leftText && this.teamStatus != 5 && this.teamStatus != 4 && this.teamStatus != 3">{{leftText}}</button>
+        <button class="goOrder" @click="goShare" v-if="this.teamStatus != 5 && this.teamStatus != 4 && this.teamStatus != 3">{{rightText}}</button>
       </div>
 
     </div>
@@ -174,7 +175,7 @@ export default {
         this.leftText = "";
         this.rightText = "邀请好友开团";
       } else if (this.teamStatus == 2) {
-        this.leftText = "立即参与";
+        this.leftText = "继续购买";
         this.rightText = "立即分享";
       } else if (this.teamStatus == 3) {
         this.leftText = "";
@@ -297,7 +298,7 @@ export default {
         color: rgba(79, 80, 84, 1);
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+        // white-space: nowrap;
       }
       table {
         width: 4.78rem;

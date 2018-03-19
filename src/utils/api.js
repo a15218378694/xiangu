@@ -38,5 +38,6 @@ export default {
   unitprice: '/buy/unitprice',//商品详情页点击单价购买
   sharedetails: '/sharedetails',//拼团分享出 的页面
   gototuxedo: '/groupbooking/gototuxedo',//外链进来 去参团
+  imjoin: '/groupbooking/imjoin',//立即参与
   finishcutdown: '/groupbooking/finishcutdown'//拼团详情 倒计时结束
 };

@@ -249,7 +249,7 @@ export default {
       height: 2.24rem;
     }
   }
-  .faqi {
+  .faqi,.yikai {
     text-align: center;
     background: url("../assets/img/yaoqing/邀请好友开团_slices/faqibeijing.png")
       no-repeat;
@@ -295,53 +295,6 @@ export default {
       }
     }
   }
-  .yikai {
-    text-align: center;
-    background: url("../assets/img/yaoqing/邀请好友开团_slices/faqibeijing.png")
-      no-repeat;
-    background-size: contain;
-    width: 6.61rem;
-    height: 2.98rem;
-    padding-top: 0.54rem;
-    margin: 0 auto;
-    margin-bottom: 0.3rem;
-    p {
-      margin: 0 auto;
-    }
-    .one {
-      width: 4.21rem;
-      height: 0.56rem;
-      font-size: 0.4rem;
-      font-family: PingFangSC-Semibold;
-      color: rgba(255, 255, 255, 1);
-      line-height: 0.56rem;
-      span {
-        color: #f0ed76;
-      }
-    }
-    .two {
-      height: 0.45rem;
-      font-size: 0.32rem;
-      font-family: PingFangSC-Regular;
-      color: rgba(255, 255, 255, 1);
-      line-height: 0.45rem;
-      span {
-        color: #f0ed76;
-      }
-    }
-    .three {
-      a {
-        width: 1.51rem;
-        height: 0.33rem;
-        font-size: 0.24rem;
-        font-family: PingFangSC-Regular;
-        color: rgba(194, 250, 255, 1);
-        line-height: 0.33rem;
-        text-decoration: underline;
-      }
-    }
-  }
-
   .groundGoodsDes {
     width: 6.7rem;
     height: 5.14rem;
@@ -438,7 +391,7 @@ export default {
 
     table {
       width: 6.05rem;
-      height: 1.64rem;
+      height: 1.04rem;
       background: rgba(255, 255, 255, 0.5);
       border: 0.01rem solid #fff;
       margin-top: 0.2rem;
@@ -456,6 +409,8 @@ export default {
         font-size: 0.24rem;
         font-family: PingFangSC-Regular;
         color: rgba(158, 159, 161, 1);
+        padding: 0 !important;
+        margin: 0 !important;
       }
 
       .oneth,

@@ -5,7 +5,7 @@ import { Toast } from "mint-ui";
 
 export default {
   toastEven(msg) {
-    Toast(msg)
+    // Toast(msg)
   },
   formatNumber(n) {
     n = n.toString();
