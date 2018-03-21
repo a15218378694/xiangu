@@ -117,7 +117,7 @@
     </div>
 
     <div class="goods_con">
-      <div class="kefu">客服</div>
+      <a href="mqqwpa://im/chat?chat_type=wpa&uin=1504392338&version=1&src_type=web&web_src=bjhuli.com">客服</a>
       <button class="ground_buy" @click="isShowEven('拼团',2)">
         <p class="ground_pri">￥{{proDetails.original_price}}</p>
         <p class="groundBtn" v-if="rukou == 'groundDet'">立即拼团</p>
@@ -1102,11 +1102,11 @@ export default {
     left: 0;
     right: 0;
     color: #7cc688;
-    padding-left: 2.82rem;
+    // padding-left: 2.82rem;
     overflow: hidden;
     background-color: #fff;
     text-align: center;
-    .kefu {
+    a {
       position: absolute;
       width: 1.19rem;
       height: 0.6rem;
@@ -1115,6 +1115,18 @@ export default {
       left: 0.28rem;
       top: 0.21rem;
       border: 0.02rem solid #42bd56;
+    }
+    a:link {
+      color: #7cc688;
+    }
+    a:visited {
+      color: #7cc688;
+    }
+    a:hover {
+      color: #7cc688;
+    }
+    a:active {
+      color: #7cc688;
     }
     .ground_buy {
       width: 2.34rem;
@@ -1318,7 +1330,7 @@ export default {
         position: absolute;
         left: 0;
         bottom: 0;
-        width: 50%;  
+        width: 50%;
         background: rgba(209, 241, 200, 1);
         color: #7cc688;
       }

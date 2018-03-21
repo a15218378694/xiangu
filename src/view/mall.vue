@@ -374,4 +374,7 @@ export default mallObj;
     }
   }
 }
+.el-carousel__item {
+    // width: 300px;
+  }
 </style>
