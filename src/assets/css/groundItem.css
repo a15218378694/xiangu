@@ -58,7 +58,7 @@
 .grounding .bot .rightt .goGround {
   display: inline-block;
   vertical-align: middle;
-  border: 0.01rem solid #42bd56 !important;
+  border: 0.02rem solid #42bd56 !important;
   color: #42bd56;
   width: 1.2rem;
   height: 0.58rem;

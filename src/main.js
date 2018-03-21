@@ -98,7 +98,6 @@ new Vue({
   created() {
     window.vm = this;
     let token = util.getStore("token");
-    util.toastEven("getStore的" + token);
     axios.defaults.headers.common["tonken"] = token;
     this.chanToken()
   },
@@ -109,8 +108,6 @@ new Vue({
         if (hyToken === "" || hyToken === null) {
           token1 = ""
         }
-        util.toastEven('chanToken自己获取的' + token1)
-        util.toastEven('传过来的' + hyToken)
         axios.defaults.headers.common['tonken'] = hyToken || token1
       }
     }

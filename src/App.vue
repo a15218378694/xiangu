@@ -25,7 +25,6 @@ export default {
     $route(to, from) {
       if (this.$bridge.getSheBei() == "Android") {
         let token = util.getStore("token");
-        util.toastEven("getStore的" + token);
         axios.defaults.headers.common["tonken"] = token;
       }
       if (this.$bridge.getSheBei() == "iPhone") {

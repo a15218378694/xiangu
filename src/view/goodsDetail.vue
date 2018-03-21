@@ -280,7 +280,6 @@ export default {
     isShowEven(buyTypeTit, buy_way) {
       if (this.$bridge.getSheBei() == "Android") {
         let token = util.getStore("token");
-        util.toastEven("getStore的" + token);
         axios.defaults.headers.common["tonken"] = token;
       }
       if (buyTypeTit == "close") {
@@ -972,7 +971,7 @@ export default {
       .rightt {
         padding: 0.095rem 0;
         .goGround {
-          border: 0.01rem solid #42bd56 !important;
+          border: 0.02rem solid #42bd56 !important;
           color: #42bd56;
           width: 1.2rem;
           height: 0.58rem;
@@ -1115,7 +1114,7 @@ export default {
       border-radius: 0.3rem;
       left: 0.28rem;
       top: 0.21rem;
-      border: 1px solid #42bd56;
+      border: 0.02rem solid #42bd56;
     }
     .ground_buy {
       width: 2.34rem;
@@ -1134,7 +1133,7 @@ export default {
     }
   }
   .scrollBox {
-    max-height: 240px;
+    max-height: 4.8rem;
     overflow: hidden;
   }
   // .zhezhao {
@@ -1207,7 +1206,7 @@ export default {
         background: rgba(255, 255, 255, 1);
         border-radius: 0.05rem;
         font-size: 0.26rem;
-        border: 0.01rem solid #f0f0f0;
+        border: 0.02rem solid #f0f0f0;
         min-height: 0.6rem;
         line-height: 0.6rem;
         padding: 0 0.35rem;
@@ -1218,7 +1217,8 @@ export default {
       }
       .guigeTypeItemActive {
         color: #42bd56;
-        border: 0.01rem solid #42bd56;
+        background-color: rgb(229, 241, 226);
+        border: 0.02rem solid #42bd56;
       }
     }
 
@@ -1230,7 +1230,7 @@ export default {
       margin-top: 0.32rem;
       height: 1.06rem;
       padding: 0.16rem 0.3rem;
-      border: 0.01rem solid #f0f0f0;
+      border: 0.02rem solid #f0f0f0;
       position: relative;
       span {
         color: #828284;
@@ -1318,8 +1318,8 @@ export default {
         position: absolute;
         left: 0;
         bottom: 0;
-        width: 50%;
-        background-color: #e1f3e2;
+        width: 50%;  
+        background: rgba(209, 241, 200, 1);
         color: #7cc688;
       }
       .goOrder {

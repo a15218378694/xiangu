@@ -83,8 +83,11 @@
           <router-link to="playDet">玩法详情</router-link>
         </div>
         <div class="three" v-if="groundDetInfo.teamStatus == 3">
-          我们将根据你所填写的地址进行发货 具体请查看
-          <router-link to="playDet">玩法详情</router-link>
+          <div class="sucTip">补贴/返现将自动返回到你的钱包，请查看账户明细 </div>
+          <div class="sucTip">我们将根据你所填写的地址进行发货</div>
+          <div class="sucTip">具体请查看
+            <router-link to="playDet">玩法详情</router-link>
+          </div>
         </div>
         <div class="three" v-if="groundDetInfo.teamStatus == 4">
           <div>支付的金额将自动返回到你的钱包</div>
@@ -181,7 +184,6 @@ export default {
       })
         .then(json => {
           let prov = json.content.address_detail.province;
-          util.toastEven(prov);
           that.province = prov;
           that.getGroudDet(true, that.getGroundDetCall);
         })
@@ -193,7 +195,9 @@ export default {
       this.teamStatus = res.data.teamStatus;
       if (res.data.joinTeam) {
         this.joinTeam = res.data.joinTeam;
+        util.toastEven(res.data.joinTeam);
       }
+
       if (this.joinTeam == 1) {
         if (this.teamStatus == 1) {
           this.leftText = "";
@@ -243,7 +247,6 @@ export default {
       };
       const res = await http.get(api.gototuxedo, params);
       console.log(res);
-
       if (res.data) {
         calls && calls(res);
         if (flag) {
@@ -264,17 +267,15 @@ export default {
     },
     async goGoodsDet() {
       if (this.goodsId) {
-        if (this.leftText === "立即参与") {
-          let params = {
-            teamId: this.teamId,
-            pid: this.goodsId,
-            buy_way: 2,
-            province: this.province
-          };
-          const res = await http.get(api.imjoin, params);
-          if (res.data.code == -2) {
-           return MessageBox("提示", res.data.msg);
-          }
+        let params = {
+          teamId: this.teamId,
+          pid: this.goodsId,
+          buy_way: 2,
+          province: this.province
+        };
+        const res = await http.get(api.imjoin, params);
+        if (res.data.code == -2) {
+          return MessageBox("提示", res.data.msg);
         }
         this.$router.push({
           path: "goodsDetail",
@@ -333,7 +334,7 @@ export default {
   .fanliBox {
     padding: 0.3rem;
     overflow: hidden;
-    border-bottom: 0.01rem solid #f0f0f0;
+    border-bottom: 0.02rem solid #f0f0f0;
 
     .left {
       float: left;
@@ -355,14 +356,14 @@ export default {
       }
       table {
         width: 4.78rem;
-        border: 0.01rem solid #dadada;
+        border: 0.02rem solid #dadada;
         text-align: center;
         th {
           text-align: center;
           background-color: #42bd56;
           color: #fff;
           font-size: 0.24rem;
-          border-left: 0.01rem solid #dadada;
+          border-left: 0.02rem solid #dadada;
         }
         th:nth-of-type(1) {
           border-left: none;
@@ -370,22 +371,19 @@ export default {
         td {
           font-size: 0.22rem;
           color: rgba(158, 159, 161, 1);
-          border: 0.01rem solid #dadada;
+          border: 0.02rem solid #dadada;
         }
       }
       .tip {
+        width: 4.8rem;
         margin-top: 0.18rem;
-        height: 0.3rem;
         font-size: 0.22rem;
         font-family: PingFangSC-Regular;
         color: rgba(158, 159, 161, 1);
-        line-height: 0.3rem;
         span {
-          height: 0.33rem;
           font-size: 0.24rem;
           font-family: PingFangSC-Medium;
           color: rgba(255, 109, 0, 1);
-          line-height: 0.33rem;
         }
       }
     }
@@ -402,15 +400,14 @@ export default {
 
   .killBox {
     padding: 0.21rem 0;
-    margin-bottom: 0.01rem;
+    margin-bottom: 0.02rem;
     text-align: center;
     .one {
       height: 0.6rem;
       line-height: 0.6rem;
       color: rgba(79, 80, 84, 1);
       font-size: 0.3rem;
-      img {
-      }
+
       span {
         color: #ff5400;
       }
@@ -437,6 +434,13 @@ export default {
         text-decoration: underline;
         color: #59b9e1;
       }
+      .sucTip {
+        height: 0.37rem;
+        font-size: 0.26rem;
+        font-family: PingFangSC-Regular;
+        color: rgba(79, 80, 84, 1);
+        line-height: 0.37rem;
+      }
     }
   }
   .entryGround {
@@ -448,7 +452,7 @@ export default {
       overflow: hidden;
       height: 0.98rem;
       line-height: 0.98rem;
-      border-bottom: 0.01rem solid #f0f0f0;
+      border-bottom: 0.02rem solid #f0f0f0;
 
       .left {
         float: left;
@@ -478,7 +482,7 @@ export default {
     .bot {
       padding: 0.2rem 0;
       display: flex;
-      border-bottom: 0.01rem solid #f0f0f0;
+      border-bottom: 0.02rem solid #f0f0f0;
 
       .leftt {
         img {
@@ -538,7 +542,7 @@ export default {
       left: 0;
       bottom: 0;
       width: 50%;
-      background-color: #e1f3e2;
+      background: rgba(197, 245, 200, 1);
       color: #7cc688;
     }
     .goOrder {

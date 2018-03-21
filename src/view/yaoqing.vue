@@ -379,7 +379,7 @@ export default {
           height: 0.46rem;
           line-height: 0.46rem;
           background: rgba(255, 255, 255, 0.4);
-          border: 0.01rem solid rgba(0, 187, 204, 1);
+          border: 0.02rem solid rgba(0, 187, 204, 1);
 
           border-radius: 0.1rem;
           font-size: 0.2rem;
@@ -393,7 +393,7 @@ export default {
       width: 6.05rem;
       height: 1.04rem;
       background: rgba(255, 255, 255, 0.5);
-      border: 0.01rem solid #fff;
+      border: 0.02rem solid #fff;
       margin-top: 0.2rem;
       text-align: center;
       th {
@@ -478,7 +478,7 @@ export default {
     .bot {
       padding: 0.2rem 0;
       display: flex;
-      border-bottom: 0.01rem solid #f0f0f0;
+      border-bottom: 0.02rem solid #f0f0f0;
 
       .leftt {
         img {

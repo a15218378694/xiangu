@@ -44,7 +44,7 @@ export default {
   right: 0;
   background-color: #fff;
   .sea {
-    border-bottom: 0.01rem solid #f0f0f0;
+    border-bottom: 0.02rem solid #f0f0f0;
     text-align: center;
     display: flex;
     line-height: 0.6rem;

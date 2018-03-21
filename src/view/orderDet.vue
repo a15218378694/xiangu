@@ -83,7 +83,7 @@
 <script>
 import Vue from "vue";
 import http from "../utils/http";
-import util from '../utils/util';
+import util from "../utils/util";
 import api from "../utils/api";
 import goodsItem from "../components/goodsItem.vue";
 import NavHeader from "../components/navHeader.vue";
@@ -121,13 +121,29 @@ export default {
       curCom: "orderDet",
       btn_done: false,
       daoji: 3,
-      province: '',
-      city: ''
+      province: "",
+      city: "",
+      locationProvince: ""
     };
   },
   methods: {
+    getData() {
+      let that = this;
+      this.$jsonp("http://api.map.baidu.com/location/ip", {
+        ak: "Pswwb3LjDlxDt5KhGQxqn6zhS8hbQAHv"
+      })
+        .then(json => {
+          let prov = json.content.address_detail.province;
+          that.locationProvince = prov;
+          that.getGroudDet(true, that.getGroundDetCall);
+        })
+        .catch(err => {
+          // Failed.
+        });
+    },
     fetchGoodsDet: async function() {
       let that = this;
+      this.getData();
       let params = {
         name: this.perName, //收货人
         telephone: this.perPhone, // 收货人电话
@@ -136,9 +152,10 @@ export default {
         freight: this.freight,
         shoppingCat: this.shoppingCatArr,
         teamId: this.teamId,
-        province: this.perProvi,
-        city: this.perCity,
+        province: this.province,
+        city: this.city,
         buyway: 1,
+        locationProvince: this.locationProvince,
         remarkMessage: this.liuyanInfo //留言信息
       };
       if (this.totalNums > 0) {
@@ -199,14 +216,15 @@ export default {
     },
     getCurSel1() {
       let that = this;
-      window.getCurSel = function(perName, perPhone, perAddr, perProvi, perCity) {
-        console.log(perName, perPhone, perAddr, perProvi, perCity);
+      window.getCurSel = function(perName, perPhone, perAddr, province, city) {
+        console.log(perName, perPhone, perAddr, province, city);
+        util.toastEven(city);
         that.perPhone = "";
         that.perName = perName;
         that.perPhone = perPhone;
         that.perAddr = perAddr;
-        that.perProvi = perProvi;
-        that.perCity = perCity;
+        that.province = province;
+        that.city = city;
       };
     },
     editAddr() {
@@ -220,6 +238,7 @@ export default {
     }
   },
   created() {
+    this.getData();
     this.getCurSel1();
     // this.changeBtn();
     this.lastPage = this.$route.query.curPage;
@@ -227,8 +246,8 @@ export default {
     this.perName = this.orderDetData.name;
     this.perPhone = this.orderDetData.phone;
     this.perAddr = this.orderDetData.address;
-    this.perProvi = this.orderDetData.province;
-    this.perCity = this.orderDetData.city;
+    this.province = this.orderDetData.province;
+    this.city = this.orderDetData.city;
     // this.orderId = this.$route.query.orderId; //订单号
     this.status = this.orderDetData.myorders.status; //订单状态：1、待付款，2、待发货，3、待成团，4、已发货，5、已完成，6、已关闭7，待退款'
     this.proNum = this.orderDetData.myorders.proNum; // 商品的总数量
@@ -242,8 +261,9 @@ export default {
     this.teamId = this.$route.query.teamId;
 
     //传递过来的规格  分不清的时候就看vue的状态管理，浏览器插件
-    
-    if (//多套规格
+
+    if (
+      //多套规格
       this.$route.query.checkedGuige &&
       JSON.parse(this.$route.query.checkedGuige).length > 0
     ) {
@@ -322,7 +342,7 @@ export default {
   .goods_det1 {
     background-color: #fff;
     margin-top: 0.2rem;
-    border-bottom: 0.01rem solid #f0f0f0;
+    border-bottom: 0.02rem solid #f0f0f0;
 
     .top {
       overflow: hidden;

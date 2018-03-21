@@ -314,7 +314,7 @@ export default mallObj;
   .goods_types {
     display: flex;
     padding: 0.2rem;
-    border-bottom: 0.01rem solid #f0f0f0;
+    border-bottom: 0.02rem solid #f0f0f0;
     text-align: center;
     .goods_type {
       flex: 1;

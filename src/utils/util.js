@@ -201,6 +201,14 @@ export default {
       }
     }
   },
+  pad(num, n = 2) {
+    let len = num.toString().length
+    while (len < n) {
+      num = '0' + num
+      len++
+    }
+    return num
+  },
   timestampToTime(timestamp) {
     var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
 
@@ -208,8 +216,10 @@ export default {
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
     var D = date.getDate() + ' ';
     var h = date.getHours() + ':';
-    var m = date.getMinutes() + ':';
-    var s = date.getSeconds();
+    var m = this.pad(date.getMinutes()) + ':';
+    var s = this.pad(date.getSeconds());
+    
+    
     return Y + M + D + h + m + s;
   },
   setStore(name, content) {
