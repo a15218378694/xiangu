@@ -71,13 +71,9 @@ function checkCode(res) {
         bridge.callHandler("isLogOrder", iosData, function (resp) {});
       });
     }
-
-  } else {
-    // return new Promise((resolve, reject) => {
-    //     resolve(res)
-    // });
-    return res
+    res.data = false
   }
+  return res
 }
 
 export default {

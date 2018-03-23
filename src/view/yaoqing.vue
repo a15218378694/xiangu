@@ -4,7 +4,7 @@
       <div class="yiqi">
         <img src="../assets/img/yaoqing/邀请好友开团_slices/yiqi.png" alt="">
       </div>
-      <div class="faqi" v-if="yaoQingObj.teamStatus == 1 || yaoQingObj.teamStatus == 4">
+      <div class="faqi" v-if="yaoQingObj.teamStatus == 1 || yaoQingObj.teamStatus == 3 || yaoQingObj.teamStatus == 4 || yaoQingObj.teamStatus == 5">
         <p class="one">
           发起拼团
           <span>返现至 ¥5,000</span>
@@ -12,14 +12,14 @@
         <p class="two" v-if="yaoQingObj.teamStatus == 1">离开团还差
           <span>{{yaoQingObj.balancePerson}}</span> 人
         </p>
-        <p class="two" v-if="yaoQingObj.teamStatus == 4">此拼团已结束
-          <span>{{yaoQingObj.balancePerson}}</span> 人
+        <p class="two" v-if="yaoQingObj.teamStatus == 3 || yaoQingObj.teamStatus == 4 || yaoQingObj.teamStatus == 5">
+          此拼团已结束
         </p>
         <p class="three">
           <router-link to="playDet">查看玩法详情</router-link>
         </p>
       </div>
-      <div class="yikai" v-if="yaoQingObj.teamStatus == 2 || yaoQingObj.teamStatus == 3 || yaoQingObj.teamStatus == 5">
+      <div class="yikai" v-if="yaoQingObj.teamStatus == 2">
         <p class="one">
           参与拼团
           <span>返现至 ¥5,000</span>

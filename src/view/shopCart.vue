@@ -8,7 +8,7 @@
 
       <div v-if="hasGoods">
         <div class="shopCartGoods">
-          <v-touch v-for="(item,index) in shopCartGoods" :key="index" v-bind:pan-options="{ direction: 'horizontal', threshold: 100 }" v-on:swipeleft="onSwipeLeft(item)" v-on:swiperight="onSwipeRight(item)" class="goodsItemInfo">
+          <v-touch v-for="(item,index) in shopCartGoods" v-if="shopCartGoods.length" :key="index" v-bind:pan-options="{ direction: 'horizontal', threshold: 100 }" v-on:swipeleft="onSwipeLeft(item)" v-on:swiperight="onSwipeRight(item)" class="goodsItemInfo">
             <div class="infoDet" v-on:click.stop="toGoodsDet(item.pid)">
               <div class="left">
                 <img v-if="!item.isSelected" v-on:click.stop="selected(item)" class="sel" src="../assets/img/shopCart/购物车_slices/Oval@2x.png" alt="">
@@ -71,7 +71,7 @@ export default {
   data: function() {
     return {
       totalPrice: 0,
-      shopCartGoods: [{}],
+      shopCartGoods: [],
       page: 1,
       totalPage: 0,
       busy: true,

@@ -133,7 +133,7 @@
       <div class="goods_guige">
         <div class="one">
           <div class="left">
-            <img :src="proDetails.slidershowAdd[0].address" alt="">
+            <img :src="miniImage" alt="">
           </div>
           <div class="cen">
             <div class="tit">{{proDetails.title}}</div>
@@ -210,6 +210,7 @@ export default {
   name: "name",
   data: function() {
     return {
+      miniImage: '',
       isLoading1: false,
       refreshDelay: 120,
       isCollect: "",
@@ -326,7 +327,7 @@ export default {
         setTimeout(() => {
           this.$refs.listContent.refresh();
         }, 20);
-        this.$emit("goodsDetailPage", this.isShow);
+        this.miniImage = res.data.proDetails.image;
         this.guigess = res.data.proSize.proSizeLists;
         this.guigess.forEach((v, i) => {
           v.curIndex = -1;
@@ -624,7 +625,7 @@ export default {
       this.paramsSureOrder = {
         pid: this.proDetails.id,
         title: this.proDetails.title,
-        image: this.proDetails.slidershowAdd[0].address,
+        image: this.miniImage,
         buyway: this.buy_way,
         cart_num: cartNum
       };

@@ -438,6 +438,7 @@ export default {
     .left {
       float: left;
       width: 4.86rem;
+      // width: 3.86rem;
       text-align: right;
       margin-right: 0.3rem;
       .totPri {
