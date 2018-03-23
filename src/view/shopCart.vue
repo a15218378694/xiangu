@@ -142,7 +142,7 @@ export default {
       if (!flag) {
         this.sureGoOrder(this.totalPrice);
       } else {
-        util.toastEven("请先选择商品");
+        util.toastEven("请先选择商品",1);
       }
     },
     onSwipeLeft(item) {
@@ -250,14 +250,14 @@ export default {
               }
             });
             this.fetchDeledGoods(delArr, res => {
-              util.toastEven("删除成功");
+              util.toastEven("删除成功",1);
               this.page = 1;
               this.getShopGoods();
             });
           }
         });
       } else {
-        return util.toastEven("请先选择要删除的商品");
+        return util.toastEven("请先选择要删除的商品",1);
       }
     },
     fetchDeledGoods: async function(params, callS) {

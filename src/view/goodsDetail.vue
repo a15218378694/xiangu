@@ -5,9 +5,8 @@
       <img class="back" @click="back" src="../assets/img/mall/商品详情_slices/Group@2x.png" alt="">
       <img v-if="isCollect == 1" class="collect" @click="collect(1)" src="../assets/img/mall/商品详情_slices/收藏2@2x.png" alt="">
       <img v-else-if="isCollect == 2" @click="collect(0)" class="collect" src="../assets/img/mall/商品详情_slices/收藏@2x.png" alt="">
-      <router-link class="toShopCart" to="shopCart">
-        <img class="shopCart" src="../assets/img/mall/商品详情_slices/购物车@2x.png" alt="">
-      </router-link>
+      <div @click="goShopCart" class="toShopCart"></div>
+
       <span v-if="isLoading1"></span>
     </div>
 
@@ -210,7 +209,7 @@ export default {
   name: "name",
   data: function() {
     return {
-      miniImage: '',
+      miniImage: "",
       isLoading1: false,
       refreshDelay: 120,
       isCollect: "",
@@ -305,6 +304,11 @@ export default {
         }
       }
       this.fetchGuigeDet(buy_way);
+    },
+    goShopCart() {
+      this.$router.push({
+        path: "shopCart"
+      });
     },
     fetchGuigeDet: async function(buy_way) {
       this.isLoading1 = !this.isLoading1;
@@ -710,7 +714,7 @@ export default {
       });
       if (res.data) {
         this.isCollect = 1;
-        return util.toastEven("收藏成功");
+        return util.toastEven("收藏成功",1);
       }
     },
     delColl: async function() {
@@ -719,7 +723,7 @@ export default {
       ]);
       if (res.data) {
         this.isCollect = 2;
-        return util.toastEven("取消收藏");
+        return util.toastEven("取消收藏",1);
       }
     },
     checkNum() {
@@ -788,13 +792,14 @@ export default {
     }
     .toShopCart {
       float: right;
-      .shopCart {
-        width: 0.8rem;
-        height: 0.8rem;
-        padding: 0.3rem;
-        padding-right: 0.15rem;
-        box-sizing: content-box;
-      }
+      background: url(../assets/img/mall/商品详情_slices/购物车@2x.png) no-repeat;
+      background-size: 0.8rem;
+      background-position: center;
+      width: 1.1rem;
+      height: 1.4rem;
+      // padding: 0.3rem;
+      // padding-right: 0.15rem;
+      box-sizing: content-box;
     }
 
     .collect {

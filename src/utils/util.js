@@ -4,8 +4,11 @@ import { Toast } from "mint-ui";
 
 
 export default {
-  toastEven(msg) {
+  toastEven(msg,flag) {
     // Toast(msg)
+    if (flag) {
+      Toast(msg)
+    }
   },
   formatNumber(n) {
     n = n.toString();
