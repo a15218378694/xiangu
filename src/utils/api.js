@@ -35,7 +35,7 @@ export default {
   submitorder: '/pro/submitorder',//立即支付
   getProPrice: '/pro/getProPrice',//根据商品规格 获得相应的价格
   invitefriends: '/groupbooking/invitefriends',//邀请好友开团
-  unitprice: '/buy/unitprice',//商品详情页点击单价购买
+  unitprice: '/buy/unitprice',//商品详情页点击单独购买
   sharedetails: '/sharedetails',//拼团分享出 的页面
   gototuxedo: '/groupbooking/gototuxedo',//外链进来 去参团
   imjoin: '/groupbooking/imjoin',//立即参与 传省份

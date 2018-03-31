@@ -154,17 +154,19 @@ export default {
     }
 
   },
-  //操作多个定时器
+  //操作多个定时器 typ是分辨是否是点击更多获取信息，还是组件刚加载的时候获取信息
   grounding: async function (that, typ) {
     let params = {};
     const res = await http.get(api.groupbooking, params);
     if (res.data) {
       if (res.data.gbookingMessage) {
         if (typ !== 'more') {
+          //默认只显示两个团的信息
           that.groundInfo = res.data.gbookingMessage.splice(0, 2);
         } else {
           that.groundInfo = res.data.gbookingMessage
         }
+        //下面是假数据，我拿来测试倒计时用的
         // that.groundInfo = [
         //   //正在拼团的商品
         //   {

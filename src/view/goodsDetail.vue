@@ -124,7 +124,7 @@
       </button>
       <button class="alone_buy" @click="isShowEven('单价',1)" v-if="this.rukou !== 'groundDet'">
         <p class="alone_pri">￥{{proDetails.offering_price}}</p>
-        <p class="aloneBtn">单价购买</p>
+        <p class="aloneBtn">单独购买</p>
       </button>
     </div>
 
@@ -153,14 +153,14 @@
                 <button v-for="(guigeObj,guigeIndex) in guigesObj.sizeslist" :key="guigeIndex" :class="[guigesObj.curIndex == guigeIndex ? 'guigeTypeItemActive' : '','guigeTypeItem']" @click="checkGuige(indexss,guigeIndex,guigesObj,guigeObj)">{{guigeObj.sizes}}</button>
               </div>
             </div>
+            <div class="needNum">
+              <span>需要数量：</span>
+              <input v-model.number="num" type="number" :placeholder="placeHold">
+              <img src="../assets/img/mall/guige/提示@3x.png" alt="">
+            </div>
           </div>
         </scroll>
 
-        <div class="needNum">
-          <span>需要数量：</span>
-          <input v-model.number="num" type="number" :placeholder="placeHold">
-          <img src="../assets/img/mall/guige/提示@3x.png" alt="">
-        </div>
         <div class="res">
           <!-- v-if="showChecked" -->
           <div class="resGuiges">
@@ -252,10 +252,14 @@ export default {
   },
   created() {
     this.goodsId = this.$route.query.goodsId;
+
+    //外链唤醒APP，最后来到这个页面，会带appPage这个参数
     if (this.$route.query.appPage) {
       this.appPage = this.$route.query.appPage;
     }
+    //下面的标识都是从拼团详情页面进入才不是空的，只是为了唤醒立即参团的框框
     this.rukou = this.$route.query.rukou;
+    //从首页直接进去teamId是空的，后面有人申请开团了才会不为空，如果为novalues,也类似空
     if (this.$route.query.teamId) {
       this.teamId = this.$route.query.teamId;
     }
@@ -264,6 +268,7 @@ export default {
     if (winBri.getSheBei() == "iPhone") {
       this.isIph = true;
     }
+    //为了唤醒规格选择的框框
     if (this.rukou == "groundDet") {
       this.isShowEven("拼团", 2);
     }
@@ -276,7 +281,7 @@ export default {
     scroll
   },
   methods: {
-    //单价购买或者发起拼团或者关闭
+    //单独购买或者发起拼团或者关闭
     isShowEven(buyTypeTit, buy_way) {
       if (this.$bridge.getSheBei() == "Android") {
         let token = util.getStore("token");
@@ -345,6 +350,7 @@ export default {
       this.$router.go(-1);
     },
     fetchGoodsDet: async function() {
+      //记录浏览量的
       await http.get(api.pageviews, { id: this.goodsId });
       let params = {
         id: this.goodsId
@@ -701,10 +707,13 @@ export default {
     loadTop() {
       util.loadTop(this);
     },
+    //做是否收藏的处理
     collect(status) {
       if (!status) {
+        //收藏
         this.collectEven();
       } else {
+        //取消收藏
         this.delColl();
       }
     },
@@ -714,7 +723,7 @@ export default {
       });
       if (res.data) {
         this.isCollect = 1;
-        return util.toastEven("收藏成功",1);
+        return util.toastEven("收藏成功", 1);
       }
     },
     delColl: async function() {
@@ -723,7 +732,7 @@ export default {
       ]);
       if (res.data) {
         this.isCollect = 2;
-        return util.toastEven("取消收藏",1);
+        return util.toastEven("取消收藏", 1);
       }
     },
     checkNum() {
@@ -792,7 +801,8 @@ export default {
     }
     .toShopCart {
       float: right;
-      background: url(../assets/img/mall/商品详情_slices/购物车@2x.png) no-repeat;
+      background: url(../assets/img/mall/商品详情_slices/购物车@2x.png)
+        no-repeat;
       background-size: 0.8rem;
       background-position: center;
       width: 1.1rem;

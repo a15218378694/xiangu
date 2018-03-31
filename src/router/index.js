@@ -15,7 +15,6 @@ const playDet = () => import('@/view/playDet.vue')
 const yaoqing = () => import('@/view/yaoqing.vue')
 const groundDetSerList = () => import('@/view/groundDetSerList.vue')
 
-
 export default new Router({
   routes: [
     {
