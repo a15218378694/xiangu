@@ -53,7 +53,7 @@ function checkCode(res) {
     if (res.msg) {
       util.toastEven(res.msg)
     } else {
-      util.toastEven('出问题了..，.请将问题反馈给我们吧')
+      util.toastEven('出问题了......，.请将问题反馈给我们吧')
     }
   }
   // if (res.data && (!res.data.success)) {
