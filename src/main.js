@@ -97,6 +97,10 @@ new Vue({
     axios.defaults.headers.common["tonken"] = token;
     this.chanToken()
   },
+  mounted () {
+    window.vue = this;
+    
+  },
   methods: {
     chanToken() {
       window.changeToken = function (hyToken) {
