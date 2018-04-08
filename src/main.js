@@ -108,6 +108,7 @@ new Vue({
         if (hyToken === "" || hyToken === null) {
           token1 = ""
         }
+        //测试token xtm0552116446
         axios.defaults.headers.common['tonken'] = hyToken || token1
       }
     }
