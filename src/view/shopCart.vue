@@ -59,6 +59,8 @@
 </template>
 
 <script>
+sessionStorage.clear();
+
 import Vue from "vue";
 import api from "../utils/api";
 import http from "../utils/http";
@@ -119,19 +121,17 @@ export default {
       });
 
       const res = await http.post1(api.order, params);
-      console.log(this.endGuigess);
       if (res.data) {
+        sessionStorage.setItem('orderDetData',JSON.stringify(res.data));
+        sessionStorage.setItem('newGuigess',JSON.stringify(this.shopCartGoods));
+        sessionStorage.setItem('checkedGuige',JSON.stringify(this.endGuigess));
         this.$router.push({
           path: "orderDet",
           query: {
-            orderDetData: JSON.stringify(res.data),
-            shopCartGoods: JSON.stringify(this.shopCartGoods),
-            endGuigess: JSON.stringify(this.endGuigess),
             totalNum: this.num,
             totalNums: this.totalNums,
             buyway: this.buy_way,
             teamId: `novalues`
-
             // orderId: res.data.myorders.orderid
           }
         });

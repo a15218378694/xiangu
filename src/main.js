@@ -85,7 +85,7 @@ new function () {
 
 router.beforeEach((to, from, next) => {
   if (winBri.getSheBei() !== "iPhone" && winBri.getSheBei() !== "Android") {
-    util.goLogin()
+    // util.goLogin()
   }
   next()
 })

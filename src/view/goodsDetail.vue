@@ -188,6 +188,7 @@
 </template>
 
 <script>
+sessionStorage.clear();
 let buyNumRule = 200;
 import Vue from "vue";
 import axios from "axios";
@@ -303,9 +304,15 @@ export default {
         } else if (this.goodsId == 3) {
           this.placeHold = `200条的倍数进行购买`;
         } else if (this.goodsId == 4) {
-          this.placeHold = `30台的倍数进行购买`;
+          this.placeHold = `20台起订`;
         } else if (this.goodsId == 5) {
-          this.placeHold = `100台的倍数进行购买`;
+          this.placeHold = `20台起订`;
+        } else if (this.goodsId == 6) {
+          this.placeHold = `60条起订`;
+        } else if (this.goodsId == 7) {
+          this.placeHold = `400条的倍数进行购买`;
+        } else if (this.goodsId == 8) {
+          this.placeHold = `100条的倍数进行购买`;
         }
       }
       this.fetchGuigeDet(buy_way);
@@ -601,12 +608,12 @@ export default {
         if (this.buy_way == 2 && res.data.code == 2) {
           return MessageBox("提示", res.data.msg);
         }
+        sessionStorage.setItem('orderDetData',JSON.stringify(res.data));
+        sessionStorage.setItem('newGuigess',JSON.stringify(this.newGuigess));
+        sessionStorage.setItem('checkedGuige',JSON.stringify(this.checkedGuige));
         this.$router.push({
           path: "orderDet",
           query: {
-            orderDetData: JSON.stringify(res.data),
-            newGuigess: JSON.stringify(this.newGuigess),
-            checkedGuige: JSON.stringify(this.checkedGuige),
             totalNum: this.num,
             totalNums: this.totalNums,
             buyway: this.buy_way,
@@ -749,31 +756,48 @@ export default {
         buyNumRule = 200;
       } else if (this.goodsId == 1) {
         buyNumRule = 400;
-      } else if (this.goodsId == 5) {
+      } else if (this.goodsId == 7) {
+        buyNumRule = 400;
+      } else if (this.goodsId == 8) {
         buyNumRule = 100;
-      } else if (this.goodsId == 4) {
-        buyNumRule = 30;
       }
       if (
         this.goodsId == 3 ||
         this.goodsId == 1 ||
-        this.goodsId == 4 ||
-        this.goodsId == 5
+        this.goodsId == 7 ||
+        this.goodsId == 8
       ) {
         if (this.num % buyNumRule) {
-          if (this.goodsId == 1 || this.goodsId == 3) {
-            MessageBox(`提示`, `购买数量必须以${buyNumRule}条的倍数进行购买`);
-            return false;
-          } else if (this.goodsId == 4 || this.goodsId == 5) {
-            MessageBox(`提示`, `购买数量必须以${buyNumRule}台的倍数进行购买`);
-            return false;
-          }
+          // if (this.goodsId == 1 || this.goodsId == 3) {
+          //   MessageBox(`提示`, `购买数量必须以${buyNumRule}条的倍数进行购买`);
+          //   return false;
+          // }
+          //  else if (this.goodsId == 4 || this.goodsId == 5) {
+          //   MessageBox(`提示`, `购买数量必须以${buyNumRule}台的倍数进行购买`);
+          //   return false;
+          // }
+          MessageBox(`提示`, `购买数量必须以${buyNumRule}条的倍数进行购买`);
+          return false;
         } else {
           return true;
         }
       } else if (this.goodsId == 2) {
         if (this.num < 200) {
           MessageBox(`提示`, `购买数量需200条起订`);
+          return false;
+        } else {
+          return true;
+        }
+      } else if (this.goodsId == 4 || this.goodsId == 5) {
+        if (this.num < 20) {
+          MessageBox(`提示`, `购买数量需20台起订`);
+          return false;
+        } else {
+          return true;
+        }
+      } else if (this.goodsId == 6) {
+        if (this.num < 60) {
+          MessageBox(`提示`, `购买数量需60条起订`);
           return false;
         } else {
           return true;

@@ -13,13 +13,14 @@
       <div class="des">即将开通，敬请期待！</div>
     </div>
     <div class="mall_hasGoods" v-else>
-      <div class="carouse bgcWhite">
-        <el-carousel indicator-position="none" type="card" height="200px">
-          <el-carousel-item v-for="item in banners" :key="item.id">
+      <div class="bgcWhite" style="height:150px;">
+        <mt-swipe :auto="4000">
+          <mt-swipe-item v-for="item in banners" :key="item.id">
             <img :src="item.image || defaultImg" alt="">
-          </el-carousel-item>
-        </el-carousel>
+          </mt-swipe-item>
+        </mt-swipe>
       </div>
+
       <div class="goods_types bgcWhite">
         <template v-for="(goodsType,idx) in goodsTypes">
           <router-link :to="{path:'typeDet',query: {'typeText':goodsType['name'],'id':goodsType.id}}" class="goods_type" :key="idx">
@@ -68,13 +69,15 @@ import groundItem from "../components/groundItem.vue";
 import shopItem from "../components/shopItem.vue";
 import goodsTool from "../components/goodsTool.vue";
 import navHeader from "../components/navHeader.vue";
-import { Carousel, CarouselItem } from "element-ui";
+import { Swipe, SwipeItem } from "mint-ui";
+
+Vue.component(Swipe.name, Swipe);
+Vue.component(SwipeItem.name, SwipeItem);
 import { Search } from "mint-ui";
 import { mapState } from "vuex";
 
 Vue.component(Search.name, Search);
-Vue.component(Carousel.name, Carousel);
-Vue.component(CarouselItem.name, CarouselItem);
+
 let mallObj = {
   name: "name",
   data() {
@@ -228,11 +231,11 @@ let mallObj = {
     },
     loadTop() {
       util.loadTop(this);
-    },
+    }
     // getCartCount: async function(params = {}) {
     //   const res = await http.get(api.showPro, params);
     //   console.log(res);
-      
+
     //   if (res.data) {
     //     this.$store.commit("updateCartCount",res.data.list.length);
     //   }
@@ -291,26 +294,6 @@ export default mallObj;
   }
 }
 .mall_hasGoods {
-  .carouse {
-    padding: 0.29rem 0 0.2rem;
-    .el-carousel__item h3 {
-      color: #475669;
-      font-size: 0.14rem;
-      opacity: 0.75;
-      line-height: 2rem;
-      margin: 0;
-    }
-    .el-carousel__item:nth-child(2n) {
-      background-color: #99a9bf;
-    }
-    .el-carousel__item:nth-child(2n + 1) {
-      background-color: #d3dce6;
-    }
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
   .goods_types {
     display: flex;
     padding: 0.2rem;
@@ -375,6 +358,6 @@ export default mallObj;
   }
 }
 .el-carousel__item {
-    // width: 300px;
-  }
+  // width: 300px;
+}
 </style>

@@ -138,22 +138,22 @@ export default {
     that.page++;
     callb();
   },
-  goLogin: async function () {
-    let params = {
-      phone: 15218378694
-    };
-    const res = await http.post(api.send_SMS_verifyCode, params);
-    if (res.data) {
-      const res1 = await http.post(api.login_by_verifyCode, {
-        phone: 15218378694,
-        code: 1234
-      });
-      if (res1.data) {
-        this.setStore('token', res1.data.tonken)
-      }
-    }
+  // goLogin: async function () {
+  //   let params = {
+  //     phone: 15218378694
+  //   };
+  //   const res = await http.post(api.send_SMS_verifyCode, params);
+  //   if (res.data) {
+  //     const res1 = await http.post(api.login_by_verifyCode, {
+  //       phone: 15218378694,
+  //       code: 1234
+  //     });
+  //     if (res1.data) {
+  //       this.setStore('token', res1.data.tonken)
+  //     }
+  //   }
 
-  },
+  // },
   //操作多个定时器 typ是分辨是否是点击更多获取信息，还是组件刚加载的时候获取信息
   grounding: async function (that, typ) {
     let params = {};

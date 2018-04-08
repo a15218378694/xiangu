@@ -242,7 +242,7 @@ export default {
     this.getCurSel1();
     // this.changeBtn();
     this.lastPage = this.$route.query.curPage;
-    this.orderDetData = JSON.parse(this.$route.query.orderDetData); //传过来的混合数据
+    this.orderDetData = JSON.parse(sessionStorage.getItem("orderDetData")); //传过来的混合数据
     this.perName = this.orderDetData.name;
     this.perPhone = this.orderDetData.phone;
     this.perAddr = this.orderDetData.address;
@@ -264,31 +264,32 @@ export default {
 
     if (
       //多套规格
-      this.$route.query.checkedGuige &&
-      JSON.parse(this.$route.query.checkedGuige).length > 0
+      sessionStorage.getItem("checkedGuige") &&
+      JSON.parse(sessionStorage.getItem("checkedGuige")).length > 0
     ) {
-      this.checkedGuige = JSON.parse(this.$route.query.checkedGuige);
+      this.checkedGuige = JSON.parse(sessionStorage.getItem("checkedGuige"));
 
       if (this.$route.query.totalNums) {
         this.totalNums = this.$route.query.totalNums;
       } //一套规格
     } else if (
-      this.$route.query.checkedGuige &&
-      JSON.parse(this.$route.query.checkedGuige).length <= 0
+      sessionStorage.getItem("checkedGuige") &&
+      JSON.parse(sessionStorage.getItem("checkedGuige")).length <= 0
     ) {
-      console.log(JSON.parse(this.$route.query.newGuigess));
-      this.checkedGuige[0] = JSON.parse(this.$route.query.newGuigess);
+      console.log(JSON.parse(sessionStorage.getItem("newGuigess")));
+      this.checkedGuige[0] = JSON.parse(sessionStorage.getItem("newGuigess"));
       this.totalNum = this.$route.query.totalNum;
       console.log(this.totalNum);
     }
     if (this.lastPage == "goodsDetail") {
       this.endGuigess = [this.checkedGuige];
+    } else {
+      //下面是购物车的情况
+      if (sessionStorage.getItem("checkedGuige")) {
+        this.endGuigess = JSON.parse(sessionStorage.getItem("checkedGuige"));
+      }
     }
 
-    //下面是购物车的情况
-    if (this.$route.query.endGuigess) {
-      this.endGuigess = JSON.parse(this.$route.query.endGuigess);
-    }
     this.orderDetailsArr.forEach((v, i) => {
       //v.shoppingCat[0]拿到商品对象数据
       v.shoppingCat[0].endGuigess = this.endGuigess[i];
@@ -301,6 +302,9 @@ export default {
     this.timer = setInterval(() => {
       this.daoji--;
     }, 1000);
+  },
+  destroyed() {
+    sessionStorage.clear();
   },
   components: {
     goodsItem,
