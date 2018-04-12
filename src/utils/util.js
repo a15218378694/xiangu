@@ -128,7 +128,7 @@ export default {
     }, intervalTime);
   },
 
-  //分页 上拉加载更多......
+  //分页 上拉加载更多,,,,
   loadMore(that, callb) {
     if (that.page >= that.totalPage) {
       that.loading = false;
