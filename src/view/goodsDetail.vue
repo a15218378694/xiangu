@@ -298,7 +298,7 @@ export default {
         this.placeHold = "请输入购买数量";
       } else {
         if (this.goodsId == 1) {
-          this.placeHold = `400条的倍数进行购买`;
+          this.placeHold = `300条的倍数进行购买`;
         } else if (this.goodsId == 2) {
           this.placeHold = `200条起订`;
         } else if (this.goodsId == 3) {
@@ -755,7 +755,7 @@ export default {
       if (this.goodsId == 3) {
         buyNumRule = 200;
       } else if (this.goodsId == 1) {
-        buyNumRule = 400;
+        buyNumRule = 300;
       } else if (this.goodsId == 7) {
         buyNumRule = 400;
       } else if (this.goodsId == 8) {
@@ -1185,9 +1185,10 @@ export default {
     }
   }
   .scrollBox {
-    max-height: 4.8rem;
+    max-height: 6.8rem;
     overflow: hidden;
   }
+
   // .zhezhao {
   //   position: fixed;
   //   left: 0;
