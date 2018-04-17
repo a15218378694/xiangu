@@ -109,6 +109,7 @@ new Vue({
           token1 = ""
         }
         //测试token xtm0552116446
+        util.toastEven(hyToken,true)
         axios.defaults.headers.common['tonken'] = hyToken || token1
       }
     }
