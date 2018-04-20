@@ -7,6 +7,7 @@ import "@/assets/css/groundItem.css";
 import "@/assets/icon/iconfont.css";
 
 import Vue from "vue";
+import './components/global'
 import VueJsonp from 'vue-jsonp'
 Vue.use(VueJsonp)
 import App from './App'
@@ -67,10 +68,10 @@ new function () {
     document
       .getElementsByTagName("html")[0]
       .setAttribute(
-      "style",
-      "font-size:" +
-      _self.widthProportion() * _self.fontSize +
-      "px !important"
+        "style",
+        "font-size:" +
+        _self.widthProportion() * _self.fontSize +
+        "px !important"
       );
   };
   _self.changePage();
@@ -94,23 +95,21 @@ new Vue({
   router,
   created() {
     let token = util.getStore("token");
-    axios.defaults.headers.common["tonken"] = token;
+    axios.defaults.headers.common["tonken"] = token || 'xtm0552116446';
     this.chanToken()
   },
-  mounted () {
+  mounted() {
     window.vue = this;
-    
+
   },
   methods: {
     chanToken() {
       window.changeToken = function (hyToken) {
-        let token1 = util.getStore('token')
-        if (hyToken === "" || hyToken === null) {
-          token1 = ""
-        }
         //测试token xtm0552116446
-        util.toastEven(hyToken,true)
-        axios.defaults.headers.common['tonken'] = hyToken || token1
+        // util.toastEven(hyToken, true)
+        util.setStore("token",hyToken);
+        // axios.defaults.headers.common["tonken"] = hyToken
+
       }
     }
   },

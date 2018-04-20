@@ -4,16 +4,16 @@
           <mt-search @click.native="toSearch" v-model="value" cancel-text="取消" placeholder="输入你要搜索的商品">
           </mt-search>
         </div> -->
-    <nav-header>
+    <navHeader>
       <span class="orderDetTit" slot="header">商城</span>
-    </nav-header>
+    </navHeader>
     <div class="mall_noGoods" v-if="!hasGoods">
       <div class="back_img"></div>
       <div class="des">一片空白</div>
       <div class="des">即将开通，敬请期待！</div>
     </div>
     <div class="mall_hasGoods" v-else>
-      <div class="bgcWhite" style="height:150px;">
+      <div class="bgcWhite" style="height:150px;"> 
         <mt-swipe :auto="4000">
           <mt-swipe-item v-for="item in banners" :key="item.id">
             <img :src="item.image || defaultImg" alt="">
@@ -41,15 +41,15 @@
           </div>
         </div>
 
-        <ground-item :groundInfo="groundInfo" :clock="clock"></ground-item>
+        <groundItem :groundInfo="groundInfo" :clock="clock"></groundItem>
 
       </div> -->
 
-      <goods-tool @getToolGoods="fetchHot" :showRules='showRules'>
+      <goodsTool @getToolGoods="fetchHot" :showRules='showRules'>
         <span slot="goodsToolTit">热门商品</span>
-      </goods-tool>
+      </goodsTool>
 
-      <shop-item :hotGoods="hotGoods"></shop-item>
+      <shopItem :hotGoods="hotGoods"></shopItem>
       <router-link to="shopCart">
         <img class="shopCart" src="../assets/img/mall/购物车@3x.png" alt="">
       </router-link>
@@ -65,10 +65,6 @@ import Vue from "vue";
 import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
-import groundItem from "../components/groundItem.vue";
-import shopItem from "../components/shopItem.vue";
-import goodsTool from "../components/goodsTool.vue";
-import navHeader from "../components/navHeader.vue";
 import { Swipe, SwipeItem } from "mint-ui";
 
 Vue.component(Swipe.name, Swipe);
@@ -241,12 +237,6 @@ let mallObj = {
     //   }
     // },
   },
-  components: {
-    groundItem,
-    shopItem,
-    goodsTool,
-    navHeader
-  }
 };
 
 export default mallObj;
