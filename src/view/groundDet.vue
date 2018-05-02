@@ -238,9 +238,7 @@ export default {
     },
     getData() {
       let that = this;
-      this.$jsonp("http://api.map.baidu.com/location/ip", {
-        ak: "Pswwb3LjDlxDt5KhGQxqn6zhS8hbQAHv"
-      })
+      this.$jsonp("http://webapi.amap.com/maps?v=1.3&key=d76c045c86da17ecb136f079603b9b5")
         .then(json => {
           let prov = json.content.address_detail.province;
           that.province = prov;

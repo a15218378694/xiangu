@@ -3,7 +3,7 @@
     ["es2015", { "modules": false }],
     "stage-2"
   ],
-  "plugins": ["transform-vue-jsx", "transform-runtime",["component", [
+  "plugins": ["transform-vue-jsx","transform-es2015-modules-commonjs", "transform-runtime",["component", [
     {
       "libraryName": "element-ui",
       "styleLibraryName": "theme-chalk"

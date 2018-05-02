@@ -13,14 +13,31 @@
       <div class="des">即将开通，敬请期待！</div>
     </div>
     <div class="mall_hasGoods" v-else>
-      <div class="bgcWhite" style="height:150px;"> 
+      <!-- <div class="bgcWhite" style="height:150px;"> 
         <mt-swipe :auto="4000">
           <mt-swipe-item v-for="item in banners" :key="item.id">
             <img :src="item.image || defaultImg" alt="">
           </mt-swipe-item>
         </mt-swipe>
-      </div>
+      </div> -->
+      <div class="swiper">
+        <div class="swiper-container">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <img src="https://merchant-service.oss-cn-beijing.aliyuncs.com/banner1.png" />
+            </div>
+            <div class="swiper-slide">
+              <img src="https://merchant-service.oss-cn-beijing.aliyuncs.com/banner1.png" />
+            </div>
+            <div class="swiper-slide">
+              <img src="https://merchant-service.oss-cn-beijing.aliyuncs.com/banner1.png" />
+            </div>
 
+          </div>
+          <!-- 如果需要分页器 -->
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
       <div class="goods_types bgcWhite">
         <template v-for="(goodsType,idx) in goodsTypes">
           <router-link :to="{path:'typeDet',query: {'typeText':goodsType['name'],'id':goodsType.id}}" class="goods_type" :key="idx">
@@ -65,16 +82,17 @@ import Vue from "vue";
 import http from "../utils/http";
 import api from "../utils/api";
 import util from "../utils/util";
-import { Swipe, SwipeItem } from "mint-ui";
+import "@/utils/swi.js";
+import "@/assets/css/swi.css";
+// import { Swipe, SwipeItem } from "mint-ui";
 
-Vue.component(Swipe.name, Swipe);
-Vue.component(SwipeItem.name, SwipeItem);
+// Vue.component(Swipe.name, Swipe);
+// Vue.component(SwipeItem.name, SwipeItem);
 import { Search } from "mint-ui";
 import { mapState } from "vuex";
 
 Vue.component(Search.name, Search);
-
-let mallObj = {
+export default {
   name: "name",
   data() {
     return {
@@ -119,6 +137,18 @@ let mallObj = {
     this.grounding();
     this.getBanner();
     // this.getCartCount();
+    this.$nextTick(() => {
+      new Swiper(".swiper-container", {
+        direction: "horizontal",
+        loop: true,
+        autoplay: 5000,
+        slidesPerView: "auto",
+        centeredSlides: true,
+        spaceBetween: 20,
+        // 如果需要分页器
+        pagination: ".swiper-pagination"
+      });
+    });
   },
   methods: {
     fetchHotGoods: async function(params, callS) {
@@ -236,10 +266,8 @@ let mallObj = {
     //     this.$store.commit("updateCartCount",res.data.list.length);
     //   }
     // },
-  },
+  }
 };
-
-export default mallObj;
 </script>
 
 <style lang="less">
@@ -350,4 +378,64 @@ export default mallObj;
 .el-carousel__item {
   // width: 300px;
 }
+</style>
+
+    <style>
+        .swiper-container {
+            margin-top: 20px;
+            width: 750px;
+            height: 320px;
+            margin-bottom: 53px;
+            overflow: hidden !important;
+        }
+
+        .swiper-container .swiper-wrapper .swiper-slide {
+            width: 620px;
+            border-radius: 20px;
+        }
+
+        .swiper-container .swiper-wrapper .swiper-slide img {
+            width: 100%;
+            height: 320px;
+            border-radius: 20px;
+        }
+
+        .swiper-container .swiper-wrapper .swiper-slide-prev {
+            margin-top: 18px;
+            height: 284px !important;
+        }
+
+        .swiper-container .swiper-wrapper .swiper-slide-prev img {
+            height: 284px !important;
+        }
+
+        .swiper-container .swiper-wrapper .swiper-slide-next {
+            margin-top: 18px;
+            height: 284px !important;
+        }
+
+        .swiper-container .swiper-wrapper .swiper-slide-next img {
+            height: 284px !important;
+        }
+
+        .swiper-container .swiper-wrapper .swiper-slide-active {
+            width: 620px;
+        }
+
+        .swiper-pagination {
+            bottom: -30px !important;
+        }
+
+        .swiper-pagination .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            background: #ff1e1e;
+        }
+
+        .swiper-pagination .swiper-pagination-bullet-active {
+            width: 21px;
+            height: 12px;
+            background: #e75230;
+            border-radius: 6px;
+        }
 </style>
