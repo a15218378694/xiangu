@@ -40,7 +40,7 @@ Vue.use(Vuex);
 Vue.use(VueLazyload, {
   loading: require("./assets/img/common/loading_image@2x.png")
 });
-
+import $ from 'jquery'
 const store = new Vuex.Store({
   state: {
     cartCount: 0

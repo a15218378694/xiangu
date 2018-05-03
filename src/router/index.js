@@ -14,6 +14,7 @@ const typeDet = () => import('@/view/typeDet.vue')
 const playDet = () => import('@/view/playDet.vue')
 const yaoqing = () => import('@/view/yaoqing.vue')
 const groundDetSerList = () => import('@/view/groundDetSerList.vue')
+const demo = () => import('@/view/demo.vue')
 
 export default new Router({
   routes: [
@@ -68,6 +69,10 @@ export default new Router({
     {
       path: "/yaoqing",
       component: yaoqing
-    }
+    },
+    {
+      path: "/demo",
+      component: demo
+    },
   ]
 });
