@@ -130,7 +130,7 @@ export default {
       // 线上 http://merchant.xljkj.cn:80 测试 http://192.168.6.111:8080 192.168.8.102:80
       baseURL: root,
       url,
-      params, // get 请求时带的参数``
+      params, // get 请求时带的参数...
       timeout: 10000,
       headers: {
         'X-Requested-With': 'XMLHttpRequest'
