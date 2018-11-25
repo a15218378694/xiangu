@@ -229,7 +229,6 @@ export default {
   },
   setStore(name, content) {
     if (!name) return;
-    console.log(typeof content !== 'string');
     if (typeof content !== 'string') {
       content = JSON.stringify(content);
     }

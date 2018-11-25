@@ -4,9 +4,9 @@ var rootPos = ''
 if (process.env.NODE_ENV == 'production') {
   rootPos = 'http://api.map.baidu.com'
   let isTestBaseAPI = location.href.includes('test')
-  root = 'http://merchant.xljkj.cn'
+  root = 'https://merchant.xljkj.cn'
   if (isTestBaseAPI) {
-    root = 'http://test.merchant.xljkj.cn'
+    root = 'https://merchant.xljkj.cn'
   }
 }
 import axios from 'axios'
@@ -112,6 +112,7 @@ export default {
       timeout: 10000,
       // headers: {
       //   'X-Requested-With': 'XMLHttpRequest',
+      
       //   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       // }
     }).then(

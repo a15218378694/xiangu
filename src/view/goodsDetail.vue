@@ -356,7 +356,7 @@ export default {
     back() {
       this.$router.go(-1);
     },
-    fetchGoodsDet: async function() {
+    async fetchGoodsDet() {
       //记录浏览量的
       await http.get(api.pageviews, { id: this.goodsId });
       let params = {
@@ -414,15 +414,35 @@ export default {
         pid: this.proDetails.id,
         buyway: this.buy_way
       };
-      this.newGuigess.map((v, i) => {
-        if (i == 0) {
-          params.coulour = v.sizes;
-        } else if (i == 1) {
-          params.sizes = v.sizes;
-        } else if (i == 2) {
-          params.powers = v.sizes;
-        }
+      let obj = {
+        0: "coulour",
+        1: "sizes",
+        2: "powers"
+      };
+      let arr = this.newGuigess.map((v, i) => {
+        // if (i == 0) {
+        //   params.coulour = v.sizes;
+        // } else if (i == 1) {
+        //   params.sizes = v.sizes;
+        // } else if (i == 2) {
+        //   params.powers = v.sizes;
+        // }
+        params.obj[i] = v.sizes;
       });
+      let arr = [
+        {
+          id: 1,
+          name: "aa"
+        },
+        {
+          id: 2,
+          name: "bb"
+        },
+        {
+          id: 3,
+          name: "cc"
+        },
+      ];
       const res = await http.post1(api.getProPrice, params);
       if (res.data) {
         this.publicPrice = res.data.price;
@@ -561,7 +581,7 @@ export default {
     clearStatus() {
       this.num = "";
       this.newGuigess = [];
-      this.guigess.forEach((v, i) => {
+      let arr = this.guigess.forEach((v, i) => {
         v.curIndex = -1;
         v.curItem = "";
       });
@@ -608,9 +628,12 @@ export default {
         if (this.buy_way == 2 && res.data.code == 2) {
           return MessageBox("提示", res.data.msg);
         }
-        sessionStorage.setItem('orderDetData',JSON.stringify(res.data));
-        sessionStorage.setItem('newGuigess',JSON.stringify(this.newGuigess));
-        sessionStorage.setItem('checkedGuige',JSON.stringify(this.checkedGuige));
+        sessionStorage.setItem("orderDetData", JSON.stringify(res.data));
+        sessionStorage.setItem("newGuigess", JSON.stringify(this.newGuigess));
+        sessionStorage.setItem(
+          "checkedGuige",
+          JSON.stringify(this.checkedGuige)
+        );
         this.$router.push({
           path: "orderDet",
           query: {
@@ -1188,20 +1211,9 @@ export default {
     max-height: 6.8rem;
     overflow: hidden;
   }
-
-  // .zhezhao {
-  //   position: fixed;
-  //   left: 0;
-  //   right: 0;
-  //   top: 0;
-  //   bottom: 0;
-  // }
   .goods_guige {
     text-align: left;
     width: 100%;
-    // position: fixed;
-    // bottom: 0;
-    // z-index: 3;
     background-color: #fff;
     .one {
       height: 1.6rem;

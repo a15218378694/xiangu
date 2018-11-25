@@ -211,7 +211,7 @@ export default {
     },
     //打开页面默认获取数据
     getGoods() {
-      this.loading = true;
+      this.loadin = true;
       this.fetchHotGoods(
         {
           groups: this.groups,
