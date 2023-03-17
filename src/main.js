@@ -54,7 +54,7 @@ const store = new Vuex.Store({
 Vue.config.productionTip = false;
 new function () {
   var _self = this;
-  _self.width = 750; //设置默认最大宽度
+  _self.width = 750; //设置默认最大宽度1111
   _self.fontSize = 100; //默认字体大小
   _self.widthProportion = function () {
     var p =
