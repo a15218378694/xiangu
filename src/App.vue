@@ -18,7 +18,7 @@ export default {
   },
   mounted() {
     // this.$bridge.callhandler("ObjC Echo", params, data => {
-    //   // 处理返回数据222333666
+    //   // 处理返回数据222333555
     // });
   },
   methods: {},
