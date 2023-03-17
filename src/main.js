@@ -60,7 +60,7 @@ new function () {
     var p =
       ((document.body && document.body.clientWidth) ||
         document.getElementsByTagName("html")[0].offsetWidth) / _self.width;
-    // > 1 ? 1 : p < 0.5 ? 0.5 : p;
+    // > 1 ? 1 : p < 0.5 ? 0.5 : p;222
     return p;
   };
   _self.changePage = function () {
